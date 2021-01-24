@@ -25,6 +25,7 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	runtime 'org.postgresql:postgresql:9.4-1206-jdbc42'
 }
 
 test {
