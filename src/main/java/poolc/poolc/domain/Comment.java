@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 import static javax.persistence.FetchType.LAZY;
 
-@Entity
+@Entity(name = "Comment")
 @Getter
 public class Comment {
     @Id
