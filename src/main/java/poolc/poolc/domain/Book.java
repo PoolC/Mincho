@@ -33,9 +33,9 @@ public class Book {
     @Column(name = "info", length = 64)
     private String info;
 
-    @Column(name = "status", columnDefinition = "varchar(64) default 'available'")
+    @Column(name = "status", columnDefinition = "varchar(64) default 'AVAILABLE'")
     @Enumerated(EnumType.STRING)
-    private BookStatus status = BookStatus.available;
+    private BookStatus status = BookStatus.AVAILABLE;
 
     @Column(name = "borrowDate")
     private LocalDateTime borrowDate;
