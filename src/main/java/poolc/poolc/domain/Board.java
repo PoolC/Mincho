@@ -10,27 +10,30 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "Board")
 @Getter @Setter
 public class Board {
     @Id @GeneratedValue
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "Name", length = 40, nullable = false, unique = true)
+    @Column(name = "name", columnDefinition = "varchar(40)", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "URLPath", length = 40, nullable = false, unique = true)
+    @Column(name = "URLPath", columnDefinition = "varchar(40)", nullable = false, unique = true)
     private String urlPath;
 
-    @Column(name = "ReadPermission",length = 10, nullable = false)
+    @Column(name = "readPermission", columnDefinition = "varchar(10)", nullable = false)
     private String readPermission;
 
-    @Column(name = "WritePermission",length = 10, nullable = false)
+    @Column(name = "writePermission", columnDefinition = "varchar(10)", nullable = false)
     private String writePermission;
 
-    private LocalDateTime createAt;
-    private LocalDateTime updateAt;
+    @Column(name = "createdAt", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updatedAt", nullable = false)
+    private LocalDateTime updatedAt;
 
 
 }
