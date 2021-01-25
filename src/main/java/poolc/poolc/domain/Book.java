@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Book")
 @Getter
 @Setter
 public class Book {
@@ -18,8 +17,8 @@ public class Book {
     @Column(name = "ID")
     private Long ID;
 
-    @OneToOne
-    @JoinColumn(name = "UUID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "borrower", referencedColumnName = "UUID")
     private Member borrower;
 
     @Column(name = "title", length = 1024, nullable = false)
