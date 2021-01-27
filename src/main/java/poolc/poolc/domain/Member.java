@@ -63,15 +63,15 @@ public class Member {
     private Boolean isExcepted = false;
 
     @Lob
-    @Type(type = "org.hibernate.type.BinaryType")
     @Column(name = "passwordHash", nullable = false)
-    private Blob passwordHash;
+    private byte[] passwordHash;
 
     @Lob
-    @Type(type = "org.hibernate.type.BinaryType")
     @Column(name = "passwordSalt", nullable = false)
-    private Blob passwordSalt;
+    private byte[] passwordSalt;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     List<ProjectMember> projects = new ArrayList<>();
+
+
 }
