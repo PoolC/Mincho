@@ -32,7 +32,7 @@ public class Member {
     @Column(name = "department", columnDefinition = "char(40)", nullable = false)
     private String department;
 
-    @Column(name = "studentID", columnDefinition = "char(40)", nullable = false)
+    @Column(name = "studentID", columnDefinition = "char(40)", nullable = false, unique = true)
     private String studentID;
 
     @Column(name = "isActivated", columnDefinition = "boolean default false")
