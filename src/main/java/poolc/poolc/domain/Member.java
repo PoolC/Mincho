@@ -63,10 +63,12 @@ public class Member {
     private Boolean isExcepted = false;
 
     @Lob
+    @Type(type = "org.hibernate.type.BinaryType")
     @Column(name = "passwordHash", nullable = false)
     private byte[] passwordHash;
 
     @Lob
+    @Type(type = "org.hibernate.type.BinaryType")
     @Column(name = "passwordSalt", nullable = false)
     private byte[] passwordSalt;
 
