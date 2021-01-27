@@ -16,7 +16,7 @@ public class Activity {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "title", columnDefinition = "varchar(40)", nullable = false)
+    @Column(name = "title", columnDefinition = "varchar(1024)", nullable = false)
     private String title;
 
     @Column(name = "host", columnDefinition = "varchar(40)", nullable = false)
