@@ -3,12 +3,11 @@ package poolc.poolc.domain;
 import lombok.Getter;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.*;
 import java.sql.Blob;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "Member")
 @Getter
@@ -73,4 +72,6 @@ public class Member {
     @Column(name = "passwordSalt", nullable = false)
     private Blob passwordSalt;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    List<ProjectMember> projects = new ArrayList<>();
 }
