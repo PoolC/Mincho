@@ -32,7 +32,7 @@ public class Member {
     @Column(name = "department", columnDefinition = "char(40)", nullable = false)
     private String department;
 
-    @Column(name = "studentID", columnDefinition = "char(40)", nullable = false)
+    @Column(name = "studentID", columnDefinition = "char(40)", nullable = false, unique = true)
     private String studentID;
 
     @Column(name = "isActivated", columnDefinition = "boolean default false")
@@ -65,13 +65,35 @@ public class Member {
     @Lob
     @Type(type = "org.hibernate.type.BinaryType")
     @Column(name = "passwordHash", nullable = false)
-    private Blob passwordHash;
+    private byte[] passwordHash;
 
     @Lob
     @Type(type = "org.hibernate.type.BinaryType")
     @Column(name = "passwordSalt", nullable = false)
-    private Blob passwordSalt;
+    private byte[] passwordSalt;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     List<ProjectMember> projects = new ArrayList<>();
+
+    public Member(String UUID, String loginID, String email, String phoneNumber, String name, String department, String studentID, Boolean isActivated, Boolean isAdmin, LocalDateTime createdAt, LocalDateTime updatedAt, String passwordResetToken, LocalDateTime passwordResetTokenValidUntil, String profileImageURL, String introduction, Boolean isExcepted, byte[] passwordHash, byte[] passwordSalt, List<ProjectMember> projects) {
+        this.UUID = UUID;
+        this.loginID = loginID;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.name = name;
+        this.department = department;
+        this.studentID = studentID;
+        this.isActivated = isActivated;
+        this.isAdmin = isAdmin;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.passwordResetToken = passwordResetToken;
+        this.passwordResetTokenValidUntil = passwordResetTokenValidUntil;
+        this.profileImageURL = profileImageURL;
+        this.introduction = introduction;
+        this.isExcepted = isExcepted;
+        this.passwordHash = passwordHash;
+        this.passwordSalt = passwordSalt;
+        this.projects = projects;
+    }
 }
