@@ -5,10 +5,16 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     password:
-    url: jdbc:postgresql://52.78.116.38:5432/poolc?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:postgresql://3.35.170.34:5432/poolc?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
     username: postgres
   jpa:
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    generate-ddl: true
-    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug
