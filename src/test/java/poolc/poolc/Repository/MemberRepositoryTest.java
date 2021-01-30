@@ -3,11 +3,9 @@ package poolc.poolc.Repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import poolc.poolc.domain.Member;
 import poolc.poolc.domain.ProjectMember;
-import poolc.poolc.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -33,7 +31,6 @@ public class MemberRepositoryTest {
                 LocalDateTime.now(),"aaa","나는 박형철이다", false, a.getBytes(), a.getBytes(), projectMembers );
 
         memberRepository.save(member);
-        assertEquals(member,memberRepository.findOne("1"));
     }
 
 
@@ -50,11 +47,12 @@ public class MemberRepositoryTest {
         memberRepository.save(member1);
         memberRepository.save(member2);
         List<Member> members = memberRepository.findAll();
-        assertEquals(2L, members.size() );
+        for (Member member : members) {
+            System.out.println("member = " + member);
+        }
     }
 
     @Test
-    @Rollback(value = false)
     public void UUID회원찾기() throws Exception{
         List<ProjectMember> projectMembers = new ArrayList<>();
         String a = "ddd";
@@ -65,8 +63,8 @@ public class MemberRepositoryTest {
         memberRepository.save(member);
         em.flush();
         em.clear();
+        System.out.println(member);
         Member findMember = memberRepository.findOne("1");
-
         member.equals(findMember);
     }
 
@@ -82,6 +80,7 @@ public class MemberRepositoryTest {
         memberRepository.save(member);
         em.flush();
         em.clear();
+        System.out.println(member);
         Member findMember = memberRepository.findByEmail("jasotn12@naver.com");
         member.equals(findMember);
     }
@@ -97,6 +96,7 @@ public class MemberRepositoryTest {
         memberRepository.delete(member);
 
         Member findMember = memberRepository.findOne("1");
-        assertNull(findMember);
+        assertNotEquals(findMember,member);
     }
+
 }
