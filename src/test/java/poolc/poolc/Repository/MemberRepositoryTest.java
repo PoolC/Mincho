@@ -33,6 +33,7 @@ public class MemberRepositoryTest {
 
     @Test
     public void 회원가입() throws Exception{
+        List<ProjectMember> projectMembers = new ArrayList<>();
         String a = "ddd";
         Member member = new Member("1", "anfro2520", "jasotn12@naver.com", "010-4595-9147", "hyungchulpak",
                 "ComputerScience", "2015147514", false, false, LocalDateTime.now(), LocalDateTime.now(), "pass",
@@ -44,6 +45,7 @@ public class MemberRepositoryTest {
 
     @Test
     public void 모든회원조회() throws Exception{
+        List<ProjectMember> projectMembers = new ArrayList<>();
         String a = "ddd";
         Member member1 = new Member("1", "anfro2520", "jasotn12@naver.com", "010-4595-9147", "hyungchulpak",
                 "ComputerScience", "2015147514", false, false, LocalDateTime.now(), LocalDateTime.now(), "pass",
@@ -61,6 +63,7 @@ public class MemberRepositoryTest {
 
     @Test
     public void UUID회원찾기() throws Exception{
+        List<ProjectMember> projectMembers = new ArrayList<>();
         String a = "ddd";
         Member member = new Member("1", "anfro2520", "jasotn12@naver.com", "00-4595-9147", "hyungchulpak",
                 "ComputerScience", "2015147514", false, false, LocalDateTime.now(), LocalDateTime.now(), "pass",
@@ -77,6 +80,7 @@ public class MemberRepositoryTest {
 
     @Test
     public void 이메일로회원찾기() throws Exception{
+        List<ProjectMember> projectMembers = new ArrayList<>();
         String a = "ddd";
         Member member = new Member("1", "anfro2520", "jasotn12@naver.com", "010-4595-9147", "hyungchulpak",
                 "ComputerScience", "2015147514", false, false, LocalDateTime.now(), LocalDateTime.now(), "pass",
@@ -92,6 +96,7 @@ public class MemberRepositoryTest {
 
     @Test
     public void 회원가입_후_탈퇴() throws Exception{
+        List<ProjectMember> projectMembers = new ArrayList<>();
         String a = "ddd";
         Member member = new Member("1", "anfro2520", "jasotn12@naver.com", "010-4595-9147", "hyungchulpak",
                 "ComputerScience", "2015147514", false, false, LocalDateTime.now(), LocalDateTime.now(), "pass",
