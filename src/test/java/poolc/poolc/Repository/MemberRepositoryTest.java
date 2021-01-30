@@ -1,24 +1,15 @@
 package poolc.poolc.Repository;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import poolc.poolc.Repository.MemberRepository;
-import poolc.poolc.Service.MemberService;
 import poolc.poolc.domain.Member;
 import poolc.poolc.domain.ProjectMember;
 
 import javax.persistence.EntityManager;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
