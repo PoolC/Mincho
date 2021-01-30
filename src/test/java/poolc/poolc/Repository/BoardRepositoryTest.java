@@ -25,11 +25,9 @@ public class BoardRepositoryTest {
         Board board = new Board("test", "/test", "read", "write", LocalDateTime.now(), LocalDateTime.now());
         boardRepository.save(board);
 
-        em.flush();
-        em.clear();
 
-        Board findBoard = boardRepository.findOne(1L);
-        board.equals(findBoard);
+        Board findBoard = boardRepository.findOne(board.getId());
+        Assertions.assertEquals(board,findBoard);
     }
 
     @Test
@@ -41,8 +39,8 @@ public class BoardRepositoryTest {
         em.flush();
         em.clear();
 
-        Board findBoard = boardRepository.findOne(1L);
-        Assertions.assertNotEquals(board, findBoard);
+        Board findBoard = boardRepository.findOne(board.getId());
+        Assertions.assertNull(findBoard);
     }
 
 
