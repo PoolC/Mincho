@@ -16,10 +16,10 @@ public class ProjectMember {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "projectID", referencedColumnName = "ID")
+    @JoinColumn(name = "projectID", referencedColumnName = "ID", nullable = false)
     private Project project;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "memberUUID", referencedColumnName = "UUID")
+    @JoinColumn(name = "memberUUID", referencedColumnName = "UUID", nullable = false)
     private Member member;
 }
