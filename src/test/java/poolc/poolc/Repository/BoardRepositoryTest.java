@@ -28,7 +28,8 @@ public class BoardRepositoryTest {
         em.flush();
         em.clear();
 
-        Board findBoard = boardRepository.findOne(1L);
+        Board findBoard = boardRepository.findOne(board.getId());
+
         board.equals(findBoard);
     }
 
@@ -41,8 +42,8 @@ public class BoardRepositoryTest {
         em.flush();
         em.clear();
 
-        Board findBoard = boardRepository.findOne(1L);
-        Assertions.assertNotEquals(board, findBoard);
+        Board findBoard = boardRepository.findOne(board.getId());
+        Assertions.assertNull(findBoard);
     }
 
 
