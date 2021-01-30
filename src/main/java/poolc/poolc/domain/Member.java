@@ -1,7 +1,6 @@
 package poolc.poolc.domain;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -74,9 +73,6 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     List<ProjectMember> projects = new ArrayList<>();
-
-    public Member() {
-    }
 
     public Member(String UUID, String loginID, String email, String phoneNumber, String name, String department, String studentID, Boolean isActivated, Boolean isAdmin, LocalDateTime createdAt, LocalDateTime updatedAt, String passwordResetToken, LocalDateTime passwordResetTokenValidUntil, String profileImageURL, String introduction, Boolean isExcepted, byte[] passwordHash, byte[] passwordSalt, List<ProjectMember> projects) {
         this.UUID = UUID;
