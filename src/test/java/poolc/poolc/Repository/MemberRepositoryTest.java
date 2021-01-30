@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import poolc.poolc.domain.Member;
 import poolc.poolc.domain.ProjectMember;
+import poolc.poolc.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -31,6 +32,7 @@ public class MemberRepositoryTest {
                 LocalDateTime.now(),"aaa","나는 박형철이다", false, a.getBytes(), a.getBytes(), projectMembers );
 
         memberRepository.save(member);
+        assertEquals(member,memberRepository.findOne("1"));
     }
 
 
@@ -47,9 +49,7 @@ public class MemberRepositoryTest {
         memberRepository.save(member1);
         memberRepository.save(member2);
         List<Member> members = memberRepository.findAll();
-        for (Member member : members) {
-            System.out.println("member = " + member);
-        }
+        assertEquals(2L,members.size());
     }
 
     @Test
@@ -63,7 +63,6 @@ public class MemberRepositoryTest {
         memberRepository.save(member);
         em.flush();
         em.clear();
-        System.out.println(member);
         Member findMember = memberRepository.findOne("1");
         member.equals(findMember);
     }
@@ -80,7 +79,6 @@ public class MemberRepositoryTest {
         memberRepository.save(member);
         em.flush();
         em.clear();
-        System.out.println(member);
         Member findMember = memberRepository.findByEmail("jasotn12@naver.com");
         member.equals(findMember);
     }
@@ -96,7 +94,7 @@ public class MemberRepositoryTest {
         memberRepository.delete(member);
 
         Member findMember = memberRepository.findOne("1");
-        assertNotEquals(findMember,member);
+        assertNull(findMember);
     }
 
 }
