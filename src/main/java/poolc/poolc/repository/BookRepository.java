@@ -20,6 +20,10 @@ public class BookRepository {
         return em.find(Book.class, id);
     }
 
+    public void delete(Book book) {
+        em.remove(book);
+    }
+
     public List<Book> findAll() {
         return em.createQuery("select b from Book b", Book.class)
                 .getResultList();
