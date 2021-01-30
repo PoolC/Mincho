@@ -4,7 +4,6 @@ import lombok.Getter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,22 +16,22 @@ public class Member {
     @Column(name = "UUID", length = 40)
     private String UUID;
 
-    @Column(name = "loginID", columnDefinition = "char(40)", unique = true, nullable = false)
+    @Column(name = "loginID", columnDefinition = "varchar(40)", unique = true, nullable = false)
     private String loginID;
 
-    @Column(name = "email", columnDefinition = "char(255)", nullable = false, unique = true)
+    @Column(name = "email", columnDefinition = "varchar(255)", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "phoneNumber", columnDefinition = "char(20)", nullable = false)
+    @Column(name = "phoneNumber", columnDefinition = "varchar(20)", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "name", columnDefinition = "char(40)", nullable = false)
+    @Column(name = "name", columnDefinition = "varchar(40)", nullable = false)
     private String name;
 
-    @Column(name = "department", columnDefinition = "char(40)", nullable = false)
+    @Column(name = "department", columnDefinition = "varchar(40)", nullable = false)
     private String department;
 
-    @Column(name = "studentID", columnDefinition = "char(40)", nullable = false, unique = true)
+    @Column(name = "studentID", columnDefinition = "varchar(40)", nullable = false, unique = true)
     private String studentID;
 
     @Column(name = "isActivated", columnDefinition = "boolean default false")
@@ -47,16 +46,16 @@ public class Member {
     @Column(name = "updatedAt", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(name = "passwordResetToken", columnDefinition = "char(255)", nullable = false)
+    @Column(name = "passwordResetToken", columnDefinition = "varchar(255)", nullable = false)
     private String passwordResetToken;
 
     @Column(name = "passwordResetTokenValidUntil", nullable = false)
     private LocalDateTime passwordResetTokenValidUntil;
 
-    @Column(name = "profileImageURL", columnDefinition = "char(255)")
+    @Column(name = "profileImageURL", columnDefinition = "varchar(255)")
     private String profileImageURL;
 
-    @Column(name = "introduction", columnDefinition = "char(1024)")
+    @Column(name = "introduction", columnDefinition = "varchar(1024)")
     private String introduction;
 
     @Column(name = "isExcepted", columnDefinition = "boolean default false")
