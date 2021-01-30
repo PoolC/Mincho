@@ -1,4 +1,4 @@
-package poolc.poolc.Repository;
+package poolc.poolc.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
