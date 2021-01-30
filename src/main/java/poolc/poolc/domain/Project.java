@@ -17,20 +17,20 @@ public class Project {
     @Column(name = "ID")
     private long id;
 
-    @Column(name = "name", columnDefinition = "char(255)", nullable = false)
+    @Column(name = "name", columnDefinition = "varchar(255)", nullable = false)
     private String name;
 
     @Lob
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "genre", columnDefinition = "char(255)", nullable = false)
+    @Column(name = "genre", columnDefinition = "varchar(255)", nullable = false)
     private String genre;
 
-    @Column(name = "duration", columnDefinition = "char(255)", nullable = false)
+    @Column(name = "duration", columnDefinition = "varchar(255)", nullable = false)
     private String duration;
 
-    @Column(name = "thumbnailURL", columnDefinition = "char(255)", nullable = false)
+    @Column(name = "thumbnailURL", columnDefinition = "varchar(255)", nullable = false)
     private String thumbnailURL;
 
     @Lob
