@@ -20,6 +20,10 @@ public class ProjectRepository {
         return em.find(Project.class, id);
     }
 
+    public void delete(Project project) {
+        em.remove(project);
+    }
+
     public List<Project> findAll() {
         return em.createQuery("select p from Project p").getResultList();
     }
