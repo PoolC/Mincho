@@ -1,6 +1,7 @@
 package poolc.poolc.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -8,7 +9,10 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-@Table(name = "ProjectMember")
+@Setter
+@Table(name = "ProjectMember",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"projectID", "memberUUID"})})
 public class ProjectMember {
 
     @Id
