@@ -5,6 +5,8 @@ import lombok.Getter;
 import javax.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 
@@ -29,6 +31,9 @@ public class Post {
 
     @Column(name = "body", columnDefinition = "text", nullable = false)
     private String body;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> commentList = new ArrayList<>();
 
     @Column(name = "createdAt", nullable = false)
     private LocalDateTime createdAt;
