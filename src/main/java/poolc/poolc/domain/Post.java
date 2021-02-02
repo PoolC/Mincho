@@ -36,5 +36,28 @@ public class Post {
     @Column(name = "updatedAt", nullable = false)
     private LocalDateTime updatedAt;
 
+    public Post() {
+    }
 
+    public Post(Board board, Member member, String title, String body, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.board = board;
+        this.member = member;
+        this.title = title;
+        this.body = body;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", board=" + board +
+                ", member=" + member +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }
