@@ -32,7 +32,6 @@ public class PostRepositoryTest {
     EntityManager em;
 
     @Test
-    @Rollback(value = false)
     public void 게시글작성() throws Exception{
         List<ProjectMember> projectMembers = new ArrayList<>();
         String a = "ddd";
@@ -75,18 +74,18 @@ public class PostRepositoryTest {
     public void 게시판에있는게시글전체조회() throws Exception{
         List<ProjectMember> projectMembers = new ArrayList<>();
         String a = "ddd";
-        Member member = new Member("1", "anfro2520", "jasotn12@naver.com", "010-4595-9147", "hyungchulpak",
+        Member member1 = new Member("1", "anfro2520", "jasotn12@naver.com", "010-4595-9147", "hyungchulpak",
                 "ComputerScience", "2015147514", false, false, LocalDateTime.now(), LocalDateTime.now(), "pass",
                 LocalDateTime.now(),"aaa","나는 박형철이다", false, a.getBytes(), a.getBytes(), projectMembers );
 
-        memberRepository.save(member);
+        memberRepository.save(member1);
         Board board = new Board("test", "/test", "read", "write", LocalDateTime.now(), LocalDateTime.now());
         boardRepository.save(board);
 
-        Post post1 = new Post(board, member, "aaaa", "aaaaaa", LocalDateTime.now(), LocalDateTime.now());
+        Post post1 = new Post(board, member1, "aaaa", "aaaaaa", LocalDateTime.now(), LocalDateTime.now());
         postRepository.save(post1);
 
-        Post post2 = new Post(board, member, "bbb", "cccc", LocalDateTime.now(), LocalDateTime.now());
+        Post post2 = new Post(board, member1, "bbb", "cccc", LocalDateTime.now(), LocalDateTime.now());
         postRepository.save(post2);
 
         List<Post> boards = postRepository.findAllByBoard(board);
@@ -97,7 +96,7 @@ public class PostRepositoryTest {
     public void 멤버가작성한게시글전체조회() throws Exception{
         List<ProjectMember> projectMembers = new ArrayList<>();
         String a = "ddd";
-        Member member = new Member("1", "anfro2520", "jasotn12@naver.com", "010-4595-9147", "hyungchulpak",
+        Member member = new Member("2", "anfro2520", "jasotn12@naver.com", "010-4595-9147", "hyungchulpak",
                 "ComputerScience", "2015147514", false, false, LocalDateTime.now(), LocalDateTime.now(), "pass",
                 LocalDateTime.now(),"aaa","나는 박형철이다", false, a.getBytes(), a.getBytes(), projectMembers );
 
@@ -114,9 +113,4 @@ public class PostRepositoryTest {
         List<Post> boards = postRepository.findAllByAuthor(member);
         Assertions.assertEquals(2L,boards.size());
     }
-
-
-
-
-
 }
