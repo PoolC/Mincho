@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 
 import static javax.persistence.FetchType.LAZY;
 
@@ -27,4 +28,31 @@ public class Session {
 
     @Column(name = "sessionNumber", nullable = false)
     private Long sessionNumber;
+
+    public Session() {
+    }
+
+    public Session(Activity activity, String description, LocalDate date, Long sessionNumber) {
+        this.activity = activity;
+        this.description = description;
+        this.date = date;
+        this.sessionNumber = sessionNumber;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Session session = (Session) o;
+        return Objects.equals(getId(), session.getId()) &&
+                Objects.equals(getActivity(), session.getActivity()) &&
+                Objects.equals(getDescription(), session.getDescription()) &&
+                Objects.equals(getDate(), session.getDate()) &&
+                Objects.equals(getSessionNumber(), session.getSessionNumber());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getActivity(), getDescription(), getDate(), getSessionNumber());
+    }
 }
