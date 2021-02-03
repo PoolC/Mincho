@@ -39,6 +39,7 @@ public class SessionRepositoryTest {
         //then
         em.flush();
         em.clear();
+
         session.equals(em.find(Session.class, session.getId()));
 
     }
@@ -57,7 +58,6 @@ public class SessionRepositoryTest {
         em.clear();
 
         Assertions.assertNull(sessionRepository.findOne(session.getId()));
-
     }
 
     @Test
@@ -72,7 +72,11 @@ public class SessionRepositoryTest {
         //when
         List<Session> sessionList = sessionRepository.findAllByActivity(activity.getId());
         //then
-//        Assertions.assertEquals(2L,sessionList.size());
+
+        em.flush();
+        em.clear();
+
+        Assertions.assertEquals(2L,sessionList.size());
     }
 
 
