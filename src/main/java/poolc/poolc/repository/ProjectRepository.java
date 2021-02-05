@@ -15,6 +15,7 @@ public class ProjectRepository {
     public void save(Project project) {
         em.persist(project);
     }
+    
 
     public Project findOne(Long id) {
         return em.find(Project.class, id);
@@ -32,5 +33,16 @@ public class ProjectRepository {
         List<Project> resultList = em.createQuery("select p from Project p join fetch p.members", Project.class)
                 .getResultList();
         return resultList;
+    }
+
+    public Project findOneWithMembers(Long id) {
+        List<Project> resultList = em.createQuery("select p from Project p join fetch p.members where p.id=:id", Project.class)
+                .setParameter("id", id)
+                .getResultList();
+        if (resultList.size() == 0) {
+            return null;
+        } else {
+            return resultList.get(0);
+        }
     }
 }
