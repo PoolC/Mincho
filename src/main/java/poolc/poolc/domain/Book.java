@@ -6,6 +6,7 @@ import poolc.poolc.enums.BookStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -19,7 +20,7 @@ public class Book {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "borrower", referencedColumnName = "UUID")
-    private Member borrower;
+    private Member borrower = null;
 
     @Column(name = "title", length = 1024, nullable = false)
     private String title;
@@ -39,4 +40,24 @@ public class Book {
 
     @Column(name = "borrowDate")
     private LocalDateTime borrowDate;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return Objects.equals(getID(), book.getID()) &&
+                Objects.equals(getBorrower(), book.getBorrower()) &&
+                Objects.equals(getTitle(), book.getTitle()) &&
+                Objects.equals(getAuthor(), book.getAuthor()) &&
+                Objects.equals(getImageURL(), book.getImageURL()) &&
+                Objects.equals(getInfo(), book.getInfo()) &&
+                getStatus() == book.getStatus() &&
+                Objects.equals(getBorrowDate(), book.getBorrowDate());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getID(), getBorrower(), getTitle(), getAuthor(), getImageURL(), getInfo(), getStatus(), getBorrowDate());
+    }
 }
