@@ -5,7 +5,7 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     password:
-    url: jdbc:postgresql://3.35.170.34:5432/poolc?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:postgresql://3.34.208.67:5432/poolc?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
     username: postgres
   jpa:
     hibernate:
