@@ -86,11 +86,15 @@ public class BookServiceTest {
         book.setAuthor("윤석");
         book.setTitle("짱");
         bookService.saveBook(book);
+        Book book2 = new Book();
+        book2.setAuthor("윤석2");
+        book2.setTitle("짱2");
+        bookService.saveBook(book2);
         em.flush();
         em.clear();
         Optional<Book> oneBook = bookService.findOneBook(book.getID());
-        Book book2 = oneBook.orElse(null);
-        assertEquals(book2, book);
+        Book book3 = oneBook.orElse(null);
+        assertEquals(book3, book);
     }
 
     @Test
