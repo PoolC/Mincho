@@ -11,6 +11,8 @@ import poolc.poolc.repository.BoardRepository;
 import poolc.poolc.repository.CommentRepository;
 import poolc.poolc.repository.PostRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -46,9 +48,18 @@ public class BoardService {
         boardRepository.delete(findBoard);
     }
 
+    public List<Board> findBoards(){
+        return boardRepository.findAll();
+    }
 
+    public Board findOneBoard(Long BoardID){
+        return boardRepository.findOne(BoardID);
+    }
 
-
-
+    @Transactional
+    public void update(Long boardID, String name, String URLPath, String readPermission, String writePermission){
+        Board findBoard = boardRepository.findOne(boardID);
+        findBoard.updateBoard(name, URLPath, readPermission, writePermission);
+    }
 
 }
