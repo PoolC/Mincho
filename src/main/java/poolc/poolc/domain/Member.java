@@ -6,7 +6,9 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "Member")
 @Getter
@@ -97,5 +99,38 @@ public class Member {
         this.passwordHash = passwordHash;
         this.passwordSalt = passwordSalt;
         this.projects = projects;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return Objects.equals(getUUID(), member.getUUID()) &&
+                Objects.equals(getLoginID(), member.getLoginID()) &&
+                Objects.equals(getEmail(), member.getEmail()) &&
+                Objects.equals(getPhoneNumber(), member.getPhoneNumber()) &&
+                Objects.equals(getName(), member.getName()) &&
+                Objects.equals(getDepartment(), member.getDepartment()) &&
+                Objects.equals(getStudentID(), member.getStudentID()) &&
+                Objects.equals(getIsActivated(), member.getIsActivated()) &&
+                Objects.equals(getIsAdmin(), member.getIsAdmin()) &&
+                Objects.equals(getCreatedAt(), member.getCreatedAt()) &&
+                Objects.equals(getUpdatedAt(), member.getUpdatedAt()) &&
+                Objects.equals(getPasswordResetToken(), member.getPasswordResetToken()) &&
+                Objects.equals(getPasswordResetTokenValidUntil(), member.getPasswordResetTokenValidUntil()) &&
+                Objects.equals(getProfileImageURL(), member.getProfileImageURL()) &&
+                Objects.equals(getIntroduction(), member.getIntroduction()) &&
+                Objects.equals(getIsExcepted(), member.getIsExcepted()) &&
+                Arrays.equals(getPasswordHash(), member.getPasswordHash()) &&
+                Arrays.equals(getPasswordSalt(), member.getPasswordSalt());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(getUUID(), getLoginID(), getEmail(), getPhoneNumber(), getName(), getDepartment(), getStudentID(), getIsActivated(), getIsAdmin(), getCreatedAt(), getUpdatedAt(), getPasswordResetToken(), getPasswordResetTokenValidUntil(), getProfileImageURL(), getIntroduction(), getIsExcepted(), getProjects());
+        result = 31 * result + Arrays.hashCode(getPasswordHash());
+        result = 31 * result + Arrays.hashCode(getPasswordSalt());
+        return result;
     }
 }
