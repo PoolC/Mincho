@@ -21,7 +21,9 @@ public class BookRepository {
     }
 
     public Book findOneWithBorrower(Long id) {
-        List<Book> resultList = em.createQuery("select b from Book b left join fetch b.borrower", Book.class).getResultList();
+        List<Book> resultList = em.createQuery("select b from Book b left join fetch b.borrower where b.id=:id", Book.class)
+                .setParameter("id", id)
+                .getResultList();
         if (resultList.size() == 0) {
             return null;
         } else {
