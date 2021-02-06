@@ -26,6 +26,14 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
+    public void deleteProject(Long projectId) {
+        Project project = projectRepository.findOne(projectId);
+        if (project == null) {
+            throw new IllegalStateException("존재하지 않는 책입니다!");
+        }
+        projectRepository.delete(project);
+    }
+
     public List<Project> findProjects() {
         return projectRepository.findAll();
     }
