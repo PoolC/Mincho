@@ -4,11 +4,10 @@ import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity(name = "Board")
@@ -37,6 +36,9 @@ public class Board {
     @Column(name = "updatedAt", nullable = false)
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    List<Post> posts = new ArrayList<>();
+
     public Board() {
     }
 
@@ -47,6 +49,14 @@ public class Board {
         this.writePermission = writePermission;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public void updateBoard(String name, String URLPath, String readPermission, String writePermission){
+        this.name = name;
+        this.urlPath = URLPath;
+        this.readPermission = readPermission;
+        this.writePermission = writePermission;
+        this.updatedAt = LocalDateTime.now();
     }
 
     @Override
