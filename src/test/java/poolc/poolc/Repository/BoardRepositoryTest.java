@@ -4,13 +4,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import poolc.poolc.domain.Board;
 import poolc.poolc.repository.BoardRepository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @SpringBootTest
 @Transactional
@@ -21,29 +21,37 @@ public class BoardRepositoryTest {
     EntityManager em;
 
     @Test
-    public void 게시판저장() throws Exception{
+    public void 게시판저장() {
+        //given
         Board board = new Board("test", "/test", "read", "write", LocalDateTime.now(), LocalDateTime.now());
+
+        //when
         boardRepository.save(board);
 
+        //then
         em.flush();
         em.clear();
 
-        Board findBoard = boardRepository.findOne(board.getId());
+        Optional<Board> findBoard = boardRepository.findById(board.getId());
 
         board.equals(findBoard);
     }
 
     @Test
-    public void 게시판삭제() throws Exception{
+    public void 게시판삭제() {
+        //given
         Board board = new Board("test", "/test", "read", "write", LocalDateTime.now(), LocalDateTime.now());
         boardRepository.save(board);
+
+        //when
         boardRepository.delete(board);
 
+        //then
         em.flush();
         em.clear();
 
-        Board findBoard = boardRepository.findOne(board.getId());
-        Assertions.assertNull(findBoard);
+        Optional<Board> findBoard = boardRepository.findById(board.getId());
+        Assertions.assertTrue(findBoard.isEmpty());
     }
 
 
