@@ -15,7 +15,7 @@ import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,12 +46,14 @@ public class BookServiceTest {
         book.setTitle("짱");
         bookService.saveBook(book);
         bookService.deleteBook(book.getId());
-        assertEquals(bookService.findOneBook(book.getId()), Optional.empty());
+        assertThrows(NoSuchElementException.class, () -> {
+            bookService.findOneBook(book.getId());
+        });
     }
 
     @Test
     public void 없는책삭제() {
-        assertThrows(IllegalStateException.class, () -> {
+        assertThrows(NoSuchElementException.class, () -> {
             bookService.deleteBook(1l);
         });
     }
@@ -69,9 +71,7 @@ public class BookServiceTest {
         em.flush();
         em.clear();
         List<Book> books = bookService.findBooks();
-        for (Book book1 : books) {
-            System.out.println(book1.getTitle());
-        }
+        assertEquals(2, books.size());
     }
 
     @Test
@@ -86,14 +86,15 @@ public class BookServiceTest {
         bookService.saveBook(book2);
         em.flush();
         em.clear();
-        Optional<Book> oneBook = bookService.findOneBook(book.getId());
-        Book book3 = oneBook.orElse(null);
+        Book book3 = bookService.findOneBook(book.getId());
         assertEquals(book3, book);
     }
 
     @Test
     public void 책하나조회예외() {
-        assertEquals(Optional.empty(), bookService.findOneBook(1l));
+        assertThrows(NoSuchElementException.class, () -> {
+            bookService.findOneBook(1235l);
+        });
     }
 
     @Test
@@ -103,20 +104,24 @@ public class BookServiceTest {
         Member member = new Member("1", "anfro2520", "jasotn12@naver.com", "010-4595-9147", "hyungchulpak",
                 "ComputerScience", "2015147514", false, false, LocalDateTime.now(), LocalDateTime.now(), "pass",
                 LocalDateTime.now(), "aaa", "나는 박형철이다", false, a.getBytes(), a.getBytes(), projectMembers);
+
         Book book = new Book();
         book.setAuthor("윤석");
         book.setTitle("짱");
+
         em.persist(member);
         bookService.saveBook(book);
         bookService.borrowBook(member.getUUID(), book.getId());
+
         em.flush();
         em.clear();
-        assertEquals(member.getUUID(), bookService.findOneBook(book.getId()).get().getBorrower().getUUID());
+
+        assertEquals(member, bookService.findOneBook(book.getId()).getBorrower());
     }
 
     @Test
     public void 없는책대여() {
-        assertThrows(IllegalStateException.class, () -> bookService.borrowBook("1", 1l));
+        assertThrows(NoSuchElementException.class, () -> bookService.borrowBook("1", 1l));
     }
 
     @Test
@@ -132,12 +137,12 @@ public class BookServiceTest {
     }
 
     @Test
-    public void 올바르지않은사람대여() {
+    public void 없는사람대여() {
         Book book = new Book();
         book.setTitle("1");
         book.setAuthor("1");
         bookService.saveBook(book);
-        assertThrows(IllegalStateException.class, () -> bookService.borrowBook("a1", book.getId()));
+        assertThrows(NoSuchElementException.class, () -> bookService.borrowBook("a1", book.getId()));
     }
 
     @Test
@@ -160,12 +165,12 @@ public class BookServiceTest {
         bookService.returnBook(member.getUUID(), book.getId());
         em.flush();
         em.clear();
-        assertNull(bookService.findOneBook(book.getId()).get().getBorrower());
+        assertNull(bookService.findOneBook(book.getId()).getBorrower());
     }
 
     @Test
     public void 없는책반납() {
-        assertThrows(IllegalStateException.class, () -> bookService.returnBook("1", 1l)).getMessage();
+        assertThrows(NoSuchElementException.class, () -> bookService.returnBook("1", 1l)).getMessage();
     }
 
     @Test
@@ -176,7 +181,7 @@ public class BookServiceTest {
         bookService.saveBook(book);
         em.flush();
         em.clear();
-        System.out.println(assertThrows(IllegalStateException.class, () -> bookService.returnBook("1", book.getId())).getMessage());
+        assertThrows(IllegalStateException.class, () -> bookService.returnBook("1", book.getId()));
     }
 
     @Test
@@ -194,6 +199,6 @@ public class BookServiceTest {
         bookService.borrowBook(member.getUUID(), book.getId());
         em.flush();
         em.clear();
-        System.out.println(assertThrows(IllegalStateException.class, () -> bookService.returnBook("23232", book.getId())).getMessage());
+        assertThrows(IllegalStateException.class, () -> bookService.returnBook("23232", book.getId()));
     }
 }

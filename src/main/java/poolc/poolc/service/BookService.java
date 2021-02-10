@@ -10,6 +10,7 @@ import poolc.poolc.repository.BookRepository;
 import poolc.poolc.repository.MemberRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -28,37 +29,28 @@ public class BookService {
 
     @Transactional
     public void deleteBook(Long bookId) {
-        Book book = bookRepository.findOne(bookId);
-        if (book == null) {
-            throw new IllegalStateException("존재하지 않는 책입니다!");
-        }
-        bookRepository.delete(book);
+        bookRepository.delete(findOneBook(bookId));
     }
 
     public List<Book> findBooks() {
         return bookRepository.findAll();
     }
 
-    public Optional<Book> findOneBook(Long bookId) {
-        return Optional.ofNullable(bookRepository.findOneWithBorrower(bookId));
+    public Book findOneBook(Long bookId) {
+        Optional<Book> bookOptional = bookRepository.findByIdWithBorrower(bookId);
+        return bookOptional.orElseThrow(() -> new NoSuchElementException("존재하지 않는 책입니다"));
     }
 
     @Transactional
     public void borrowBook(String memberUUID, Long bookId) {
-        Book book = bookRepository.findOneWithBorrower(bookId);
-        validateBook(book);
+        Book book = findOneBook(bookId);
+        validateAvailableBook(book);
         book.setStatus(BookStatus.INAVAILABLE);
-        Member member = memberRepository.findOne(memberUUID);
-        if (member == null) {
-            throw new IllegalStateException("존재하지 않는 회원입니다");
-        }
+        Member member = memberRepository.findById(memberUUID).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다"));
         book.setBorrower(member);
     }
 
-    private void validateBook(Book book) {
-        if (book == null) {
-            throw new IllegalStateException("존재하지 않는 책입니다!");
-        }
+    private void validateAvailableBook(Book book) {
         if (book.getStatus() != BookStatus.AVAILABLE) {
             throw new IllegalStateException("대여된 책입니다!");
         }
@@ -66,16 +58,13 @@ public class BookService {
 
     @Transactional
     public void returnBook(String memberUUID, Long bookId) {
-        Book book = bookRepository.findOneWithBorrower(bookId);
+        Book book = findOneBook(bookId);
         validateMyBook(book, memberUUID);
         book.setStatus(BookStatus.AVAILABLE);
         book.setBorrower(null);
     }
 
     private void validateMyBook(Book book, String memberUUID) {
-        if (book == null) {
-            throw new IllegalStateException("존재하지 않는 책입니다!");
-        }
         if (book.getStatus() == BookStatus.AVAILABLE) {
             throw new IllegalStateException("대여되지 않은 책입니다!");
         }

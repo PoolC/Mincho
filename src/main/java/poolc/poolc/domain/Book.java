@@ -47,7 +47,6 @@ public class Book {
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
         return Objects.equals(getId(), book.getId()) &&
-                Objects.equals(getBorrower(), book.getBorrower()) &&
                 Objects.equals(getTitle(), book.getTitle()) &&
                 Objects.equals(getAuthor(), book.getAuthor()) &&
                 Objects.equals(getImageURL(), book.getImageURL()) &&
@@ -60,4 +59,5 @@ public class Book {
     public int hashCode() {
         return Objects.hash(getId(), getBorrower(), getTitle(), getAuthor(), getImageURL(), getInfo(), getStatus(), getBorrowDate());
     }
+
 }
