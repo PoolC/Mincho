@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import poolc.poolc.domain.Activity;
 import poolc.poolc.repository.ActivityRepository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @SpringBootTest
 @Transactional
@@ -22,44 +22,33 @@ public class ActivityRepositoryTest {
     private EntityManager em;
 
     @Test
-    public void Activity생성() {
-        //given
-        Activity activity = new Activity("title", "host", LocalDate.now(), null, "9", false, 40L, false);
-
-        //when
+    public void Activity생성(){
+        Activity activity = new Activity("title", "host", LocalDate.now(),null,"9",false,40L,false);
         activityRepository.save(activity);
 
-        //then
-        em.flush();
-        em.clear();
-
-        activity.equals(activityRepository.findById(activity.getId()));
+        activity.equals(activityRepository.findOne(activity.getId()));
     }
 
     @Test
-    public void Activity삭제() {
-        //given
-        Activity activity = new Activity("title", "host", LocalDate.now(), null, "9", false, 40L, false);
+    public void Activity삭제(){
+        Activity activity = new Activity("title", "host", LocalDate.now(),null,"9",false,40L,false);
         activityRepository.save(activity);
+        activityRepository.delete(activity.getId());
 
-        //when
-        activityRepository.delete(activity);
-
-        //then
         em.flush();
         em.clear();
 
-        Optional<Activity> findActivity = activityRepository.findById(activity.getId());
-        Assertions.assertTrue(findActivity.isEmpty());
+        Activity findActivity = activityRepository.findOne(activity.getId());
+        Assertions.assertNull(findActivity);
     }
 
     @Test
-    public void Activity전체조회() {
+    public void Activity전체조회() throws Exception{
         //given
-        Activity activity1 = new Activity("title", "host", LocalDate.now(), null, "9", false, 40L, false);
+        Activity activity1 = new Activity("title", "host", LocalDate.now(),null,"9",false,40L,false);
         activityRepository.save(activity1);
 
-        Activity activity2 = new Activity("title", "host", LocalDate.now(), null, "9", false, 40L, false);
+        Activity activity2 = new Activity("title", "host", LocalDate.now(),null,"9",false,40L,false);
         activityRepository.save(activity2);
 
         //when
