@@ -4,13 +4,11 @@ package poolc.poolc.Service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import poolc.poolc.domain.Book;
 import poolc.poolc.domain.Member;
 import poolc.poolc.domain.ProjectMember;
 import poolc.poolc.enums.BookStatus;
-import poolc.poolc.repository.BookRepository;
 import poolc.poolc.service.BookService;
 
 import javax.persistence.EntityManager;
@@ -21,25 +19,24 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 @Transactional
+@SpringBootTest
 public class BookServiceTest {
 
     @Autowired
     BookService bookService;
 
     @Autowired
-    BookRepository bookRepository;
-    @Autowired
     EntityManager em;
 
     @Test
-    @Rollback(false)
     public void 책등록() {
         Book book = new Book();
         book.setAuthor("윤석");
         book.setTitle("짱");
+        assertNull(book.getId());
         bookService.saveBook(book);
+        assertNotNull(book.getId());
     }
 
     @Test
@@ -50,7 +47,8 @@ public class BookServiceTest {
         bookService.saveBook(book);
         em.flush();
         em.clear();
-        bookService.deleteBook(book.getID());
+        bookService.deleteBook(book.getId());
+        assertEquals(bookService.findOneBook(book.getId()), Optional.empty());
     }
 
     @Test
@@ -61,7 +59,6 @@ public class BookServiceTest {
     }
 
     @Test
-    @Rollback(false)
     public void 여러가지책조회() {
         Book book = new Book();
         book.setAuthor("윤석");
@@ -80,7 +77,6 @@ public class BookServiceTest {
     }
 
     @Test
-    @Rollback(false)
     public void 책하나조회() {
         Book book = new Book();
         book.setAuthor("윤석");
@@ -92,19 +88,17 @@ public class BookServiceTest {
         bookService.saveBook(book2);
         em.flush();
         em.clear();
-        Optional<Book> oneBook = bookService.findOneBook(book.getID());
+        Optional<Book> oneBook = bookService.findOneBook(book.getId());
         Book book3 = oneBook.orElse(null);
         assertEquals(book3, book);
     }
 
     @Test
-    @Rollback(false)
     public void 책하나조회예외() {
         assertEquals(Optional.empty(), bookService.findOneBook(1l));
     }
 
     @Test
-    @Rollback(false)
     public void 책대여() {
         String a = "ddd";
         List<ProjectMember> projectMembers = new ArrayList<>();
@@ -116,10 +110,10 @@ public class BookServiceTest {
         book.setTitle("짱");
         em.persist(member);
         bookService.saveBook(book);
-        bookService.borrowBook(member.getUUID(), book.getID());
+        bookService.borrowBook(member.getUUID(), book.getId());
         em.flush();
         em.clear();
-        assertEquals(member.getUUID(), bookService.findOneBook(book.getID()).get().getBorrower().getUUID());
+        assertEquals(member.getUUID(), bookService.findOneBook(book.getId()).get().getBorrower().getUUID());
     }
 
     @Test
@@ -136,7 +130,7 @@ public class BookServiceTest {
         bookService.saveBook(book);
         em.flush();
         em.clear();
-        assertThrows(IllegalStateException.class, () -> bookService.borrowBook("1", book.getID()));
+        assertThrows(IllegalStateException.class, () -> bookService.borrowBook("1", book.getId()));
     }
 
     @Test
@@ -145,7 +139,7 @@ public class BookServiceTest {
         book.setTitle("1");
         book.setAuthor("1");
         bookService.saveBook(book);
-        assertThrows(IllegalStateException.class, () -> bookService.borrowBook("a1", book.getID()));
+        assertThrows(IllegalStateException.class, () -> bookService.borrowBook("a1", book.getId()));
     }
 
     @Test
@@ -160,15 +154,15 @@ public class BookServiceTest {
         book.setTitle("짱");
         em.persist(member);
         bookService.saveBook(book);
-        bookService.borrowBook(member.getUUID(), book.getID());
+        bookService.borrowBook(member.getUUID(), book.getId());
         em.flush();
         em.clear();
         System.out.println(member.getUUID());
         System.out.println(book.getBorrower().getUUID());
-        bookService.returnBook(member.getUUID(), book.getID());
+        bookService.returnBook(member.getUUID(), book.getId());
         em.flush();
         em.clear();
-        assertNull(bookService.findOneBook(book.getID()).get().getBorrower());
+        assertNull(bookService.findOneBook(book.getId()).get().getBorrower());
     }
 
     @Test
@@ -184,7 +178,7 @@ public class BookServiceTest {
         bookService.saveBook(book);
         em.flush();
         em.clear();
-        System.out.println(assertThrows(IllegalStateException.class, () -> bookService.returnBook("1", book.getID())).getMessage());
+        System.out.println(assertThrows(IllegalStateException.class, () -> bookService.returnBook("1", book.getId())).getMessage());
     }
 
     @Test
@@ -199,9 +193,9 @@ public class BookServiceTest {
         book.setAuthor("1");
         bookService.saveBook(book);
         em.persist(member);
-        bookService.borrowBook(member.getUUID(), book.getID());
+        bookService.borrowBook(member.getUUID(), book.getId());
         em.flush();
         em.clear();
-        System.out.println(assertThrows(IllegalStateException.class, () -> bookService.returnBook("23232", book.getID())).getMessage());
+        System.out.println(assertThrows(IllegalStateException.class, () -> bookService.returnBook("23232", book.getId())).getMessage());
     }
 }

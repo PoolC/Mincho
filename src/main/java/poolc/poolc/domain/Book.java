@@ -16,7 +16,7 @@ public class Book {
     @Id
     @GeneratedValue
     @Column(name = "ID")
-    private Long ID;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "borrower", referencedColumnName = "UUID")
@@ -46,7 +46,7 @@ public class Book {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return Objects.equals(getID(), book.getID()) &&
+        return Objects.equals(getId(), book.getId()) &&
                 Objects.equals(getBorrower(), book.getBorrower()) &&
                 Objects.equals(getTitle(), book.getTitle()) &&
                 Objects.equals(getAuthor(), book.getAuthor()) &&
@@ -58,6 +58,6 @@ public class Book {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getID(), getBorrower(), getTitle(), getAuthor(), getImageURL(), getInfo(), getStatus(), getBorrowDate());
+        return Objects.hash(getId(), getBorrower(), getTitle(), getAuthor(), getImageURL(), getInfo(), getStatus(), getBorrowDate());
     }
 }
