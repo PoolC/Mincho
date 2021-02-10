@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import poolc.poolc.domain.Book;
+import poolc.poolc.book.domain.Book;
+import poolc.poolc.book.repository.BookRepository;
 import poolc.poolc.domain.Member;
 import poolc.poolc.domain.ProjectMember;
-import poolc.poolc.repository.BookRepository;
 import poolc.poolc.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
@@ -79,7 +79,7 @@ public class BookRepositoryTest {
                 "ComputerScience", "2015147514", false, false, LocalDateTime.now(), LocalDateTime.now(), "pass",
                 LocalDateTime.now(), "aaa", "나는 박형철이다", false, a.getBytes(), a.getBytes(), projectMembers);
         memberRepository.save(member);
-        
+
         em.flush();
         em.clear();
 

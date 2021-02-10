@@ -1,7 +1,8 @@
-package poolc.poolc.domain;
+package poolc.poolc.book.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import poolc.poolc.domain.Member;
 import poolc.poolc.enums.BookStatus;
 
 import javax.persistence.*;

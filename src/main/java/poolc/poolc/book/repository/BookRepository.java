@@ -1,9 +1,9 @@
-package poolc.poolc.repository;
+package poolc.poolc.book.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import poolc.poolc.domain.Book;
+import poolc.poolc.book.domain.Book;
 
 import java.util.Optional;
 

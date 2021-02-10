@@ -1,12 +1,12 @@
-package poolc.poolc.service;
+package poolc.poolc.book.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import poolc.poolc.domain.Book;
+import poolc.poolc.book.domain.Book;
+import poolc.poolc.book.repository.BookRepository;
 import poolc.poolc.domain.Member;
 import poolc.poolc.enums.BookStatus;
-import poolc.poolc.repository.BookRepository;
 import poolc.poolc.repository.MemberRepository;
 
 import java.util.List;

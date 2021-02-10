@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import poolc.poolc.domain.Book;
+import poolc.poolc.book.domain.Book;
+import poolc.poolc.book.service.BookService;
 import poolc.poolc.domain.Member;
 import poolc.poolc.domain.ProjectMember;
 import poolc.poolc.enums.BookStatus;
-import poolc.poolc.service.BookService;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
