@@ -1,7 +1,6 @@
 package poolc.poolc.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import poolc.poolc.domain.Book;
@@ -18,10 +17,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BookService {
 
-    @Autowired
     private final BookRepository bookRepository;
 
-    @Autowired
     private final MemberRepository memberRepository;
 
     @Transactional
