@@ -129,7 +129,7 @@ public class BookServiceTest {
         Book book = new Book();
         book.setTitle("1");
         book.setAuthor("1");
-        book.setStatus(BookStatus.INAVAILABLE);
+        book.setStatus(BookStatus.UNAVAILABLE);
         bookService.saveBook(book);
         em.flush();
         em.clear();

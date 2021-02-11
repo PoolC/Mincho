@@ -45,7 +45,7 @@ public class BookService {
     public void borrowBook(String memberUUID, Long bookId) {
         Book book = findOneBook(bookId);
         validateAvailableBook(book);
-        book.setStatus(BookStatus.INAVAILABLE);
+        book.setStatus(BookStatus.UNAVAILABLE);
         Member member = memberRepository.findById(memberUUID).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다"));
         book.setBorrower(member);
     }
