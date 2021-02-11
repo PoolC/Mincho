@@ -14,3 +14,8 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+security:
+  jwt:
+    token:
+      secret-key: ${PROJECT_NAME_HERE_SECRET_KEY}
+      expire-length: ${EXPIRE_LENGTH_IN_MILLISECONDS}

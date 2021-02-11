@@ -1,0 +1,7 @@
+package org.poolc.api.repository;
+
+import org.poolc.api.domain.Board;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BoardRepository extends JpaRepository<Board, Long> {
+}
