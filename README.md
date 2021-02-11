@@ -42,6 +42,11 @@ export EXPIRE_LENGTH_IN_MILLISECONDS=3600000
 ./gradlew bootRun
 ```
 
+**주의:** *build & run* 및 *test* (`⌘,` > `Build, Execution, Deployment` > `Build Tools` > `Gradle`)를 intelliJ로 설정할 경우,
+java
+compiler(`⌘,` > `Build, Execution, Deployment` > `Compiler` > `Java Compiler` > `Additional command line parameters`)
+에 `-parameters` 파라미터를 추가해야 합니다.
+
 ### Tests
 
 ```shell
