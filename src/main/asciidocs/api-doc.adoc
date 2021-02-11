@@ -5,10 +5,13 @@
 모든 HTTP 상태 코드는 https://tools.ietf.org/html/rfc7231#section-6[RFC 7231] 문서를 따른다.
 
 == 인증
-
+=== 요청 설명
+....
+POST /login
+Content-Type: application/json; charset=UTF-8
+....
 토큰을 발급한다. 회원가입을 완료하고 관리자에게 승인받은 회원만 발급 가능하다.
 
-=== 요청 설명
 ==== Request body
 include::{snippets}/auth/request-fields.adoc[]
 === 응답 설명
