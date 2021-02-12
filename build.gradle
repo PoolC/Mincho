@@ -39,7 +39,7 @@ dependencies {
     implementation 'org.springframework.security:spring-security-crypto:5.4.2'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
 
-    runtime 'org.postgresql:postgresql:9.4-1206-jdbc42'
+    runtimeOnly 'com.h2database:h2'
 
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

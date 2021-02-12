@@ -18,7 +18,6 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @WebMvcTest
-@TestPropertySource(properties = {"PROJECT_NAME_HERE_SECRET_KEY=some_awesome_key", "EXPIRE_LENGTH_IN_MILLISECONDS=3600000"})
 public class ApiDoc {
     protected MockMvc mockMvc;
 

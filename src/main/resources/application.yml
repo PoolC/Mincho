@@ -2,11 +2,14 @@ server:
   address: localhost
   port: 8080
 spring:
+  h2:
+    console:
+      enabled: true
   datasource:
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
     password:
-    url: jdbc:postgresql://3.34.208.67:5432/poolc?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
-    username: postgres
   jpa:
     hibernate:
       ddl-auto: create
