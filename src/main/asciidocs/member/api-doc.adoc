@@ -1,0 +1,15 @@
+=== 회원가입
+==== 요청 설명
+....
+POST /member
+Content-Type: application/json; charset=UTF-8
+....
+회원가입을 한다. 생성된 회원은 기본적으로 비허가 상태다.
+
+===== Request body
+include::{snippets}/member/create/request-fields.adoc[]
+==== 예시
+===== Request
+include::{snippets}/member/create/http-request.adoc[]
+===== Response
+include::{snippets}/member/create/http-response.adoc[]
