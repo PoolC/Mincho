@@ -1,14 +1,13 @@
 package org.poolc.api.member.controller;
 
+import org.poolc.api.member.dto.MemberResponse;
 import org.poolc.api.member.dto.RegisterMemberRequest;
 import org.poolc.api.member.service.MemberService;
 import org.poolc.api.member.vo.MemberCreateValues;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/member")
@@ -27,6 +26,11 @@ public class MemberController {
         memberService.create(new MemberCreateValues(request));
 
         return ResponseEntity.accepted().build();
+    }
+
+    @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MemberResponse> getMember() {
+        return ResponseEntity.badRequest().build();
     }
 
     private void checkIsValidMemberInput(RegisterMemberRequest request) {
