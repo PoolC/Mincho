@@ -5,25 +5,41 @@
 모든 HTTP 상태 코드는 https://tools.ietf.org/html/rfc7231#section-6[RFC 7231] 문서를 따른다.
 
 == 인증
-=== 요청 설명
+=== 토큰 생성
+==== 요청 설명
 ....
 POST /login
 Content-Type: application/json; charset=UTF-8
 ....
 토큰을 발급한다. 회원가입을 완료하고 관리자에게 승인받은 회원만 발급 가능하다.
 
-==== Request body
+===== Request body
 include::{snippets}/auth/request-fields.adoc[]
-=== 응답 설명
-==== Response body
+==== 응답 설명
+===== Response body
 include::{snippets}/auth/response-fields.adoc[]
-=== 예시
-==== Request
+==== 예시
+===== Request
 include::{snippets}/auth/http-request.adoc[]
-==== Response
+===== Response
 include::{snippets}/auth/http-response.adoc[]
 
 == 회원
+=== 회원가입
+==== 요청 설명
+....
+POST /member
+Content-Type: application/json; charset=UTF-8
+....
+회원가입을 한다. 생성된 회원은 기본적으로 비허가 상태다.
+
+===== Request body
+include::{snippets}/member/create/request-fields.adoc[]
+==== 예시
+===== Request
+include::{snippets}/member/create/http-request.adoc[]
+===== Response
+include::{snippets}/member/create/http-response.adoc[]
 
 == 게시판
 

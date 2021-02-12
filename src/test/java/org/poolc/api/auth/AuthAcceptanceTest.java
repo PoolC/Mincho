@@ -16,10 +16,10 @@ import static org.poolc.api.member.MemberAcceptanceTest.createMemberRequest;
 public class AuthAcceptanceTest extends AcceptanceTest {
     @Test
     void tokenIsIssued() {
-        String loginID = "test";
+        String loginID = "new_test_id";
         String password = "test";
 
-        createMemberRequest("someName", loginID, password, password, "some@email.com", "010-2862-6046", "풀씨학부", "2021147500");
+        createMemberRequest("someName", loginID, password, password, "some@email.com", "010-4321-4321", "풀씨학부", "2021147599");
         ExtractableResponse<Response> response = loginRequest(loginID, password);
 
         AuthResponse authResponse = response.as(AuthResponse.class);
