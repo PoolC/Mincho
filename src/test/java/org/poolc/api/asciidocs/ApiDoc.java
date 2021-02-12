@@ -1,6 +1,7 @@
 package org.poolc.api.asciidocs;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.restdocs.RestDocumentationContextProvider;
@@ -18,6 +19,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @WebMvcTest
+@Tag("documentation")
 public class ApiDoc {
     protected MockMvc mockMvc;
 

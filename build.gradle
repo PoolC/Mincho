@@ -48,11 +48,19 @@ dependencies {
 
 test {
     outputs.dir snippetsDir
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags "documentation"
+    }
+}
+
+task documentationTest(type: Test) {
+    useJUnitPlatform {
+        includeTags "documentation"
+    }
 }
 
 asciidoctor {
     sourceDir 'src/main/asciidocs'
     attributes "snippets": snippetsDir
-    dependsOn test
+    dependsOn documentationTest
 }
