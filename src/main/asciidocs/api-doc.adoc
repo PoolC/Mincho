@@ -1,0 +1,26 @@
+= PoolC 홈페이지 api 문서
+:toc:
+
+`POST /member`, `POST /login` 을 제외한 모든 API는 토큰 발급 절차를 거쳐야 한다. +
+모든 HTTP 상태 코드는 https://tools.ietf.org/html/rfc7231#section-6[RFC 7231] 문서를 따른다.
+
+== 인증
+include::{docdir}/auth/api-doc.adoc[]
+
+== 회원
+include::{docdir}/member/api-doc.adoc[]
+
+== 게시판
+
+== 게시글
+
+== 프로젝트
+
+== 도서
+
+== 활동
+
+== 활동 회차
+
+== 댓글
+

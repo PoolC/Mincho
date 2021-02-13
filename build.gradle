@@ -1,7 +1,8 @@
 plugins {
-	id 'org.springframework.boot' version '2.4.2'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.4.2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.asciidoctor.convert' version '1.5.8'
+    id 'java'
 }
 
 group = 'poolc'
@@ -9,25 +10,57 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+}
+
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	runtime 'org.postgresql:postgresql:9.4-1206-jdbc42'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
+
+    compile 'org.projectlombok:lombok:1.18.16'
+
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'io.rest-assured:rest-assured:4.2.0'
+    implementation 'io.rest-assured:json-path:4.2.0'
+    implementation 'io.rest-assured:xml-path:4.2.0'
+    implementation 'org.projectlombok:lombok:1.18.16'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.security:spring-security-crypto:5.4.2'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
+
+    runtimeOnly 'com.h2database:h2'
+
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 test {
-	useJUnitPlatform()
+    outputs.dir snippetsDir
+    useJUnitPlatform {
+        excludeTags "documentation"
+    }
+}
+
+task documentationTest(type: Test) {
+    useJUnitPlatform {
+        includeTags "documentation"
+    }
+}
+
+asciidoctor {
+    sourceDir 'src/main/asciidocs'
+    attributes "snippets": snippetsDir
+    dependsOn documentationTest
 }

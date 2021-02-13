@@ -1,0 +1,18 @@
+=== 토큰 생성
+==== 요청 설명
+....
+POST /login
+Content-Type: application/json; charset=UTF-8
+....
+토큰을 발급한다. 회원가입을 완료하고 관리자에게 승인받은 회원만 발급 가능하다.
+
+===== Request body
+include::{snippets}/auth/request-fields.adoc[]
+==== 응답 설명
+===== Response body
+include::{snippets}/auth/response-fields.adoc[]
+==== 예시
+===== Request
+include::{snippets}/auth/http-request.adoc[]
+===== Response
+include::{snippets}/auth/http-response.adoc[]
