@@ -4,12 +4,13 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.poolc.api.auth.exception.UnauthenticatedException;
+import org.poolc.api.auth.vo.ParsedTokenValues;
 import org.poolc.api.member.domain.Member;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.HashMap;
 
 @Component
 public class JwtTokenProvider {
@@ -30,23 +31,21 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public HashMap<String, String> getUserInfo(String token) {
-        Claims body = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        HashMap<String, String> info = new HashMap<>();
-        info.put("id", body.get("id").toString());
-        info.put("isAdmin", body.get("isAdmin").toString());
-        return info;
+
+    public ParsedTokenValues getUserInfo(String token) {
+        Claims body = tryToGetTokenClaims(token);
+        return new ParsedTokenValues(body);
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
+        tryToGetTokenClaims(token);
+    }
+
+    private Claims tryToGetTokenClaims(String token) {
         try {
-            Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-            if (claims.getExpiration().before(new Date())) {
-                return false;
-            }
-            return true;
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new UnauthenticatedException("Invalid token\n" + e.getMessage());
         }
     }
 }
