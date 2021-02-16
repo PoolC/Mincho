@@ -114,7 +114,7 @@ public class MemberController {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> illegalArgumentHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
     @ExceptionHandler(UnauthenticatedException.class)

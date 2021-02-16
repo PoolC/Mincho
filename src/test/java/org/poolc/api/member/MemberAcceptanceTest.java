@@ -1,7 +1,5 @@
 package org.poolc.api.member;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -15,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,7 +79,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "UPDATE_MEMBER_PASSWORD", "NEW_PASSWORD", "NEW@naver.com", "01033334444");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
 
     }
 
@@ -109,10 +105,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> memberResponse = getMembersRequest(accessToken);
-        Gson gson = new Gson();
-        Type type = new TypeToken<ArrayList<MemberResponse>>() {
-        }.getType();
-        List<MemberResponse> list = gson.fromJson(memberResponse.body().asString(), type);
+
         ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "DELETED_MEMBER_ID");
 
 
