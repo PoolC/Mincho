@@ -1,5 +1,7 @@
 package org.poolc.api.member;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -10,12 +12,16 @@ import org.poolc.api.member.dto.MemberResponse;
 import org.poolc.api.member.dto.RegisterMemberRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
+@ActiveProfiles("test")
 public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
@@ -65,7 +71,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getMembersRequest(accessToken);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().as(List.class)).hasSize(5); // TODO: 만든 회원 수에 맞게 변경
+        assertThat(response.body().as(List.class)).hasSize(3); // TODO: 만든 회원 수에 맞게 변경
     }
 
     @Test
@@ -91,7 +97,23 @@ public class MemberAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void adminCanDeleteMember() {
+    void adminDeleteExistingMember() {
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> memberResponse = getMembersRequest(accessToken);
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<MemberResponse>>() {
+        }.getType();
+        List<MemberResponse> list = gson.fromJson(memberResponse.body().asString(), type);
+        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, list.get(0).getUuid());
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void adminDeleteNotExistingMember() {
         String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
@@ -159,12 +181,13 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> deleteMemberRequest(String accessToken, String name) {
+    public static ExtractableResponse<Response> deleteMemberRequest(String accessToken, String UUID) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/member", name)
+                .param("UUID", UUID)
+                .when().delete("/member")
                 .then().log().all()
                 .extract();
     }

@@ -23,7 +23,7 @@ public class JwtTokenProvider {
         Date now = new Date();
         return Jwts.builder()
                 .claim("id", member.getUUID())
-                .claim("isAdmin", member.getIsAdmin().toString())
+                .claim("isAdmin", member.getIsAdmin())
                 .setIssuedAt(now)
                 .setIssuer("Poolc/PROJECT_NAME_HERE")
                 .setExpiration(new Date(now.getTime() + expireTimeInMS))

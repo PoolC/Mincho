@@ -9,6 +9,8 @@ import org.poolc.api.member.vo.MemberCreateValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,6 +50,20 @@ public class MemberService {
                         null,
                         false,
                         null));
+    }
+
+    public void deleteMemberByUUID(String UUID) {
+        memberRepository.delete(memberRepository.findById(UUID)
+                .orElseThrow(() -> new NoSuchElementException("No user found with given UUID")));
+    }
+
+    public Member getMemberByUUIDIfRegistered(String UUID) {
+        return memberRepository.findById(UUID)
+                .orElseThrow(() -> new NoSuchElementException("No user found with given UUID"));
+    }
+
+    public List<Member> getAllMembers() {
+        return memberRepository.findAll();
     }
 
     public Member getMemberIfRegistered(String loginID, String password) {
