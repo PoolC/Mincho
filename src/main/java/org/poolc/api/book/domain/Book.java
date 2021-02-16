@@ -1,7 +1,6 @@
 package org.poolc.api.book.domain;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.poolc.api.enums.BookStatus;
 import org.poolc.api.member.domain.Member;
 
@@ -11,7 +10,6 @@ import java.util.Objects;
 
 @Entity
 @Getter
-@Setter
 public class Book {
 
     @Id
@@ -41,6 +39,29 @@ public class Book {
 
     @Column(name = "borrowDate")
     private LocalDateTime borrowDate;
+
+    public void borrowBook(Member member) {
+        this.status = BookStatus.UNAVAILABLE;
+        this.borrower = member;
+    }
+
+    public void returnBook() {
+        this.status = BookStatus.AVAILABLE;
+        this.borrower = null;
+    }
+
+    public Book() {
+
+    }
+
+    public Book(String title, String author, String imageURL, String info, BookStatus status, LocalDateTime borrowDate) {
+        this.title = title;
+        this.author = author;
+        this.imageURL = imageURL;
+        this.info = info;
+        this.status = status;
+        this.borrowDate = borrowDate;
+    }
 
     @Override
     public boolean equals(Object o) {

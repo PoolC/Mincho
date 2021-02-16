@@ -45,9 +45,8 @@ public class BookService {
     public void borrowBook(String memberUUID, Long bookId) {
         Book book = findOneBook(bookId);
         validateAvailableBook(book);
-        book.setStatus(BookStatus.UNAVAILABLE);
-        Member member = memberRepository.findById(memberUUID).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다"));
-        book.setBorrower(member);
+        Member member = memberRepository.findById(memberUUID).get();
+        book.borrowBook(member);
     }
 
     private void validateAvailableBook(Book book) {
@@ -60,8 +59,7 @@ public class BookService {
     public void returnBook(String memberUUID, Long bookId) {
         Book book = findOneBook(bookId);
         validateMyBook(book, memberUUID);
-        book.setStatus(BookStatus.AVAILABLE);
-        book.setBorrower(null);
+        book.returnBook();
     }
 
     private void validateMyBook(Book book, String memberUUID) {
