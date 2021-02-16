@@ -2,6 +2,7 @@ package org.poolc.api.member.service;
 
 import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.poolc.api.member.exception.DuplicateMemberException;
 import org.poolc.api.member.infra.PasswordHashProvider;
 import org.poolc.api.member.repository.MemberRepository;
@@ -52,12 +53,19 @@ public class MemberService {
                         null));
     }
 
-    public void deleteMemberByUUID(String UUID) {
-        memberRepository.delete(memberRepository.findById(UUID)
-                .orElseThrow(() -> new NoSuchElementException("No user found with given UUID")));
+    public void updateMember(String UUID, UpdateMemberRequest updateMemberRequest) {
+        Member findMember = memberRepository.findById(UUID).get();
+        String encodePassword = passwordHashProvider.encodePassword(updateMemberRequest.getPassword());
+        findMember.update(updateMemberRequest, encodePassword);
+        memberRepository.flush();
     }
 
-    public Member getMemberByUUIDIfRegistered(String UUID) {
+    public void deleteMember(String loginID) {
+        memberRepository.delete(memberRepository.findByLoginID(loginID)
+                .orElseThrow(() -> new NoSuchElementException("No user found with given loginID")));
+    }
+
+    public Member findMember(String UUID) {
         return memberRepository.findById(UUID)
                 .orElseThrow(() -> new NoSuchElementException("No user found with given UUID"));
     }
@@ -68,7 +76,8 @@ public class MemberService {
 
     public Member getMemberIfRegistered(String loginID, String password) {
         return Optional.ofNullable(memberRepository.findByLoginID(loginID))
-                .filter(member -> passwordHashProvider.matches(password, member.getPasswordHash()))
+                .filter(member -> passwordHashProvider.matches(password, member.get().getPasswordHash()))
+                .get()
                 .orElseThrow(() -> new UnauthenticatedException("No user found with given loginID and password"));
     }
 }

@@ -72,5 +72,40 @@ public class MemberDataLoader implements CommandLineRunner {
                         null,
                         false,
                         null));
+        memberRepository.save(
+                new Member(UUID.randomUUID().toString(),
+                        "DELETED_MEMBER_ID",
+                        passwordHashProvider.encodePassword("DELETED_MEMBER_PASSWORD"),
+                        "example4@email.com",
+                        "examplePhoneNumber4",
+                        "MEMBER_NAME4",
+                        "exampleDepartment",
+                        "exampleStudentID4",
+                        true,
+                        true,
+                        null,
+                        null,
+                        null,
+                        null,
+                        false,
+                        null));
+        memberRepository.save(
+                new Member(UUID.randomUUID().toString(),
+                        "UPDATE_MEMBER_ID",
+                        passwordHashProvider.encodePassword("UPDATE_MEMBER_PASSWORD"),
+                        "example5@email.com",
+                        "examplePhoneNumber5",
+                        "MEMBER_NAME5",
+                        "exampleDepartment",
+                        "exampleStudentID5",
+                        true,
+                        false,
+                        null,
+                        null,
+                        null,
+                        null,
+                        false,
+                        null));
     }
+
 }
