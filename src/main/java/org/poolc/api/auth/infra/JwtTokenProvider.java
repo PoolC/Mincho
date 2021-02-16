@@ -37,10 +37,6 @@ public class JwtTokenProvider {
         return new ParsedTokenValues(body);
     }
 
-    public void validateToken(String token) {
-        tryToGetTokenClaims(token);
-    }
-
     private Claims tryToGetTokenClaims(String token) {
         try {
             return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
