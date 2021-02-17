@@ -5,7 +5,6 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.poolc.api.auth.exception.UnauthenticatedException;
-import org.poolc.api.auth.vo.ParsedTokenValues;
 import org.poolc.api.member.domain.Member;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -31,13 +30,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-
-    public ParsedTokenValues getUserInfo(String token) {
-        Claims body = tryToGetTokenClaims(token);
-        return new ParsedTokenValues(body);
-    }
-
-    private Claims tryToGetTokenClaims(String token) {
+    public Claims getBodyFromJwtToken(String token) {
         try {
             return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
         } catch (JwtException | IllegalArgumentException e) {

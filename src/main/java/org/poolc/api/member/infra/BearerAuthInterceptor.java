@@ -1,5 +1,6 @@
 package org.poolc.api.member.infra;
 
+import io.jsonwebtoken.Claims;
 import org.poolc.api.auth.infra.JwtTokenProvider;
 import org.poolc.api.auth.vo.ParsedTokenValues;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +22,23 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response, Object handler) {
-        if (request.getMethod().equals("POST")) {
+        if (request.getMethod().equals("POST") && request.getRequestURI().equals("/member")) {
             return true;
         }
-        String token = parsingJwtToken(request.getHeader("authorization"));
-        ParsedTokenValues userInfo = jwtTokenProvider.getUserInfo(token);
+
+        ParsedTokenValues userInfo = getUserInfo(request);
+
         request.setAttribute("UUID", userInfo.getUUID());
         request.setAttribute("isAdmin", userInfo.getIsAdmin());
+
         return true;
+    }
+
+    private ParsedTokenValues getUserInfo(HttpServletRequest request) {
+        String token = parsingJwtToken(request.getHeader("authorization"));
+        Claims body = jwtTokenProvider.getBodyFromJwtToken(token);
+        ParsedTokenValues userInfo = new ParsedTokenValues(body);
+        return userInfo;
     }
 
     private String parsingJwtToken(String token) {
