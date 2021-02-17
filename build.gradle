@@ -28,8 +28,6 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.16'
 
     compile 'org.projectlombok:lombok:1.18.16'
-    compile 'com.google.code.gson:gson:2.8.2'
-
 
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'io.rest-assured:rest-assured:4.2.0'
@@ -40,7 +38,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.security:spring-security-crypto:5.4.2'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
-    implementation 'org.springframework:spring-test:5.3.3'
     runtimeOnly 'com.h2database:h2'
 
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
