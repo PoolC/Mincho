@@ -74,7 +74,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         null));
         memberRepository.save(
                 new Member(UUID.randomUUID().toString(),
-                        "DELETED_MEMBER_ID",
+                        "WILL_DELETE_MEMBER_ID",
                         passwordHashProvider.encodePassword("DELETED_MEMBER_PASSWORD"),
                         "example4@email.com",
                         "examplePhoneNumber4",
