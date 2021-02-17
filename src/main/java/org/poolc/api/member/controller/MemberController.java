@@ -65,7 +65,7 @@ public class MemberController {
         memberService.updateMember(request.getAttribute("UUID").toString(), updateMemberRequest);
         return ResponseEntity.ok().build();
     }
-    
+
     @DeleteMapping(value = "/{loginID}")
     public ResponseEntity deleteMember(HttpServletRequest request, @PathVariable("loginID") String loginID) {
         checkAdmin(request);
@@ -75,20 +75,14 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> illegalArgumentHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-    }
-
     @ExceptionHandler(UnauthenticatedException.class)
     public ResponseEntity<String> unauthenticatedHandler(Exception e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
+    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})
     public ResponseEntity<String> noSuchElementHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     private void checkAdmin(HttpServletRequest request) {

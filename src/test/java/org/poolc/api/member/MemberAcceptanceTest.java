@@ -79,7 +79,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "UPDATE_MEMBER_PASSWORD", "NEW_PASSWORD", "NEW@naver.com", "01033334444");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 
@@ -120,7 +120,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "NO_MEMBER_ID");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
