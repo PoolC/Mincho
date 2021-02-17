@@ -1,9 +1,14 @@
 package org.poolc.api.book.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.poolc.api.auth.exception.UnauthenticatedException;
+import org.poolc.api.book.dto.BookCreateRequest;
 import org.poolc.api.book.dto.BookResponse;
+import org.poolc.api.book.dto.BookUpdateRequest;
 import org.poolc.api.book.dto.BookWithBorrowerResponse;
 import org.poolc.api.book.service.BookService;
+import org.poolc.api.book.vo.BookCreateValues;
+import org.poolc.api.book.vo.BookUpdateValues;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +39,26 @@ public class BookController {
                 .collect(toList()));
     }
 
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> registerBook(HttpServletRequest request, @RequestBody BookCreateRequest requestBody) {
+        checkAdmin(request);
+        bookService.saveBook(new BookCreateValues(requestBody));
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/{bookID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteBook(HttpServletRequest request, @PathVariable("bookID") Long id) {
+        checkAdmin(request);
+        bookService.deleteBook(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/{bookID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateBook(HttpServletRequest request, @RequestBody BookUpdateRequest requestBody, @PathVariable("bookID") Long id) {
+        checkAdmin(request);
+        bookService.updateBook(id, new BookUpdateValues(requestBody));
+        return ResponseEntity.ok().build();
+    }
 
     @PutMapping(value = "/borrow/{bookID}")
     public ResponseEntity borrowBook(HttpServletRequest request, @PathVariable("bookID") Long id) {
@@ -57,4 +82,21 @@ public class BookController {
         System.out.println(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
     }
+
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ResponseEntity<String> unauthenticatedHandler(Exception e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> runTimeHandler(Exception e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    private void checkAdmin(HttpServletRequest request) {
+        if (request.getAttribute("isAdmin").equals("false")) {
+            throw new UnauthenticatedException("임원진이 아닙니다");
+        }
+    }
+
 }

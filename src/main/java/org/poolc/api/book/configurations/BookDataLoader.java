@@ -53,7 +53,7 @@ public class BookDataLoader implements CommandLineRunner {
                 "exampleDepartment",
                 "exampleStudentID2",
                 true,
-                false,
+                true,
                 null,
                 null,
                 null,

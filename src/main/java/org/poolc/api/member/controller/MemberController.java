@@ -48,4 +48,5 @@ public class MemberController {
     private boolean correctEmailFormat(RegisterMemberRequest request) {
         return request.getEmail().matches("^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$");
     }
+    
 }

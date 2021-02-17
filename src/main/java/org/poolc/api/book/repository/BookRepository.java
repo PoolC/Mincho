@@ -11,4 +11,5 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query(value = "select b from Book b left join fetch b.borrower where b.id=:id")
     Optional<Book> findByIdWithBorrower(@Param("id") Long id);
 
+    boolean existsByTitleAndAuthor(String title, String author);
 }

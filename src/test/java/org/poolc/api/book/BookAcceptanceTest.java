@@ -6,8 +6,9 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
+import org.poolc.api.book.dto.BookCreateRequest;
+import org.poolc.api.book.dto.BookUpdateRequest;
 import org.poolc.api.book.dto.BookWithBorrowerResponse;
-import org.poolc.api.member.dto.RegisterMemberRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -89,7 +90,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = borrowBookRequest(accessToken, 3l);
+        ExtractableResponse<Response> response = borrowBookRequest(accessToken, 423l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
@@ -109,7 +110,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = returnBookRequest(accessToken, 3l);
+        ExtractableResponse<Response> response = returnBookRequest(accessToken, 432l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
@@ -131,6 +132,106 @@ public class BookAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = returnBookRequest(accessToken, 2l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+    }
+
+    @Test
+    void registerBook() {
+        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = createBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void registerBookNonAdminUser() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = createBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void registerBookAlreadyExist() {
+        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = createBookRequest(accessToken, "형철이의 삶", "박형철", "d", "ㅇㄴ");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    void updateBook() {
+        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 1l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void updateNonExistingBook() {
+        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 432l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    void updateBookNonAdminUser() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 1l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void updateBookAlreadyExistSameBook() {
+        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶", "박형철", "d", "ㅇㄴ", 2l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    void deleteBook() {
+        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = deleteBookRequest(accessToken, 1l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void deleteBookNonAdminUser() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = deleteBookRequest(accessToken, 1l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    void deleteNonExistingBook() {
+        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = deleteBookRequest(accessToken, 432l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     public static ExtractableResponse<Response> getBooksRequest(String accessToken) {
@@ -173,26 +274,36 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> updateMemberInfoRequest(String accessToken, String name, String password, String passwordCheck, String department) {
-        RegisterMemberRequest request = new RegisterMemberRequest(name, null, password, passwordCheck, null, null, department, null);
-
+    public static ExtractableResponse<Response> createBookRequest(String token, String title, String author, String imageURL, String info) {
+        BookCreateRequest request = new BookCreateRequest(title, author, imageURL, info);
         return RestAssured
                 .given().log().all()
-                .auth().oauth2(accessToken)
+                .auth().oauth2(token)
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/member/me")
+                .when().post("/book")
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> deleteMemberRequest(String accessToken, String name) {
+    public static ExtractableResponse<Response> updateBookRequest(String token, String title, String author, String imageURL, String info, Long id) {
+        BookUpdateRequest request = new BookUpdateRequest(title, author, imageURL, info);
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token)
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/book/{bookID}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> deleteBookRequest(String accessToken, Long id) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/member", name)
+                .when().delete("/book/{bookID}", id)
                 .then().log().all()
                 .extract();
     }
