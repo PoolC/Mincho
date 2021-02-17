@@ -50,6 +50,13 @@ public class Book {
         this.borrower = null;
     }
 
+    public void update(String title, String author, String imageURL, String info) {
+        this.title = title;
+        this.author = author;
+        this.imageURL = imageURL;
+        this.info = info;
+    }
+
     public Book() {
 
     }
