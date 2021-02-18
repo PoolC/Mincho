@@ -2,6 +2,7 @@ package org.poolc.api.member.controller;
 
 import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.member.dto.MemberListResponse;
 import org.poolc.api.member.dto.MemberResponse;
 import org.poolc.api.member.dto.RegisterMemberRequest;
 import org.poolc.api.member.dto.UpdateMemberRequest;
@@ -29,16 +30,16 @@ public class MemberController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<MemberResponse>> getAllMembers(HttpServletRequest request) {
+    public ResponseEntity<MemberListResponse> getAllMembers(HttpServletRequest request) {
         checkAdmin(request);
 
         Member member = memberService.findMember(request.getAttribute("UUID").toString());
 
-        List<MemberResponse> memberResponses = memberService.getAllMembers()
+        List<MemberResponse> memberList = memberService.getAllMembers()
                 .stream().map(m -> new MemberResponse(member))
                 .collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(memberResponses);
+        MemberListResponse MemberListResponses = new MemberListResponse(memberList);
+        return ResponseEntity.ok().body(MemberListResponses);
     }
 
     @PostMapping
