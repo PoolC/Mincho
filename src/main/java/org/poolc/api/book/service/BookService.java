@@ -2,6 +2,7 @@ package org.poolc.api.book.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.book.domain.Book;
+import org.poolc.api.book.exception.DuplicateBookException;
 import org.poolc.api.book.repository.BookRepository;
 import org.poolc.api.book.vo.BookCreateValues;
 import org.poolc.api.book.vo.BookUpdateValues;
@@ -28,7 +29,7 @@ public class BookService {
         boolean hasDuplicate = bookRepository.existsByTitleAndAuthor(values.getTitle(), values.getAuthor());
 
         if (hasDuplicate) {
-            throw new RuntimeException("이미 존재하는 책입니다");
+            throw new DuplicateBookException("이미 존재하는 책입니다");
         }
 
         bookRepository.save(new Book(values.getTitle(),
@@ -47,7 +48,7 @@ public class BookService {
         boolean hasDuplicate = bookRepository.existsByTitleAndAuthor(values.getTitle(), values.getAuthor());
 
         if (hasDuplicate) {
-            throw new RuntimeException("이미 존재하는 책입니다");
+            throw new DuplicateBookException("이미 존재하는 책입니다");
         }
 
         book.update(values.getTitle(), values.getAuthor(), values.getImageURL(), values.getInfo());

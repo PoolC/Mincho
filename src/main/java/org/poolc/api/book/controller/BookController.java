@@ -6,6 +6,7 @@ import org.poolc.api.book.dto.BookCreateRequest;
 import org.poolc.api.book.dto.BookResponse;
 import org.poolc.api.book.dto.BookUpdateRequest;
 import org.poolc.api.book.dto.BookWithBorrowerResponse;
+import org.poolc.api.book.exception.DuplicateBookException;
 import org.poolc.api.book.service.BookService;
 import org.poolc.api.book.vo.BookCreateValues;
 import org.poolc.api.book.vo.BookUpdateValues;
@@ -91,7 +92,7 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(DuplicateBookException.class)
     public ResponseEntity<String> runTimeHandler(Exception e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
