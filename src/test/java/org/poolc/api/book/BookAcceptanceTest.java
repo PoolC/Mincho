@@ -13,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
@@ -30,7 +28,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getBooksRequest(accessToken);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().as(List.class)).hasSize(2);
+        assertThat(response.body().jsonPath().getList("data")).hasSize(2);
     }
 
     @Test

@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -33,10 +34,12 @@ public class BookController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<BookResponse>> findBooks() {
-        return ResponseEntity.ok().body(bookService.findBooks().stream()
+    public ResponseEntity<HashMap<String, List<BookResponse>>> findBooks() {
+        HashMap<String, List<BookResponse>> responseBody = new HashMap<>();
+        responseBody.put("data", bookService.findBooks().stream()
                 .map(b -> new BookResponse(b))
                 .collect(toList()));
+        return ResponseEntity.ok().body(responseBody);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
