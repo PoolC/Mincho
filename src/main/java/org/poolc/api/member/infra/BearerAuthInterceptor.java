@@ -45,9 +45,6 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
         if (token.contains("Bearer"))
             return token.replace("Bearer ", "");
 
-        if (token.contains("Basic"))
-            return token.replace("Basic ", "");
-
         return token;
     }
 }
