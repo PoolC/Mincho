@@ -25,6 +25,13 @@ public class AuthAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void loginWrongPassword() {
+        ExtractableResponse<Response> response = loginRequest("MEMBER_ID", "MEMBER_PASSWOR");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
     void unauthorizedUser() {
         String loginID = "non_existing_loginID";
         String password = "non_existing_password";
