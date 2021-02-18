@@ -33,7 +33,7 @@ public class MemberController {
     public ResponseEntity<MemberListResponse> getAllMembers(HttpServletRequest request) {
         checkAdmin(request);
 
-        Member member = memberService.findMember(request.getAttribute("UUID").toString());
+        Member member = memberService.findMemberbyUUID(request.getAttribute("UUID").toString());
 
         List<MemberResponse> memberList = memberService.getAllMembers()
                 .stream().map(m -> new MemberResponse(member))
@@ -51,10 +51,9 @@ public class MemberController {
         return ResponseEntity.accepted().build();
     }
 
-
     @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MemberResponse> getMember(HttpServletRequest request) {
-        Member member = memberService.findMember(request.getAttribute("UUID").toString());
+        Member member = memberService.findMemberbyUUID(request.getAttribute("UUID").toString());
 
         return ResponseEntity.ok()
                 .body(new MemberResponse(member));
@@ -67,6 +66,15 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping(value = "/{loginID}")
+    public ResponseEntity<MemberResponse> adminGetMemberInfoByloginID(HttpServletRequest request, @PathVariable("loginID") String loginID) {
+        checkAdmin(request);
+
+        Member member = memberService.findMemberbyLoginID(loginID);
+
+        return ResponseEntity.ok().body(new MemberResponse(member));
+    }
+
     @DeleteMapping(value = "/{loginID}")
     public ResponseEntity deleteMember(HttpServletRequest request, @PathVariable("loginID") String loginID) {
         checkAdmin(request);
@@ -75,6 +83,25 @@ public class MemberController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping(path = "/activate/{loginID}")
+    public ResponseEntity ActivateMember(HttpServletRequest request, @PathVariable("loginID") String loginID) {
+        checkAdmin(request);
+
+        memberService.authorizeMember(loginID);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(path = "/admin/{loginID}")
+    public ResponseEntity updateMemberAdmin(HttpServletRequest request, @PathVariable("loginID") String loginID, @RequestBody Boolean isAdmin) {
+        checkAdmin(request);
+
+        memberService.updateIsAdmin(loginID, isAdmin);
+
+        return ResponseEntity.ok().build();
+    }
+
 
     @ExceptionHandler(UnauthenticatedException.class)
     public ResponseEntity<String> unauthenticatedHandler(Exception e) {

@@ -60,13 +60,30 @@ public class MemberService {
         memberRepository.flush();
     }
 
+    public void authorizeMember(String loginID) {
+        Member findMember = memberRepository.findByLoginID(loginID).get();
+        findMember.authorizeMember();
+        memberRepository.flush();
+    }
+
+    public void updateIsAdmin(String loginID, Boolean isAdmin) {
+        Member findMember = memberRepository.findByLoginID(loginID).get();
+        findMember.updateIsAdmin(isAdmin);
+        memberRepository.flush();
+    }
+
     public void deleteMember(String loginID) {
         memberRepository.delete(memberRepository.findByLoginID(loginID)
                 .orElseThrow(() -> new NoSuchElementException("No user found with given loginID")));
     }
 
-    public Member findMember(String UUID) {
+    public Member findMemberbyUUID(String UUID) {
         return memberRepository.findById(UUID)
+                .orElseThrow(() -> new NoSuchElementException("No user found with given UUID"));
+    }
+
+    public Member findMemberbyLoginID(String loginID) {
+        return memberRepository.findByLoginID(loginID)
                 .orElseThrow(() -> new NoSuchElementException("No user found with given UUID"));
     }
 
