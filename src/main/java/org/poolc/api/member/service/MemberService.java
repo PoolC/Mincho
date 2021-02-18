@@ -76,13 +76,8 @@ public class MemberService {
 
     public Member getMemberIfRegistered(String loginID, String password) {
         return Optional.ofNullable(memberRepository.findByLoginID(loginID))
-                .filter(member -> {
-                    if (!member.isEmpty()) {
-                        return passwordHashProvider.matches(password, member.get().getPasswordHash());
-                    }
-                    return false;
-                })
-                .orElseThrow(() -> new UnauthenticatedException("No user found with given loginID and password"))
-                .get();
+                .get()
+                .filter(member -> passwordHashProvider.matches(password, member.getPasswordHash()))
+                .orElseThrow(() -> new UnauthenticatedException("No user found with given loginID and password"));
     }
 }
