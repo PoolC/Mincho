@@ -21,8 +21,7 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
                              HttpServletResponse response, Object handler) throws Exception {
         try {
             String token = removeBearerFromToken(request.getHeader("authorization"));
-            jwtTokenProvider.validateToken(token);
-            ParsedTokenValues userInfo = jwtTokenProvider.getUserInfo(token);
+            ParsedTokenValues userInfo = new ParsedTokenValues(jwtTokenProvider.getBodyFromJwtToken(token));
             request.setAttribute("UUID", userInfo.getUUID());
             request.setAttribute("isAdmin", userInfo.getIsAdmin());
             return true;
