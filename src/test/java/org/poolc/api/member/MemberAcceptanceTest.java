@@ -34,7 +34,6 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void testGetMe() {
-        // TODO: loginID와 password 계속 중복되고 있는데, CMD + R 로 한번에 바꿔보아요
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
@@ -48,7 +47,6 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void getAllMembersAsAdmin() {
-        // 임원진이 요청 보낸다고 가정
         String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
@@ -56,7 +54,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getMembersRequest(accessToken);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().as(List.class)).hasSize(5); // TODO: 만든 회원 수에 맞게 변경
+        assertThat(response.body().as(List.class)).hasSize(5);
     }
 
     @Test
@@ -67,7 +65,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = getMembersRequest(accessToken);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
@@ -125,9 +123,9 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "NO_MEMBER_ID");
+        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "WILL_DELETE_MEMBER_ID");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     public static ExtractableResponse<Response> createMemberRequest(String name, String loginID, String password, String passwordCheck, String email, String phone, String department, String studentID) {
