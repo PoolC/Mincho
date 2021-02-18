@@ -3,6 +3,7 @@ package org.poolc.api.member.domain;
 import lombok.Getter;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.domain.ProjectMember;
+import org.poolc.api.member.dto.UpdateMemberRequest;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -83,5 +84,12 @@ public class Member extends TimestampEntity {
         this.introduction = introduction;
         this.isExcepted = isExcepted;
         this.projects = projects;
+    }
+
+    public void update(UpdateMemberRequest updateMemberRequest, String passwordHash) {
+        this.name = updateMemberRequest.getName();
+        this.passwordHash = passwordHash;
+        this.email = updateMemberRequest.getEmail();
+        this.phoneNumber = updateMemberRequest.getPhoneNumber();
     }
 }

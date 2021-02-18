@@ -9,22 +9,26 @@ import org.poolc.api.auth.dto.AuthRequest;
 import org.poolc.api.auth.dto.AuthResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.poolc.api.member.MemberAcceptanceTest.createMemberRequest;
 
+@ActiveProfiles("test")
 public class AuthAcceptanceTest extends AcceptanceTest {
     @Test
     void tokenIsIssued() {
-        String loginID = "new_test_id";
-        String password = "test";
-
-        createMemberRequest("someName", loginID, password, password, "some@email.com", "010-4321-4321", "풀씨학부", "2021147599");
-        ExtractableResponse<Response> response = loginRequest(loginID, password);
+        ExtractableResponse<Response> response = loginRequest("MEMBER_ID", "MEMBER_PASSWORD");
 
         AuthResponse authResponse = response.as(AuthResponse.class);
         assertThat(response.statusCode()).isEqualTo(200);
         assertThat(authResponse.getAccessToken()).isNotNull();
+    }
+
+    @Test
+    void loginWrongPassword() {
+        ExtractableResponse<Response> response = loginRequest("MEMBER_ID", "MEMBER_PASSWOR");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
     @Test
@@ -36,6 +40,17 @@ public class AuthAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
+
+    @Test
+    void unactivatedUser() {
+        String loginID = "UNACCEPTED_MEMBER_ID";
+        String password = "UNACCEPTED_MEMBER_PASSWORD";
+
+        ExtractableResponse<Response> response = loginRequest(loginID, password);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
 
     public static ExtractableResponse<Response> loginRequest(String loginID, String password) {
         AuthRequest request = new AuthRequest(loginID, password);

@@ -8,15 +8,19 @@ import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
 import org.poolc.api.member.dto.MemberResponse;
 import org.poolc.api.member.dto.RegisterMemberRequest;
+import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
+@ActiveProfiles("test")
 public class MemberAcceptanceTest extends AcceptanceTest {
+
 
     @Test
     void testCreate() {
@@ -30,8 +34,6 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void testGetMe() {
-        // TODO: loginID와 password 계속 중복되고 있는데, CMD + R 로 한번에 바꿔보아요
-        // Dataloader에 인증된 회원이 있다고 가정
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
@@ -44,20 +46,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void getMeAsUnacceptedMemberIsUnauthorized() {
-        // Dataloader에 비허가 회원이 있다고 가정
-        String accessToken = loginRequest("UNACCEPTED_MEMBER_ID", "UNACCEPTED_MEMBER_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
-
-        ExtractableResponse<Response> response = getMemberRequest(accessToken);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-    }
-
-    @Test
     void getAllMembersAsAdmin() {
-        // 임원진이 요청 보낸다고 가정
         String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
@@ -65,7 +54,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getMembersRequest(accessToken);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().as(List.class)).hasSize(5); // TODO: 만든 회원 수에 맞게 변경
+        assertThat(response.body().as(List.class)).hasSize(5);
     }
 
     @Test
@@ -76,40 +65,67 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = getMembersRequest(accessToken);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
+    void updateWrongPasswordCheckMemberInfo() {
+        String accessToken = loginRequest("UPDATE_MEMBER_ID", "UPDATE_MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "UPDATE_MEMBER_PASSWORD", "NEW_PASSWORD", "NEW@naver.com", "01033334444");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
     }
 
     @Test
     void updateMemberInfo() {
-        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+        String accessToken = loginRequest("UPDATE_MEMBER_ID", "UPDATE_MEMBER_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "NEW_PASSWORD", "NEW_PASSWORD", "풀씨학과");
+        ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "UPDATE_MEMBER_PASSWORD", "UPDATE_MEMBER_PASSWORD", "NEW@naver.com", "01033334444");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> certifiedResponse = getMemberRequest(accessToken);
+        MemberResponse responseBody = certifiedResponse.as(MemberResponse.class);
+        assertThat(responseBody.getName()).isEqualTo("NEW_MEMBER_NAME");
     }
 
     @Test
-    void adminCanDeleteMember() {
+    void adminDeleteExistingMember() {
         String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "TODO: 여기에 뭐가 들어가야될까요..");
+        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "WILL_DELETE_MEMBER_ID");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void adminDeleteNotExistingMember() {
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "NO_MEMBER_ID");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
     void deleteMemberAsNonAdminIsUnauthorized() {
-        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+        String accessToken = loginRequest("UPDATE_MEMBER_ID", "UPDATE_MEMBER_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "TODO: 여기에 뭐가 들어가야될까요..");
+        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "WILL_DELETE_MEMBER_ID");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     public static ExtractableResponse<Response> createMemberRequest(String name, String loginID, String password, String passwordCheck, String email, String phone, String department, String studentID) {
@@ -144,9 +160,8 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> updateMemberInfoRequest(String accessToken, String name, String password, String passwordCheck, String department) {
-        // TODO: RegisterMemberRequest인데 update value를 넘기고 있네요. 어떻게 못 바꿀까요?
-        RegisterMemberRequest request = new RegisterMemberRequest(name, null, password, passwordCheck, null, null, department, null);
+    public static ExtractableResponse<Response> updateMemberInfoRequest(String accessToken, String name, String password, String passwordCheck, String email, String phoneNumber) {
+        UpdateMemberRequest request = new UpdateMemberRequest(name, password, passwordCheck, email, phoneNumber);
 
         return RestAssured
                 .given().log().all()
@@ -159,12 +174,12 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> deleteMemberRequest(String accessToken, String name) {
+    public static ExtractableResponse<Response> deleteMemberRequest(String accessToken, String loginID) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/member", name)
+                .when().delete("/member/{loginID}", loginID)
                 .then().log().all()
                 .extract();
     }

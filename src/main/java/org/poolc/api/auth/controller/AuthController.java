@@ -2,6 +2,7 @@ package org.poolc.api.auth.controller;
 
 import org.poolc.api.auth.dto.AuthRequest;
 import org.poolc.api.auth.dto.AuthResponse;
+import org.poolc.api.auth.exception.UnactivatedException;
 import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,10 @@ public class AuthController {
     @ExceptionHandler(UnauthenticatedException.class)
     public ResponseEntity<String> unauthenticatedHandler(Exception e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
+    @ExceptionHandler(UnactivatedException.class)
+    public ResponseEntity<String> unactivatedHandler(Exception e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 }
