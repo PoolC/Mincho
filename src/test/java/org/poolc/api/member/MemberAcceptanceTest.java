@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
+import org.poolc.api.member.dto.MemberListResponse;
 import org.poolc.api.member.dto.MemberResponse;
 import org.poolc.api.member.dto.RegisterMemberRequest;
 import org.poolc.api.member.dto.UpdateMemberRequest;
@@ -52,7 +53,9 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getMembersRequest(accessToken);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("data")).hasSize(5);
+
+        MemberListResponse responseBody = response.body().as(MemberListResponse.class);
+        assertThat(responseBody.getData()).hasSize(6);
     }
 
     @Test
@@ -91,6 +94,38 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> certifiedResponse = getMemberRequest(accessToken);
         MemberResponse responseBody = certifiedResponse.as(MemberResponse.class);
         assertThat(responseBody.getName()).isEqualTo("NEW_MEMBER_NAME");
+    }
+
+    @Test
+    void ActivateMember() {
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        String loginID = "UNACCEPTED_MEMBER_ID";
+
+        ExtractableResponse<Response> response = ActivateMemberRequest(accessToken, loginID);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> certifiedResponse = AdminGetMemberRequestByLoginID(accessToken, loginID);
+        MemberResponse responseBody = certifiedResponse.as(MemberResponse.class);
+        assertThat(responseBody.getIsActivated()).isEqualTo(true);
+    }
+
+    @Test
+    void updateMemberIsAdmin() {
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        String not_admin_loginID = "NOT_ADMIN_ID";
+
+        ExtractableResponse<Response> response = UpdateMemberIsAdmin(accessToken, not_admin_loginID, true);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> certifiedResponse = AdminGetMemberRequestByLoginID(accessToken, not_admin_loginID);
+        MemberResponse responseBody = certifiedResponse.as(MemberResponse.class);
+        assertThat(responseBody.getIsAdmin()).isEqualTo(true);
     }
 
     @Test
@@ -148,12 +183,23 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
+
     public static ExtractableResponse<Response> getMembersRequest(String accessToken) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/member")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> AdminGetMemberRequestByLoginID(String accessToken, String loginID) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/member/{loginID}", loginID)
                 .then().log().all()
                 .extract();
     }
@@ -168,6 +214,29 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/member/me")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> ActivateMemberRequest(String accessToken, String loginID) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/member/activate/{loginID}", loginID)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> UpdateMemberIsAdmin(String accessToken, String loginID, Boolean isAdmin) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(isAdmin)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/member/admin/{loginID}", loginID)
                 .then().log().all()
                 .extract();
     }

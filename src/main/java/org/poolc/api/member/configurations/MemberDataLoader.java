@@ -106,6 +106,23 @@ public class MemberDataLoader implements CommandLineRunner {
                         null,
                         false,
                         null));
+        memberRepository.save(
+                new Member(UUID.randomUUID().toString(),
+                        "NOT_ADMIN_ID",
+                        passwordHashProvider.encodePassword("NOT_ADMIN_PASSWORD"),
+                        "example6@email.com",
+                        "examplePhoneNumber6",
+                        "MEMBER_NAME6",
+                        "exampleDepartment",
+                        "exampleStudentID6",
+                        true,
+                        false,
+                        null,
+                        null,
+                        null,
+                        null,
+                        false,
+                        null));
     }
 
 }
