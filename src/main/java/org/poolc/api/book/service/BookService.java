@@ -74,17 +74,17 @@ public class BookService {
         book.borrowBook(member);
     }
 
-    private void validateAvailableBook(Book book) {
-        if (book.getStatus() != BookStatus.AVAILABLE) {
-            throw new IllegalStateException("대여된 책입니다!");
-        }
-    }
-
     @Transactional
     public void returnBook(String memberUUID, Long bookId) {
         Book book = findOneBook(bookId);
         validateMyBook(book, memberUUID);
         book.returnBook();
+    }
+
+    private void validateAvailableBook(Book book) {
+        if (book.getStatus() != BookStatus.AVAILABLE) {
+            throw new IllegalStateException("대여된 책입니다!");
+        }
     }
 
     private void validateMyBook(Book book, String memberUUID) {
