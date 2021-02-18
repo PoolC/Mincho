@@ -59,7 +59,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = getBookRequest(accessToken, 100l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = borrowBookRequest(accessToken, 423l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = returnBookRequest(accessToken, 432l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -179,7 +179,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 432l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -229,7 +229,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = deleteBookRequest(accessToken, 432l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static ExtractableResponse<Response> getBooksRequest(String accessToken) {

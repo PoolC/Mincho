@@ -77,7 +77,7 @@ public class BookController {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> noSuchElementHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     @ExceptionHandler(IllegalStateException.class)
