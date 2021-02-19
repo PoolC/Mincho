@@ -1,5 +1,6 @@
 package org.poolc.api.member.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.domain.ProjectMember;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Entity(name = "Member")
 @Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends TimestampEntity {
     // TODO: 시그니처 통일해주세요(unique, nullable 순서)
     // TODO: db 컬럼명은 snake_case 가 컨벤션입니다. 이왕 name field를 선언한거 snake_case에 맞게 바꿔주세요
