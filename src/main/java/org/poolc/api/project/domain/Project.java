@@ -1,7 +1,6 @@
 package org.poolc.api.project.domain;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.poolc.api.common.domain.TimestampEntity;
 
 import javax.persistence.*;
@@ -10,7 +9,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "Project")
 public class Project extends TimestampEntity {
 
@@ -40,5 +38,14 @@ public class Project extends TimestampEntity {
     private String body;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    List<ProjectMember> members = new ArrayList<>();
+    private List<ProjectMember> members = new ArrayList<>();
+
+    public Project(String name, String description, String genre, String duration, String thumbnailURL, String body) {
+        this.name = name;
+        this.description = description;
+        this.genre = genre;
+        this.duration = duration;
+        this.thumbnailURL = thumbnailURL;
+        this.body = body;
+    }
 }
