@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Component
-public class BearerAuthInterceptor implements HandlerInterceptor {
+public class BookBearerAuthInterceptor implements HandlerInterceptor {
     private JwtTokenProvider jwtTokenProvider;
 
-    public BearerAuthInterceptor(JwtTokenProvider jwtTokenProvider) {
+    public BookBearerAuthInterceptor(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
