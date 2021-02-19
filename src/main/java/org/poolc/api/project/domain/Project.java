@@ -40,6 +40,10 @@ public class Project extends TimestampEntity {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<ProjectMember> members = new ArrayList<>();
 
+    public void setMembers(List<ProjectMember> members) {
+        this.members = members;
+    }
+
     public Project(String name, String description, String genre, String duration, String thumbnailURL, String body) {
         this.name = name;
         this.description = description;
@@ -48,4 +52,9 @@ public class Project extends TimestampEntity {
         this.thumbnailURL = thumbnailURL;
         this.body = body;
     }
+
+    protected Project() {
+
+    }
+
 }
