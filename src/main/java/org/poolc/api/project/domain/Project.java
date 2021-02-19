@@ -1,4 +1,4 @@
-package org.poolc.api.domain;
+package org.poolc.api.project.domain;
 
 import lombok.Getter;
 import lombok.Setter;

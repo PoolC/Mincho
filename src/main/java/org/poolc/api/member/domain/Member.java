@@ -3,8 +3,8 @@ package org.poolc.api.member.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import org.poolc.api.common.domain.TimestampEntity;
-import org.poolc.api.domain.ProjectMember;
 import org.poolc.api.member.dto.UpdateMemberRequest;
+import org.poolc.api.project.domain.ProjectMember;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
