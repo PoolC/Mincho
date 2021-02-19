@@ -1,4 +1,4 @@
-package org.poolc.api.domain;
+package org.poolc.api.board.domain;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,5 +32,12 @@ public class Board extends TimestampEntity {
     private String writePermission;
 
     public Board() {
+    }
+
+    public Board(String name, String urlPath, String readPermission, String writePermission) {
+        this.name = name;
+        this.urlPath = urlPath;
+        this.readPermission = readPermission;
+        this.writePermission = writePermission;
     }
 }
