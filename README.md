@@ -1,4 +1,4 @@
-# PROJECT_NAME_HERE
+# MINCHO
 
 풀씨 백엔드 API 개편 프로젝트
 
