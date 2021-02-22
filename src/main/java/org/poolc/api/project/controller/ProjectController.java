@@ -3,10 +3,9 @@ package org.poolc.api.project.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthenticatedException;
-import org.poolc.api.project.dto.ProjectMemberResponse;
-import org.poolc.api.project.dto.ProjectResponse;
-import org.poolc.api.project.dto.ProjectWithMemberResponse;
+import org.poolc.api.project.dto.*;
 import org.poolc.api.project.service.ProjectService;
+import org.poolc.api.project.vo.ProjectCreateValues;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +39,26 @@ public class ProjectController {
         HashMap<String, ProjectWithMemberResponse> responseBody = new HashMap<>();
         responseBody.put("data", new ProjectWithMemberResponse(projectService.findProjectWithMember(id)));
         return ResponseEntity.ok().body(responseBody);
+    }
+
+    @DeleteMapping(value = "/{projectID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteOneProject(HttpServletRequest request, @PathVariable("projectID") Long id) {
+        checkAdmin(request);
+        projectService.deleteProject(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addNewProject(HttpServletRequest request, @RequestBody RegisterProjectRequest requestBody) {
+        checkAdmin(request);
+        projectService.createProject(new ProjectCreateValues(requestBody));
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/{projectID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateProject(HttpServletRequest request, @RequestBody UpdateProjectRequest requestBody, @PathVariable("projectID") Long id) {
+        checkAdmin(request);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/member", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -6,7 +6,9 @@ import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.poolc.api.project.domain.ProjectMember;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -63,9 +65,6 @@ public class Member extends TimestampEntity {
     @Column(name = "isExcepted", columnDefinition = "boolean default false")
     private Boolean isExcepted = false;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    List<ProjectMember> projects;
-
     protected Member() {
     }
 
@@ -85,7 +84,6 @@ public class Member extends TimestampEntity {
         this.profileImageURL = profileImageURL;
         this.introduction = introduction;
         this.isExcepted = isExcepted;
-        this.projects = projects;
     }
 
     public void update(UpdateMemberRequest updateMemberRequest, String passwordHash) {

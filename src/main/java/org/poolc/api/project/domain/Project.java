@@ -2,6 +2,7 @@ package org.poolc.api.project.domain;
 
 import lombok.Getter;
 import org.poolc.api.common.domain.TimestampEntity;
+import org.poolc.api.project.vo.ProjectUpdateValues;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -37,11 +38,15 @@ public class Project extends TimestampEntity {
     @Column(name = "body", nullable = false)
     private String body;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectMember> members = new ArrayList<>();
 
     public void setMembers(List<ProjectMember> members) {
         this.members = members;
+    }
+
+    public void addMembers(List<ProjectMember> members) {
+        this.members.addAll(members);
     }
 
     public Project(String name, String description, String genre, String duration, String thumbnailURL, String body) {
@@ -51,6 +56,16 @@ public class Project extends TimestampEntity {
         this.duration = duration;
         this.thumbnailURL = thumbnailURL;
         this.body = body;
+    }
+
+    public void update(ProjectUpdateValues projectUpdateValues) {
+        this.name = projectUpdateValues.getName();
+        this.description = projectUpdateValues.getDescription();
+        this.genre = projectUpdateValues.getGenre();
+        this.duration = projectUpdateValues.getDuration();
+        this.thumbnailURL = projectUpdateValues.getThumbnailURL();
+        this.body = projectUpdateValues.getBody();
+        this.members.clear();
     }
 
     protected Project() {

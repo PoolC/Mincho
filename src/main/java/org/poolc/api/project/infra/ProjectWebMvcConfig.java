@@ -15,6 +15,6 @@ public class ProjectWebMvcConfig implements WebMvcConfigurer {
 
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(bearerAuthInterceptor).addPathPatterns("/project");
-        registry.addInterceptor(bearerAuthInterceptor).addPathPatterns("/project/member");
+        registry.addInterceptor(bearerAuthInterceptor).addPathPatterns("/project/**");
     }
 }
