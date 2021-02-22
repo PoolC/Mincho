@@ -1,13 +1,13 @@
 package org.poolc.api.domain;
 
 import lombok.Getter;
+import org.poolc.api.member.domain.Member;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
+
+import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "Activity")
 @Getter
@@ -20,8 +20,9 @@ public class Activity {
     @Column(name = "title", columnDefinition = "varchar(1024)", nullable = false)
     private String title;
 
-    @Column(name = "host", columnDefinition = "varchar(40)", nullable = false)
-    private String host;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "host", referencedColumnName = "UUID", nullable = false)
+    private Member host;
 
     @Column(name = "startDate", columnDefinition = "date")
     private LocalDate startDate;
@@ -44,7 +45,7 @@ public class Activity {
     public Activity() {
     }
 
-    public Activity(String title, String host, LocalDate startDate, LocalDate endDate, String classHour, Boolean isSeminar, Long capacity, Boolean available) {
+    public Activity(String title, Member host, LocalDate startDate, LocalDate endDate, String classHour, Boolean isSeminar, Long capacity, Boolean available) {
         this.title = title;
         this.host = host;
         this.startDate = startDate;
