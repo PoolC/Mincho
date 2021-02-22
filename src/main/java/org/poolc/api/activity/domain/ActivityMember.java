@@ -8,6 +8,9 @@ import javax.persistence.*;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "ActivityMember")
+@Table(name = "ActivityMember",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"activityID", "memberID"})})
 @Getter
 public class ActivityMember {
     @Id

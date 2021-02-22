@@ -5,6 +5,8 @@ import org.poolc.api.member.domain.Member;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static javax.persistence.FetchType.LAZY;
@@ -20,15 +22,15 @@ public class Activity {
     @Column(name = "title", columnDefinition = "varchar(1024)", nullable = false)
     private String title;
 
+    @Column(name = "description", columnDefinition = "varchar(1024)", nullable = false)
+    private String description;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "host", referencedColumnName = "UUID", nullable = false)
     private Member host;
 
     @Column(name = "startDate", columnDefinition = "date")
     private LocalDate startDate;
-
-    @Column(name = "endDate", columnDefinition = "date")
-    private LocalDate endDate;
 
     @Column(name = "classHour", columnDefinition = "varchar(1024)")
     private String classHour;
@@ -42,14 +44,17 @@ public class Activity {
     @Column(name = "available", columnDefinition = "boolean default false")
     private Boolean available;
 
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ActivityTag> tags = new ArrayList<>();
+
     public Activity() {
     }
 
-    public Activity(String title, Member host, LocalDate startDate, LocalDate endDate, String classHour, Boolean isSeminar, Long capacity, Boolean available) {
+    public Activity(String title, String description, Member host, LocalDate startDate, String classHour, Boolean isSeminar, Long capacity, Boolean available) {
         this.title = title;
+        this.description = description;
         this.host = host;
         this.startDate = startDate;
-        this.endDate = endDate;
         this.classHour = classHour;
         this.isSeminar = isSeminar;
         this.capacity = capacity;
@@ -65,7 +70,6 @@ public class Activity {
                 Objects.equals(getTitle(), activity.getTitle()) &&
                 Objects.equals(getHost(), activity.getHost()) &&
                 Objects.equals(getStartDate(), activity.getStartDate()) &&
-                Objects.equals(getEndDate(), activity.getEndDate()) &&
                 Objects.equals(getClassHour(), activity.getClassHour()) &&
                 Objects.equals(getIsSeminar(), activity.getIsSeminar()) &&
                 Objects.equals(getCapacity(), activity.getCapacity()) &&
@@ -74,6 +78,6 @@ public class Activity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getTitle(), getHost(), getStartDate(), getEndDate(), getClassHour(), getIsSeminar(), getCapacity(), getAvailable());
+        return Objects.hash(getId(), getTitle(), getHost(), getStartDate(), getClassHour(), getIsSeminar(), getCapacity(), getAvailable());
     }
 }

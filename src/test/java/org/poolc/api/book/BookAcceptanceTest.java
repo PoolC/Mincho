@@ -35,7 +35,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
     void findAllBooksWithUnAuthorizedMember() {
 
         ExtractableResponse<Response> response = getBooksRequest("1234");
-        System.out.println(response.body().asString());
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 

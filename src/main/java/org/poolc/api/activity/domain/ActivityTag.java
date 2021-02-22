@@ -8,6 +8,9 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "ActivityTag")
 @Getter
+@Table(name = "ActivityTag",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"activityID", "tagID"})})
 public class ActivityTag {
     @Id
     @GeneratedValue
@@ -22,4 +25,12 @@ public class ActivityTag {
     @JoinColumn(name = "tagID", referencedColumnName = "ID", nullable = false)
     private Tag tagID;
 
+    public ActivityTag(Activity activity, Tag tagID) {
+        this.activity = activity;
+        this.tagID = tagID;
+    }
+
+    protected ActivityTag() {
+
+    }
 }
