@@ -1,7 +1,8 @@
 package org.poolc.api.board.domain;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.poolc.api.board.vo.BoardCreateValues;
+import org.poolc.api.board.vo.BoardUpdateValue;
 import org.poolc.api.common.domain.TimestampEntity;
 
 import javax.persistence.Column;
@@ -11,7 +12,6 @@ import javax.persistence.Id;
 
 @Entity(name = "Board")
 @Getter
-@Setter
 public class Board extends TimestampEntity {
 
     @Id
@@ -39,5 +39,19 @@ public class Board extends TimestampEntity {
         this.urlPath = urlPath;
         this.readPermission = readPermission;
         this.writePermission = writePermission;
+    }
+
+    public Board(BoardCreateValues boardCreateValues) {
+        this.name = boardCreateValues.getName();
+        this.urlPath = boardCreateValues.getURLPath();
+        this.readPermission = boardCreateValues.getReadPermission();
+        this.writePermission = boardCreateValues.getWritePermission();
+    }
+
+    public void update(BoardUpdateValue boardUpdateValue) {
+        this.name = boardUpdateValue.getName();
+        this.urlPath = boardUpdateValue.getUrlPath();
+        this.readPermission = boardUpdateValue.getReadPermission();
+        this.writePermission = boardUpdateValue.getWritePermission();
     }
 }

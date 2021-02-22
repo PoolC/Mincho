@@ -3,15 +3,19 @@ package org.poolc.api.board.configurations;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.board.domain.Board;
 import org.poolc.api.board.repository.BoardRepository;
+import org.poolc.api.member.infra.PasswordHashProvider;
+import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("boardtest")
+@Profile("boardTest")
 @RequiredArgsConstructor
-public class boardDataLoader implements CommandLineRunner {
+public class BoardDataLoader implements CommandLineRunner {
     private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
+    private final PasswordHashProvider passwordHashProvider;
 
     @Override
     public void run(String... args) {
@@ -24,6 +28,7 @@ public class boardDataLoader implements CommandLineRunner {
         boardRepository.save(
                 new Board("구인홍보게시판", "/구인홍보게시판", "true", "true")
         );
+
         boardRepository.save(
                 new Board("학술게시판", "/학술게시판", "true", "true")
         );
@@ -34,7 +39,7 @@ public class boardDataLoader implements CommandLineRunner {
                 new Board("삭제할게시판", "/삭제할게시판", "true", "true")
         );
         boardRepository.save(
-                new Board("수정할게시판", "/수정할게시판", "false", "false")
+                new Board("updateBoard", "/updateBoard", "false", "false")
         );
     }
 }

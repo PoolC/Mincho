@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 @Getter
-public class RegisterBoardRequest {
+public class UpdateBoardRequest {
     private final String name;
     private final String urlPath;
     private final String readPermission;
     private final String writePermission;
 
     @JsonCreator
-    public RegisterBoardRequest(String name, String URLPath, String readPermission, String writePermission) {
+    public UpdateBoardRequest(String name, String URLPath, String readPermission, String writePermission) {
         this.name = name;
         this.urlPath = URLPath;
         this.readPermission = readPermission;

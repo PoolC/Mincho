@@ -1,6 +1,7 @@
 package org.poolc.api.domain;
 
 import lombok.Getter;
+import org.poolc.api.board.domain.Board;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
 
