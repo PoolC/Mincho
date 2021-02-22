@@ -1,14 +1,15 @@
-package org.poolc.api.domain;
+package org.poolc.api.activity.domain;
 
 import lombok.Getter;
+import org.poolc.api.member.domain.Member;
 
 import javax.persistence.*;
 
 import static javax.persistence.FetchType.LAZY;
 
-@Entity(name = "Attendance")
+@Entity(name = "ActivityMember")
 @Getter
-public class Attendance {
+public class ActivityMember {
     @Id
     @GeneratedValue
     @Column(name = "ID")
@@ -19,12 +20,6 @@ public class Attendance {
     private Activity activity;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "sessionID", referencedColumnName = "ID", nullable = false)
-    private Session session;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "memberID", referencedColumnName = "memberID", nullable = false)
-    private ActivityMember memberID;
-
-
+    @JoinColumn(name = "memberID", referencedColumnName = "UUID", nullable = false)
+    private Member member;
 }

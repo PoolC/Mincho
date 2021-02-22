@@ -1,6 +1,6 @@
-package org.poolc.api.repository;
+package org.poolc.api.activity.repository;
 
-import org.poolc.api.domain.Activity;
+import org.poolc.api.activity.domain.Activity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ActivityRepository extends JpaRepository<Activity, Long> {

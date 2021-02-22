@@ -1,4 +1,4 @@
-package org.poolc.api.domain;
+package org.poolc.api.activity.domain;
 
 import lombok.Getter;
 import org.poolc.api.member.domain.Member;
