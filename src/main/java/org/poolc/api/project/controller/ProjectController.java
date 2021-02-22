@@ -6,6 +6,7 @@ import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.project.dto.*;
 import org.poolc.api.project.service.ProjectService;
 import org.poolc.api.project.vo.ProjectCreateValues;
+import org.poolc.api.project.vo.ProjectUpdateValues;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,7 @@ public class ProjectController {
     @PutMapping(value = "/{projectID}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateProject(HttpServletRequest request, @RequestBody UpdateProjectRequest requestBody, @PathVariable("projectID") Long id) {
         checkAdmin(request);
+        projectService.updateProject(new ProjectUpdateValues(requestBody), id);
         return ResponseEntity.ok().build();
     }
 

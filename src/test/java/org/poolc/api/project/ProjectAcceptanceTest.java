@@ -129,7 +129,7 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ids.add(response.body().jsonPath().getJsonObject("data[0].id").toString());
         ExtractableResponse<Response> response2 = updateProjectRequest(1l, accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         ExtractableResponse<Response> response3 = getProjectRequest(accessToken, 1l);
         assertThat(response3.statusCode()).isEqualTo(HttpStatus.OK.value());
