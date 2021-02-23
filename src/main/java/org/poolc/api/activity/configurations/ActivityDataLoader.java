@@ -3,9 +3,7 @@ package org.poolc.api.activity.configurations;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.activity.domain.Activity;
 import org.poolc.api.activity.domain.ActivityTag;
-import org.poolc.api.activity.domain.Tag;
 import org.poolc.api.activity.repository.ActivityRepository;
-import org.poolc.api.activity.repository.TagRepository;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.infra.PasswordHashProvider;
 import org.poolc.api.member.repository.MemberRepository;
@@ -22,7 +20,6 @@ import java.util.UUID;
 public class ActivityDataLoader implements CommandLineRunner {
 
     private final ActivityRepository activityRepository;
-    private final TagRepository tagRepository;
     private final MemberRepository memberRepository;
     private final PasswordHashProvider passwordHashProvider;
 
@@ -46,17 +43,17 @@ public class ActivityDataLoader implements CommandLineRunner {
                 null);
         memberRepository.save(member);
         LocalDate date = LocalDate.now();
-        Tag tag = new Tag("!121");
-        Tag tag2 = new Tag("박형철의 세미나");
-        tagRepository.save(tag);
-        tagRepository.save(tag2);
+        LocalDate date2 = LocalDate.of(2020, 1, 11);
         Activity activity = new Activity("정윤석의 c++ ", "dsds", member, date, "dsds", false, 1l, false);
-        activity.getTags().add(new ActivityTag(activity, tag));
+        activity.getTags().add(new ActivityTag(activity, "꿀잼보장"));
         activityRepository.save(activity);
-        Activity activity2 = new Activity("정윤석의 c++ 2", "dsds", member, date, "dsds", false, 1l, false);
-        activity2.getTags().add(new ActivityTag(activity2, tag));
-        activity2.getTags().add(new ActivityTag(activity2, tag2));
+        Activity activity2 = new Activity("정윤석의 c++ 2", "dsds", member, date2, "dsds", false, 1l, false);
+        Activity activity3 = new Activity("정윤석의 c++ 3", "dsds", member, date, "dsds", false, 1l, false);
+
+        activity2.getTags().add(new ActivityTag(activity2, "꿀잼보장"));
+        activity2.getTags().add(new ActivityTag(activity2, "ㄹㅇ로"));
         activityRepository.save(activity2);
+        activityRepository.save(activity3);
 
     }
 }

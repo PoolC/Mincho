@@ -10,7 +10,7 @@ import static javax.persistence.FetchType.LAZY;
 @Getter
 @Table(name = "ActivityTag",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"activityID", "tagID"})})
+                @UniqueConstraint(columnNames = {"activityID", "content"})})
 public class ActivityTag {
     @Id
     @GeneratedValue
@@ -21,13 +21,11 @@ public class ActivityTag {
     @JoinColumn(name = "activityID", referencedColumnName = "ID", nullable = false)
     private Activity activity;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "tagID", referencedColumnName = "ID", nullable = false)
-    private Tag tagID;
+    private String content;
 
-    public ActivityTag(Activity activity, Tag tagID) {
+    public ActivityTag(Activity activity, String content) {
         this.activity = activity;
-        this.tagID = tagID;
+        this.content = content;
     }
 
     protected ActivityTag() {

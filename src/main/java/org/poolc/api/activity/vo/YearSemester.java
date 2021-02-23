@@ -2,15 +2,21 @@ package org.poolc.api.activity.vo;
 
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 public class YearSemester {
 
-    private final Long year;
-    private final Long semester;
+    private final int year;
+    private final int semester;
 
-    public YearSemester(Long year, Long semester) {
-        this.year = year;
-        this.semester = semester;
+    public YearSemester(LocalDate localDate) {
+        this.year = localDate.getYear();
+        this.semester = monthToSemester(localDate);
+    }
+
+    public int monthToSemester(LocalDate localDate) {
+        return ((localDate.getMonth().getValue() < 2) || (localDate.getMonth().getValue() >= 8)) ? 2 : 1;
     }
 
     @Override
