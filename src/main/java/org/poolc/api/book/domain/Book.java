@@ -1,5 +1,6 @@
 package org.poolc.api.book.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import org.poolc.api.enums.BookStatus;
 import org.poolc.api.member.domain.Member;
@@ -10,6 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Book {
 
     @Id
