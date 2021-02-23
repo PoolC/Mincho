@@ -31,13 +31,13 @@ public class BoardService {
         return boardRepository.findAll();
     }
 
-    public Board get(String boardName) {
-        return boardRepository.findByName(boardName)
+    public Board get(Long boardId) {
+        return boardRepository.findById(boardId)
                 .orElseThrow(() -> new NoSuchElementException("no board found with given name"));
     }
 
-    public void update(String boardName, BoardUpdateValue boardUpdateValue) {
-        Board findBoard = get(boardName);
+    public void update(Long boardId, BoardUpdateValue boardUpdateValue) {
+        Board findBoard = get(boardId);
 
         checkDuplicateNameOrUrlPath(boardUpdateValue.getName(), boardUpdateValue.getUrlPath());
 
@@ -45,8 +45,8 @@ public class BoardService {
         boardRepository.flush();
     }
 
-    public void deleteBoard(String boardName) {
-        boardRepository.delete(get(boardName));
+    public void delete(Long boardId) {
+        boardRepository.delete(get(boardId));
     }
 
     private void checkDuplicateNameOrUrlPath(String name, String URLPath) {

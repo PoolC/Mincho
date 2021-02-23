@@ -51,32 +51,33 @@ public class BoardController {
         return ResponseEntity.ok().body(boardsResponse);
     }
 
-    @GetMapping(value = "/{boardName}",
+    @GetMapping(value = "/{boardId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BoardResponse> getBoard(@PathVariable String boardName) {
-        BoardResponse boardResponse = new BoardResponse(boardService.get(boardName));
+    public ResponseEntity<BoardResponse> getBoard(@PathVariable Long boardId) {
+        
+        BoardResponse boardResponse = new BoardResponse(boardService.get(boardId));
 
         return ResponseEntity.ok().body(boardResponse);
     }
 
-    @PutMapping(value = "/{boardName}")
-    public ResponseEntity<Void> updateBoard(@PathVariable String boardName,
+    @PutMapping(value = "/{boardId}")
+    public ResponseEntity<Void> updateBoard(@PathVariable Long boardId,
                                             @RequestBody UpdateBoardRequest updateBoardRequest,
                                             HttpServletRequest httpServletRequest) {
         checkAdmin(httpServletRequest);
 
         BoardUpdateValue boardUpdateValue = new BoardUpdateValue(updateBoardRequest);
-        boardService.update(boardName, boardUpdateValue);
+        boardService.update(boardId, boardUpdateValue);
 
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = "/{boardName}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable String boardName,
+    @DeleteMapping(value = "/{boardId}")
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId,
                                             HttpServletRequest httpServletRequest) {
         checkAdmin(httpServletRequest);
 
-        boardService.deleteBoard(boardName);
+        boardService.delete(boardId);
 
         return ResponseEntity.ok().build();
     }
