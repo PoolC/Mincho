@@ -20,26 +20,26 @@ public class BoardDataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) {
         boardRepository.save(
-                new Board("공지사항", "/공지사항", "true", "true")
+                new Board("공지사항", "notice", "PUBLIC", "ADMIN")
         );
         boardRepository.save(
-                new Board("자유게시판", "/자유게시판", "true", "true")
+                new Board("자유게시판", "free", "MEMBER", "MEMBER")
         );
         boardRepository.save(
-                new Board("구인홍보게시판", "/구인홍보게시판", "true", "true")
+                new Board("구인홍보게시판", "recruit", "MEMBER", "MEMBER")
         );
 
         boardRepository.save(
-                new Board("학술게시판", "/학술게시판", "true", "true")
+                new Board("학술게시판", "study_priv", "MEMBER", "MEMBER")
         );
         boardRepository.save(
-                new Board("게임제작부", "/게임제작부", "true", "true")
+                new Board("게임제작부", "gamedev", "MEMBER", "MEMBER")
         );
         boardRepository.save(
-                new Board("삭제할게시판", "/삭제할게시판", "true", "true")
+                new Board("삭제할게시판", "willbedeleted", "PUBLIC", "MEMBER")
         );
         boardRepository.save(
-                new Board("updateBoard", "/updateBoard", "false", "false")
+                new Board("수정할게시판", "updateBoard", "PUBLIC", "MEMBER")
         );
     }
 }
