@@ -94,4 +94,12 @@ public class Member extends TimestampEntity {
         this.email = updateMemberRequest.getEmail();
         this.phoneNumber = updateMemberRequest.getPhoneNumber();
     }
+
+    public void authorizeMember() {
+        this.isActivated = true;
+    }
+
+    public void updateIsAdmin(Boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
 }
