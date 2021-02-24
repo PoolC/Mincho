@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.poolc.api.activity.domain.Activity;
 import org.poolc.api.activity.domain.ActivityMember;
 import org.poolc.api.activity.domain.ActivityTag;
+import org.poolc.api.activity.domain.Session;
 import org.poolc.api.activity.exception.NotAdminOrHostException;
 import org.poolc.api.activity.repository.ActivityRepository;
+import org.poolc.api.activity.repository.SessionRepository;
 import org.poolc.api.activity.vo.ActivityCreateValues;
 import org.poolc.api.activity.vo.ActivityUpdateValues;
 import org.poolc.api.member.domain.Member;
@@ -14,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -25,6 +29,7 @@ public class ActivityService {
 
     private final ActivityRepository activityRepository;
     private final MemberRepository memberRepository;
+    private final SessionRepository sessionRepository;
     private final EntityManager em;
 
     @Transactional
@@ -77,7 +82,19 @@ public class ActivityService {
     }
 
     public List<ActivityMember> findActivityMembers(Long id) {
-        return activityRepository.findOneActivityWithMembers(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 없습니다")).getMembers();
+        return activityRepository.findOneActivityWithMembers(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다")).getMembers();
+    }
+
+    @Transactional
+    public Map<ActivityMember, Boolean> findActivityMembersWithAttendance(Long id) {
+        Session session = sessionRepository.findByIdWithAttendances(id).orElseThrow(() -> new NoSuchElementException("해당하는 세션이 없습니다"));
+        List<ActivityMember> members = activityRepository.findOneActivityWithMembers(session.getActivity().getId())
+                .orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다"))
+                .getMembers();
+        Map<ActivityMember, Boolean> result = new HashMap<>();
+        members.stream().forEach(m -> result.put(m, false));
+        session.getAttendances().forEach(m -> result.put(m.getMemberID(), true));
+        return result;
     }
 
     private boolean checkWhetherAdminOrHost(String isAdmin, String MemberID, String activityHostID) {

@@ -15,10 +15,6 @@ public class Attendance {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "activityID", referencedColumnName = "ID", nullable = false)
-    private Activity activity;
-
-    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "sessionID", referencedColumnName = "ID", nullable = false)
     private Session session;
 
@@ -26,5 +22,12 @@ public class Attendance {
     @JoinColumn(name = "memberID", referencedColumnName = "memberID", nullable = false)
     private ActivityMember memberID;
 
+    public Attendance(Session session, ActivityMember memberID) {
+        this.session = session;
+        this.memberID = memberID;
+    }
 
+    protected Attendance() {
+
+    }
 }

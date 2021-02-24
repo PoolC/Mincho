@@ -5,10 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
-import org.poolc.api.activity.dto.ActivityCreateRequest;
-import org.poolc.api.activity.dto.ActivityUpdateRequest;
-import org.poolc.api.activity.dto.SessionCreateRequest;
-import org.poolc.api.activity.dto.SessionUpdateRequest;
+import org.poolc.api.activity.dto.*;
 import org.poolc.api.auth.dto.AuthResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -413,6 +410,80 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
     }
 
+    @Test
+    public void 출석목록조회() {
+
+        String accessToken3 = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken3, 7l);
+
+        String accessToken2 = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response2 = applyActivityRequest(accessToken2, 7l);
+
+        ExtractableResponse<Response> response3 = getActivityMembersRequest(accessToken, 7l);
+        assertThat(response3.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response3.body().jsonPath().getList("data").size()).isEqualTo(2);
+
+        ExtractableResponse<Response> response4 = createSessionRequest(accessToken3, 7l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        assertThat(response4.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> response5 = getAttendanceRequest(accessToken3, 10l);
+        assertThat(response5.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response5.body().jsonPath().getList("data").size()).isEqualTo(2);
+
+    }
+
+    @Test
+    public void 출석체크() {
+
+        String accessToken3 = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken3, 7l);
+
+        String accessToken2 = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response2 = applyActivityRequest(accessToken2, 7l);
+
+        ExtractableResponse<Response> response3 = getActivityMembersRequest(accessToken, 7l);
+        assertThat(response3.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response3.body().jsonPath().getList("data").size()).isEqualTo(2);
+
+        ExtractableResponse<Response> response4 = createSessionRequest(accessToken3, 7l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        assertThat(response4.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> response5 = getAttendanceRequest(accessToken3, 10l);
+        assertThat(response5.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response5.body().jsonPath().getList("data").size()).isEqualTo(2);
+
+        List<Long> members = new ArrayList<>();
+        members.add(response5.body().jsonPath().getLong("data[0].member.id"));
+        members.add(response5.body().jsonPath().getLong("data[1].member.id"));
+        ExtractableResponse<Response> response6 = attendRequest(accessToken3, 10l, members);
+
+        ExtractableResponse<Response> response7 = getAttendanceRequest(accessToken3, 10l);
+
+        assertThat(response7.body().jsonPath().getBoolean("data[0].attended")).isEqualTo(true);
+
+
+    }
+
     public static ExtractableResponse<Response> getActivitiesRequest(String accessToken) {
         return RestAssured
                 .given().log().all()
@@ -517,6 +588,28 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .auth().oauth2(token)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/activity/member/{activityID}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> getAttendanceRequest(String token, Long id) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/activity/check/{sessionID}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> attendRequest(String token, Long id, List<Long> members) {
+        AttendanceRequest request = new AttendanceRequest(id, members);
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token)
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/activity/check")
                 .then().log().all()
                 .extract();
     }

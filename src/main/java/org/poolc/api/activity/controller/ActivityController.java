@@ -1,6 +1,7 @@
 package org.poolc.api.activity.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.poolc.api.activity.domain.ActivityMember;
 import org.poolc.api.activity.dto.*;
 import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.activity.service.SessionService;
@@ -15,10 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -66,6 +64,17 @@ public class ActivityController {
         return ResponseEntity.ok().body(responseBody);
     }
 
+    @GetMapping(value = "/check/{sessionID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<HashMap<String, List<AttendanceCheckResponse>>> getAttendanceCheck(HttpServletRequest request, @PathVariable("sessionID") Long id) {
+        HashMap<String, List<AttendanceCheckResponse>> responseBody = new HashMap<>();
+        List<AttendanceCheckResponse> list = new ArrayList<>();
+        Map<ActivityMember, Boolean> c = activityService.findActivityMembersWithAttendance(id);
+        list.addAll(c.entrySet().stream()
+                .map(e -> new AttendanceCheckResponse(e.getKey(), e.getValue())).collect(toList()));
+        responseBody.put("data", list);
+        return ResponseEntity.ok().body(responseBody);
+    }
+
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addActivity(HttpServletRequest request, @RequestBody ActivityCreateRequest requestBody) {
         activityService.createActivity(new ActivityCreateValues(requestBody, request.getAttribute("UUID").toString()));
@@ -82,6 +91,12 @@ public class ActivityController {
     public ResponseEntity<String> applyToActivity(HttpServletRequest request, @PathVariable("activityID") Long id) {
         activityService.apply(id, request.getAttribute("UUID").toString());
         return ResponseEntity.ok().body("수강신청에 성공하였습니다.");
+    }
+
+    @PostMapping(value = "/check")
+    public ResponseEntity<String> attendanceCheck(HttpServletRequest request, @RequestBody AttendanceRequest requestBody) {
+        sessionService.attend(request.getAttribute("UUID").toString(), requestBody);
+        return ResponseEntity.ok().body("출석체크에 성공하였습니다");
     }
 
     @DeleteMapping(value = "/{activityID}")

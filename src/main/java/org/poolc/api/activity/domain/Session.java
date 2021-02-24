@@ -2,9 +2,12 @@ package org.poolc.api.activity.domain;
 
 import lombok.Getter;
 import org.poolc.api.activity.vo.SessionUpdateValues;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static javax.persistence.FetchType.LAZY;
@@ -30,6 +33,9 @@ public class Session {
     @Column(name = "sessionNumber", nullable = false)
     private Long sessionNumber;
 
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attendance> attendances = new ArrayList<>();
+
     public Session() {
     }
 
@@ -43,6 +49,12 @@ public class Session {
     public void update(SessionUpdateValues values) {
         this.date = values.getDate();
         this.description = values.getDescription();
+    }
+
+    @Transactional
+    public void attend(List<Attendance> attendances) {
+        this.attendances.clear();
+        this.attendances.addAll(attendances);
     }
 
     @Override

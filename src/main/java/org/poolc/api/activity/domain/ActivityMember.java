@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.poolc.api.member.domain.Member;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 import static javax.persistence.FetchType.LAZY;
 
@@ -12,7 +13,7 @@ import static javax.persistence.FetchType.LAZY;
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"activityID", "memberID"})})
 @Getter
-public class ActivityMember {
+public class ActivityMember implements Serializable {
     @Id
     @GeneratedValue
     @Column(name = "ID")
@@ -32,6 +33,6 @@ public class ActivityMember {
     }
 
     protected ActivityMember() {
-        
+
     }
 }
