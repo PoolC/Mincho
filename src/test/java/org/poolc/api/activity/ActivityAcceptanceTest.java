@@ -33,7 +33,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getActivitiesRequest(accessToken);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("data")).hasSize(3);
+        assertThat(response.body().jsonPath().getList("data")).hasSize(4);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response2 = getActivitiesRequest(accessToken);
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response2.body().jsonPath().getList("data")).hasSize(4);
+        assertThat(response2.body().jsonPath().getList("data")).hasSize(5);
 
     }
 
@@ -339,6 +339,80 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
     }
 
+    @Test
+    public void 수강신청() {
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken, 1l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().asString()).isEqualTo("수강신청에 성공하였습니다.");
+    }
+
+    @Test
+    public void 아직열리지않은활동수강신청() {
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken, 3l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("아직 신청할수 없습니다.");
+    }
+
+    @Test
+    public void 수강신청인원초과() {
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken, 1l);
+
+        String accessToken2 = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response2 = applyActivityRequest(accessToken2, 1l);
+
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response2.body().asString()).isEqualTo("정원을 초과하였습니다");
+    }
+
+    @Test
+    public void 없는액티비티수강신청초과() {
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken, 432l);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void 수강신청한사람들조회() {
+        String accessToken3 = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken, 7l);
+
+        String accessToken2 = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response2 = applyActivityRequest(accessToken2, 7l);
+        ExtractableResponse<Response> response3 = getActivityMembersRequest(accessToken, 7l);
+        assertThat(response3.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response3.body().jsonPath().getList("data").size()).isEqualTo(2);
+
+    }
+
     public static ExtractableResponse<Response> getActivitiesRequest(String accessToken) {
         return RestAssured
                 .given().log().all()
@@ -423,6 +497,26 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/activity/session/{activityID}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> applyActivityRequest(String token, Long id) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/activity/apply/{activityID}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> getActivityMembersRequest(String token, Long id) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/activity/member/{activityID}", id)
                 .then().log().all()
                 .extract();
     }

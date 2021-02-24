@@ -3,6 +3,7 @@ package org.poolc.api.activity.domain;
 import lombok.Getter;
 import org.poolc.api.activity.vo.ActivityUpdateValues;
 import org.poolc.api.member.domain.Member;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -52,6 +53,9 @@ public class Activity {
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ActivityTag> tags = new ArrayList<>();
 
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ActivityMember> members = new ArrayList<>();
+
     public Activity() {
     }
 
@@ -65,6 +69,11 @@ public class Activity {
         this.capacity = capacity;
         this.hour = hour;
         this.available = available;
+    }
+
+    @Transactional
+    public void apply(ActivityMember activityMember) {
+        this.members.add(activityMember);
     }
 
     @Override
@@ -99,4 +108,5 @@ public class Activity {
         this.tags.addAll(values.getTags().stream()
                 .map(t -> new ActivityTag(this, t)).collect(Collectors.toList()));
     }
+
 }

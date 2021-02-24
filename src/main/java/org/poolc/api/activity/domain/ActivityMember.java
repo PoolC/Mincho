@@ -25,4 +25,13 @@ public class ActivityMember {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "memberID", referencedColumnName = "UUID", nullable = false)
     private Member member;
+
+    public ActivityMember(Activity activity, Member member) {
+        this.activity = activity;
+        this.member = member;
+    }
+
+    protected ActivityMember() {
+        
+    }
 }

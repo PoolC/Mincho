@@ -2,11 +2,13 @@ package org.poolc.api.activity.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.activity.domain.Activity;
+import org.poolc.api.activity.domain.ActivityMember;
 import org.poolc.api.activity.domain.ActivityTag;
 import org.poolc.api.activity.exception.NotAdminOrHostException;
 import org.poolc.api.activity.repository.ActivityRepository;
 import org.poolc.api.activity.vo.ActivityCreateValues;
 import org.poolc.api.activity.vo.ActivityUpdateValues;
+import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +54,20 @@ public class ActivityService {
         activity.update(values);
     }
 
+    @Transactional
+    public void apply(Long id, String uuid) {
+        Activity activity = activityRepository.findOneActivityWithMembers(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 없습니다"));
+        if (!activity.getAvailable()) {
+            throw new IllegalStateException("아직 신청할수 없습니다.");
+        } else if (activity.getCapacity() <= activity.getMembers().size()) {
+            throw new IllegalStateException("정원을 초과하였습니다");
+        } else {
+            Member member = memberRepository.findById(uuid).orElseThrow(() -> new NoSuchElementException("해당하는 회원이 없습니다"));
+            ActivityMember activityMember = new ActivityMember(activity, member);
+            activity.apply(activityMember);
+        }
+    }
+
     public List<Activity> findActivities() {
         return activityRepository.findActivitiesWithHostAndTags();
     }
@@ -60,6 +76,9 @@ public class ActivityService {
         return activityRepository.findOneActivityWithHostAndTags(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다"));
     }
 
+    public List<ActivityMember> findActivityMembers(Long id) {
+        return activityRepository.findOneActivityWithMembers(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 없습니다")).getMembers();
+    }
 
     private boolean checkWhetherAdminOrHost(String isAdmin, String MemberID, String activityHostID) {
 

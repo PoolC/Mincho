@@ -56,6 +56,16 @@ public class ActivityController {
         return ResponseEntity.ok().body(responseBody);
     }
 
+    @GetMapping(value = "/member/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<HashMap<String, List<ActivityMemberResponse>>> getActivityMembers(HttpServletRequest request, @PathVariable("activityID") Long id) {
+        HashMap<String, List<ActivityMemberResponse>> responseBody = new HashMap<>();
+        List<ActivityMemberResponse> list = new ArrayList<>();
+        list.addAll(activityService.findActivityMembers(id).stream()
+                .map(m -> new ActivityMemberResponse(m)).collect(toList()));
+        responseBody.put("data", list);
+        return ResponseEntity.ok().body(responseBody);
+    }
+
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addActivity(HttpServletRequest request, @RequestBody ActivityCreateRequest requestBody) {
         activityService.createActivity(new ActivityCreateValues(requestBody, request.getAttribute("UUID").toString()));
@@ -66,6 +76,12 @@ public class ActivityController {
     public ResponseEntity<Void> addSession(HttpServletRequest request, @RequestBody SessionCreateRequest requestBody) {
         sessionService.createSession(request.getAttribute("UUID").toString(), new SessionCreateValues(requestBody));
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/apply/{activityID}")
+    public ResponseEntity<String> applyToActivity(HttpServletRequest request, @PathVariable("activityID") Long id) {
+        activityService.apply(id, request.getAttribute("UUID").toString());
+        return ResponseEntity.ok().body("수강신청에 성공하였습니다.");
     }
 
     @DeleteMapping(value = "/{activityID}")
@@ -86,7 +102,7 @@ public class ActivityController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})
+    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<String> noSuchElementHandler(Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
