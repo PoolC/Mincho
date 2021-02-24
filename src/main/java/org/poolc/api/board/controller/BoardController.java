@@ -75,7 +75,6 @@ public class BoardController {
         List<BoardResponse> boards = boardService.getAllBoards().stream()
                 .map(board -> new BoardResponse(board))
                 .collect(Collectors.toList());
-        ;
 
         BoardsResponse boardsResponse = new BoardsResponse(boards);
 
