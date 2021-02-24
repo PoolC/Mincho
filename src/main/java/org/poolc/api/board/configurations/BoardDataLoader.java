@@ -36,6 +36,9 @@ public class BoardDataLoader implements CommandLineRunner {
                 new Board("게임제작부", "gamedev", "MEMBER", "MEMBER")
         );
         boardRepository.save(
+                new Board("임원진", "meeting", "ADMIN", "ADMIN")
+        );
+        boardRepository.save(
                 new Board("삭제할게시판", "willbedeleted", "PUBLIC", "MEMBER")
         );
         boardRepository.save(
