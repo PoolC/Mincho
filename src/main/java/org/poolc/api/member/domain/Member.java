@@ -5,14 +5,15 @@ import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.dto.UpdateMemberRequest;
-import org.poolc.api.project.domain.ProjectMember;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity(name = "Member")
@@ -108,12 +109,13 @@ public class Member extends TimestampEntity implements UserDetails {
         roles.add(MemberRoles.MEMBER);
     }
 
-    public void grantAdminPrivileges() {
-        roles.add(MemberRoles.ADMIN);
-    }
+    public void changeAdminPrivileges(boolean toAdmin) {
+        if (toAdmin) {
+            grantAdminPrivileges();
+            return;
+        }
 
-    public void revokeAdminPrivileges() {
-        roles.remove(MemberRoles.ADMIN);
+        revokeAdminPrivileges();
     }
 
     @Override
@@ -152,5 +154,13 @@ public class Member extends TimestampEntity implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+
+    private void grantAdminPrivileges() {
+        roles.add(MemberRoles.ADMIN);
+    }
+
+    private void revokeAdminPrivileges() {
+        roles.remove(MemberRoles.ADMIN);
     }
 }

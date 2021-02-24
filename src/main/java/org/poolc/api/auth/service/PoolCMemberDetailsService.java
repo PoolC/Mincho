@@ -13,9 +13,9 @@ public class PoolCMemberDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String loginID) throws UsernameNotFoundException {
-        return memberRepository.findByLoginID(loginID)
+    public UserDetails loadUserByUsername(String memberUUID) throws UsernameNotFoundException {
+        return memberRepository.findByUUID(memberUUID)
                 .orElseThrow(() -> new UsernameNotFoundException(
-                        String.format("Member %s does not exist", loginID)));
+                        String.format("Member %s does not exist", memberUUID)));
     }
 }

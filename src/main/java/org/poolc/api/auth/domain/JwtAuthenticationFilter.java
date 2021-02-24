@@ -29,8 +29,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         Optional.ofNullable(token)
                 .map(jwtTokenProvider::getSubject)
                 .map(userDetailsService::loadUserByUsername)
-                .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
-                        userDetails.getPassword(),
+                .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails,
+                        "",
                         userDetails.getAuthorities()))
                 .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
 

@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,11 +32,9 @@ public class MemberController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MemberListResponse> getAllMembers(HttpServletRequest request) {
-        Member member = memberService.findMemberbyUUID(request.getAttribute("UUID").toString());
-
+    public ResponseEntity<MemberListResponse> getAllMembers(@AuthenticationPrincipal Member member) {
         List<MemberResponse> memberList = memberService.getAllMembers()
-                .stream().map(m -> new MemberResponse(member))
+                .stream().map(m -> MemberResponse.of(member))
                 .collect(Collectors.toList());
         MemberListResponse MemberListResponses = new MemberListResponse(memberList);
         return ResponseEntity.ok().body(MemberListResponses);
@@ -50,48 +50,44 @@ public class MemberController {
     }
 
     @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MemberResponse> getMember(HttpServletRequest request) {
-        Member member = memberService.findMemberbyUUID(request.getAttribute("UUID").toString());
-
-        return ResponseEntity.ok()
-                .body(new MemberResponse(member));
+    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok().body(MemberResponse.of(member));
     }
 
     @PutMapping(path = "/me")
-    public ResponseEntity updateMember(HttpServletRequest request, @RequestBody UpdateMemberRequest updateMemberRequest) {
+    public ResponseEntity updateMember(@AuthenticationPrincipal Member member, @RequestBody UpdateMemberRequest updateMemberRequest) {
         checkIsValidMemberUpdateInput(updateMemberRequest);
-        memberService.updateMember(request.getAttribute("UUID").toString(), updateMemberRequest);
+        memberService.updateMember(member.getUUID(), updateMemberRequest);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/{loginID}")
-    public ResponseEntity<MemberResponse> adminGetMemberInfoByloginID(HttpServletRequest request, @PathVariable("loginID") String loginID) {
+    public ResponseEntity<MemberResponse> adminGetMemberInfoByloginID(@PathVariable("loginID") String loginID) {
         Member member = memberService.findMemberbyLoginID(loginID);
 
-        return ResponseEntity.ok().body(new MemberResponse(member));
+        return ResponseEntity.ok().body(MemberResponse.of(member));
     }
 
     @DeleteMapping(value = "/{loginID}")
-    public ResponseEntity deleteMember(HttpServletRequest request, @PathVariable("loginID") String loginID) {
+    public ResponseEntity deleteMember(@PathVariable("loginID") String loginID) {
         memberService.deleteMember(loginID);
 
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/activate/{loginID}")
-    public ResponseEntity ActivateMember(HttpServletRequest request, @PathVariable("loginID") String loginID) {
+    public ResponseEntity ActivateMember(@PathVariable("loginID") String loginID) {
         memberService.authorizeMember(loginID);
 
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/admin/{loginID}")
-    public ResponseEntity updateMemberAdmin(HttpServletRequest request, @PathVariable("loginID") String loginID, @RequestBody Boolean isAdmin) {
-        memberService.updateIsAdmin(loginID, isAdmin);
+    public ResponseEntity updateMemberAdmin(@PathVariable("loginID") String loginID, @RequestBody Boolean toAdmin) {
+        memberService.updateIsAdmin(loginID, toAdmin);
 
         return ResponseEntity.ok().build();
     }
-
 
     @ExceptionHandler(UnauthenticatedException.class)
     public ResponseEntity<String> unauthenticatedHandler(Exception e) {

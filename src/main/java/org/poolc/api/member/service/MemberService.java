@@ -64,9 +64,9 @@ public class MemberService {
         memberRepository.flush();
     }
 
-    public void updateIsAdmin(String loginID, Boolean isAdmin) {
+    public void updateIsAdmin(String loginID, Boolean toAdmin) {
         Member findMember = memberRepository.findByLoginID(loginID).get();
-        findMember.grantAdminPrivileges();
+        findMember.changeAdminPrivileges(toAdmin);
         memberRepository.flush();
     }
 
