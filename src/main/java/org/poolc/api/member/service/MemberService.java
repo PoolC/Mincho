@@ -2,7 +2,7 @@ package org.poolc.api.member.service;
 
 import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.member.domain.MemberRoles;
+import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.poolc.api.member.exception.DuplicateMemberException;
 import org.poolc.api.auth.infra.PasswordHashProvider;
@@ -47,7 +47,7 @@ public class MemberService {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRoles.UNACCEPTED); }})
+                        .roles(new HashSet<>() {{ add(MemberRole.UNACCEPTED); }})
                         .build());
     }
 
@@ -90,8 +90,7 @@ public class MemberService {
     }
 
     public Member getMemberIfRegistered(String loginID, String password) {
-        return Optional.ofNullable(memberRepository.findByLoginID(loginID))
-                .get()
+        return memberRepository.findByLoginID(loginID)
                 .filter(member -> passwordHashProvider.matches(password, member.getPasswordHash()))
                 .orElseThrow(() -> new UnauthenticatedException("No user found with given loginID and password"));
     }

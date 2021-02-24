@@ -3,7 +3,7 @@ package org.poolc.api.member.domain;
 import lombok.Getter;
 
 @Getter
-public enum MemberRoles {
+public enum MemberRole {
     PUBLIC("외부인"),
     UNACCEPTED("관리자 승인 전"),
     INACTIVE("한 학기 비활동"),
@@ -15,7 +15,7 @@ public enum MemberRoles {
 
     private final String description;
 
-    MemberRoles(String description) {
+    MemberRole(String description) {
         this.description = description;
     }
 }

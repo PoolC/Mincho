@@ -34,7 +34,6 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void findProjectsWithUnAuthorizedMember() {
-
         ExtractableResponse<Response> response = getProjectsRequest("1234");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());

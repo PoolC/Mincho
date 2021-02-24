@@ -3,7 +3,7 @@ package org.poolc.api.member.configurations;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.member.domain.MemberRoles;
+import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 @Component
-@Profile("memberTest")
+@Profile("amemberTest")
 @RequiredArgsConstructor
 public class MemberDataLoader implements CommandLineRunner {
 
@@ -38,7 +38,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRoles.MEMBER); }})
+                        .roles(new HashSet<>() {{ add(MemberRole.MEMBER); }})
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -55,7 +55,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRoles.UNACCEPTED); }})
+                        .roles(new HashSet<>() {{ add(MemberRole.UNACCEPTED); }})
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -73,8 +73,8 @@ public class MemberDataLoader implements CommandLineRunner {
                         .introduction("")
                         .isExcepted(false)
                         .roles(new HashSet<>() {{
-                            add(MemberRoles.ADMIN);
-                            add(MemberRoles.MEMBER);
+                            add(MemberRole.ADMIN);
+                            add(MemberRole.MEMBER);
                         }})
                         .build());
         memberRepository.save(
@@ -93,8 +93,8 @@ public class MemberDataLoader implements CommandLineRunner {
                         .introduction("")
                         .isExcepted(false)
                         .roles(new HashSet<>() {{
-                            add(MemberRoles.ADMIN);
-                            add(MemberRoles.MEMBER);
+                            add(MemberRole.ADMIN);
+                            add(MemberRole.MEMBER);
                         }})
                         .build());
         memberRepository.save(
@@ -112,7 +112,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRoles.MEMBER); }})
+                        .roles(new HashSet<>() {{ add(MemberRole.MEMBER); }})
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -129,7 +129,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRoles.MEMBER); }})
+                        .roles(new HashSet<>() {{ add(MemberRole.MEMBER); }})
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -146,7 +146,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRoles.MEMBER); }})
+                        .roles(new HashSet<>() {{ add(MemberRole.MEMBER); }})
                         .build());
     }
 }

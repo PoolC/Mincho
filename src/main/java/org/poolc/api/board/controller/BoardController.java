@@ -1,6 +1,7 @@
 package org.poolc.api.board.controller;
 
-import org.poolc.api.auth.exception.UnauthenticatedException;
+import org.poolc.api.auth.exception.UnauthorizedException;
+import org.poolc.api.board.domain.Board;
 import org.poolc.api.board.dto.BoardResponse;
 import org.poolc.api.board.dto.BoardsResponse;
 import org.poolc.api.board.dto.RegisterBoardRequest;
@@ -8,15 +9,18 @@ import org.poolc.api.board.dto.UpdateBoardRequest;
 import org.poolc.api.board.service.BoardService;
 import org.poolc.api.board.vo.BoardCreateValues;
 import org.poolc.api.board.vo.BoardUpdateValue;
+import org.poolc.api.member.domain.Member;
+import org.poolc.api.member.domain.MemberRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -30,62 +34,44 @@ public class BoardController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createBoard(HttpServletRequest request,
-                                            @RequestBody RegisterBoardRequest registerBoardRequest) {
-        checkAdmin(request);
-
-        System.out.println("registerBoardRequest.getURLPath() = " + registerBoardRequest.getUrlPath());
+    public ResponseEntity<Void> createBoard(@RequestBody RegisterBoardRequest registerBoardRequest) {
         boardService.create(new BoardCreateValues(registerBoardRequest));
 
         return ResponseEntity.accepted().build();
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BoardsResponse> getAllBoard() {
+    public ResponseEntity<BoardsResponse> getAllBoard(@AuthenticationPrincipal Member member) {
         List<BoardResponse> boards = boardService.getAllBoards().stream()
-                .map(board -> new BoardResponse(board))
+                .filter(board -> board.memberHasReadPermissions(member.getRoles()))
+                .map(BoardResponse::new)
                 .collect(Collectors.toList());
 
-        BoardsResponse boardsResponse = new BoardsResponse(boards);
-
-        return ResponseEntity.ok().body(boardsResponse);
+        return ResponseEntity.ok().body(new BoardsResponse(boards));
     }
 
-    @GetMapping(value = "/{boardId}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BoardResponse> getBoard(@PathVariable Long boardId) {
-        
-        BoardResponse boardResponse = new BoardResponse(boardService.get(boardId));
+    @GetMapping(value = "/{boardId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BoardResponse> getBoard(@AuthenticationPrincipal Member member, @PathVariable Long boardId) {
+        Board board = boardService.get(boardId);
 
-        return ResponseEntity.ok().body(boardResponse);
+        checkMemberPermissions(board, member.getRoles());
+
+        return ResponseEntity.ok().body(new BoardResponse(board));
     }
 
     @PutMapping(value = "/{boardId}")
     public ResponseEntity<Void> updateBoard(@PathVariable Long boardId,
-                                            @RequestBody UpdateBoardRequest updateBoardRequest,
-                                            HttpServletRequest httpServletRequest) {
-        checkAdmin(httpServletRequest);
-
-        BoardUpdateValue boardUpdateValue = new BoardUpdateValue(updateBoardRequest);
-        boardService.update(boardId, boardUpdateValue);
+                                            @RequestBody UpdateBoardRequest updateBoardRequest) {
+        boardService.update(boardId, new BoardUpdateValue(updateBoardRequest));
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/{boardId}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId,
-                                            HttpServletRequest httpServletRequest) {
-        checkAdmin(httpServletRequest);
-
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
         boardService.delete(boardId);
 
         return ResponseEntity.ok().build();
-    }
-
-
-    @ExceptionHandler(UnauthenticatedException.class)
-    public ResponseEntity<String> unauthenticatedHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
     @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})
@@ -93,9 +79,9 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    private void checkAdmin(HttpServletRequest request) {
-        if (request.getAttribute("isAdmin").equals("false")) {
-            throw new UnauthenticatedException("임원진이 아닙니다");
+    private void checkMemberPermissions(Board board, Set<MemberRole> roles) {
+        if (!board.memberHasReadPermissions(roles)) {
+            throw new UnauthorizedException("접근할 수 없습니다");
         }
     }
 }

@@ -91,7 +91,7 @@ public class MemberController {
 
     @ExceptionHandler(UnauthenticatedException.class)
     public ResponseEntity<String> unauthenticatedHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 
     @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})

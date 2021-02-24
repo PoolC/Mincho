@@ -10,6 +10,7 @@ import org.poolc.api.board.dto.BoardResponse;
 import org.poolc.api.board.dto.BoardsResponse;
 import org.poolc.api.board.dto.RegisterBoardRequest;
 import org.poolc.api.board.dto.UpdateBoardRequest;
+import org.poolc.api.member.domain.MemberRole;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -17,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
-@ActiveProfiles({"boardTest", "test"})
+@ActiveProfiles("boardTest")
 public class BoardAcceptanceTest extends AcceptanceTest {
     private final Long notExistBoardId = 9L;
     private final Long noticeBoardId = 1L;
@@ -28,17 +29,16 @@ public class BoardAcceptanceTest extends AcceptanceTest {
     void 게시판생성() {
         String accessToken = 임원진로그인();
 
-        ExtractableResponse<Response> response = createBoardRequest(accessToken, "board", "board", "MEMBER", "MEMBER");
+        ExtractableResponse<Response> response = createBoardRequest(accessToken, "board", "board", MemberRole.MEMBER, MemberRole.MEMBER);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
     }
-
 
     @Test
     void 비인가자게시판생성() {
         String accessToken = 비임원진로그인();
 
-        ExtractableResponse<Response> response = createBoardRequest(accessToken, "board", "board", "MEMBER", "MEMBER");
+        ExtractableResponse<Response> response = createBoardRequest(accessToken, "board", "board", MemberRole.MEMBER, MemberRole.MEMBER);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
@@ -66,7 +66,6 @@ public class BoardAcceptanceTest extends AcceptanceTest {
     @Test
     void 전체게시판조회() {
         String accessToken = 비임원진로그인();
-
 
         ExtractableResponse<Response> response = getBoardsRequest(accessToken);
         BoardsResponse requestBody = response.as(BoardsResponse.class);
@@ -110,21 +109,22 @@ public class BoardAcceptanceTest extends AcceptanceTest {
     void 임원진게시판수정() {
         String accessToken = 임원진로그인();
 
-        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("수정할게시", "updateBoard2", "true", "true");
+        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("수정할게시", "updateBoard2", MemberRole.PUBLIC, MemberRole.ADMIN);
         ExtractableResponse<Response> response = updateBoard(accessToken, updateBoardId, updateBoardRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         ExtractableResponse<Response> 확인Response = getBoardRequest(accessToken, updateBoardId);
         BoardResponse requestBody = 확인Response.as(BoardResponse.class);
-        assertThat(requestBody.getReadPermission()).isEqualTo("true");
+        assertThat(requestBody.getReadPermission()).isEqualTo(MemberRole.PUBLIC);
+        assertThat(requestBody.getWritePermission()).isEqualTo(MemberRole.ADMIN);
     }
 
     @Test
     void 비임원진게시판수정() {
         String accessToken = 비임원진로그인();
 
-        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("updateBoard", "/updateBoard", "true", "true");
+        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("updateBoard", "/updateBoard", MemberRole.MEMBER, MemberRole.MEMBER);
         ExtractableResponse<Response> response = updateBoard(accessToken, updateBoardId, updateBoardRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
@@ -136,7 +136,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("updateBoard", "/updateBoard", "true", "true");
+        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("updateBoard", "/updateBoard", MemberRole.MEMBER, MemberRole.MEMBER);
         ExtractableResponse<Response> response = updateBoard(accessToken, notExistBoardId, updateBoardRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
@@ -155,7 +155,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
     }
 
-    public static ExtractableResponse<Response> createBoardRequest(String accessToken, String name, String URLPath, String readPermission, String writePermission) {
+    public static ExtractableResponse<Response> createBoardRequest(String accessToken, String name, String URLPath, MemberRole readPermission, MemberRole writePermission) {
         RegisterBoardRequest request = new RegisterBoardRequest(name, URLPath, readPermission, writePermission);
 
         return RestAssured

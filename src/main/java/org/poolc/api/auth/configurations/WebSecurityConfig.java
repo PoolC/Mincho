@@ -3,7 +3,7 @@ package org.poolc.api.auth.configurations;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.domain.JwtAuthenticationFilter;
 import org.poolc.api.auth.infra.JwtTokenProvider;
-import org.poolc.api.member.domain.MemberRoles;
+import org.poolc.api.member.domain.MemberRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,12 +34,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/board").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.PUT, "/board/*").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.DELETE, "/board/*").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers("/board/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/member").permitAll()
-                .antMatchers(HttpMethod.GET, "/member").hasAuthority(MemberRoles.ADMIN.name())
-                .antMatchers(HttpMethod.DELETE, "/member/*").hasAuthority(MemberRoles.ADMIN.name())
-                .antMatchers("/member/activate/*").hasAuthority(MemberRoles.ADMIN.name())
-                .antMatchers("/member/admin/*").hasAuthority(MemberRoles.ADMIN.name())
-                .antMatchers("/member/**").hasAuthority(MemberRoles.MEMBER.name())
+                .antMatchers(HttpMethod.GET, "/member").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.DELETE, "/member/*").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers("/member/activate/*").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers("/member/admin/*").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers("/member/**").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

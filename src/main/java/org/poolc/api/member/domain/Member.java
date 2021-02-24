@@ -67,12 +67,12 @@ public class Member extends TimestampEntity implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "member_uuid"))
     @Builder.Default
-    private Set<MemberRoles> roles = new HashSet<>();
+    private Set<MemberRole> roles = new HashSet<>();
 
     protected Member() {
     }
 
-    public Member(String UUID, String loginID, String passwordHash, String email, String phoneNumber, String name, String department, String studentID, String passwordResetToken, LocalDateTime passwordResetTokenValidUntil, String profileImageURL, String introduction, Boolean isExcepted, Set<MemberRoles> roles) {
+    public Member(String UUID, String loginID, String passwordHash, String email, String phoneNumber, String name, String department, String studentID, String passwordResetToken, LocalDateTime passwordResetTokenValidUntil, String profileImageURL, String introduction, Boolean isExcepted, Set<MemberRole> roles) {
         this.UUID = UUID;
         this.loginID = loginID;
         this.passwordHash = passwordHash;
@@ -97,16 +97,16 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     public boolean isAcceptedMember() {
-        return !roles.contains(MemberRoles.UNACCEPTED);
+        return !roles.contains(MemberRole.UNACCEPTED);
     }
 
     public boolean isAdmin() {
-        return roles.contains(MemberRoles.ADMIN);
+        return roles.contains(MemberRole.ADMIN);
     }
 
     public void acceptMember() {
-        roles.remove(MemberRoles.UNACCEPTED);
-        roles.add(MemberRoles.MEMBER);
+        roles.remove(MemberRole.UNACCEPTED);
+        roles.add(MemberRole.MEMBER);
     }
 
     public void changeAdminPrivileges(boolean toAdmin) {
@@ -121,9 +121,9 @@ public class Member extends TimestampEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(MemberRoles::name)
+                .map(MemberRole::name)
                 .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -138,12 +138,12 @@ public class Member extends TimestampEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !roles.contains(MemberRoles.UNACCEPTED);
+        return !roles.contains(MemberRole.UNACCEPTED);
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return !roles.contains(MemberRoles.EXPELLED);
+        return !roles.contains(MemberRole.EXPELLED);
     }
 
     @Override
@@ -157,10 +157,10 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     private void grantAdminPrivileges() {
-        roles.add(MemberRoles.ADMIN);
+        roles.add(MemberRole.ADMIN);
     }
 
     private void revokeAdminPrivileges() {
-        roles.remove(MemberRoles.ADMIN);
+        roles.remove(MemberRole.ADMIN);
     }
 }
