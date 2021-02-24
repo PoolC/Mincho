@@ -1,6 +1,7 @@
 package org.poolc.api.activity.domain;
 
 import lombok.Getter;
+import org.poolc.api.activity.vo.SessionUpdateValues;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -39,6 +40,11 @@ public class Session {
         this.sessionNumber = sessionNumber;
     }
 
+    public void update(SessionUpdateValues values) {
+        this.date = values.getDate();
+        this.description = values.getDescription();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -55,4 +61,5 @@ public class Session {
     public int hashCode() {
         return Objects.hash(getId(), getActivity(), getDescription(), getDate(), getSessionNumber());
     }
+
 }

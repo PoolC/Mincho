@@ -7,6 +7,7 @@ import org.poolc.api.activity.service.SessionService;
 import org.poolc.api.activity.vo.ActivityCreateValues;
 import org.poolc.api.activity.vo.ActivityUpdateValues;
 import org.poolc.api.activity.vo.SessionCreateValues;
+import org.poolc.api.activity.vo.SessionUpdateValues;
 import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,10 +47,10 @@ public class ActivityController {
     }
 
     @GetMapping(value = "/session/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HashMap<String, List<SessionResponse>>> findSessions(@PathVariable("activityID") Long id) {
+    public ResponseEntity<HashMap<String, List<SessionResponse>>> findSessions(HttpServletRequest request, @PathVariable("activityID") Long id) {
         HashMap<String, List<SessionResponse>> responseBody = new HashMap<>();
         List<SessionResponse> list = new ArrayList<>();
-        list.addAll(sessionService.findSessionsByActivityID(id).stream()
+        list.addAll(sessionService.findSessionsByActivityID(request.getAttribute("UUID").toString(), id).stream()
                 .map(s -> new SessionResponse(s)).collect(toList()));
         responseBody.put("data", list);
         return ResponseEntity.ok().body(responseBody);
@@ -76,6 +77,12 @@ public class ActivityController {
     @PutMapping(value = "/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateActivity(HttpServletRequest request, @RequestBody ActivityUpdateRequest requestBody, @PathVariable("activityID") Long id) {
         activityService.updateActivity(request.getAttribute("isAdmin").toString(), id, new ActivityUpdateValues(requestBody, request.getAttribute("UUID").toString()));
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/session/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateSession(HttpServletRequest request, @RequestBody SessionUpdateRequest requestBody, @PathVariable("activityID") Long id) {
+        sessionService.updateSession(id, new SessionUpdateValues(requestBody, request.getAttribute("UUID").toString()));
         return ResponseEntity.ok().build();
     }
 

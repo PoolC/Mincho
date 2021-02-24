@@ -8,6 +8,7 @@ import org.poolc.api.AcceptanceTest;
 import org.poolc.api.activity.dto.ActivityCreateRequest;
 import org.poolc.api.activity.dto.ActivityUpdateRequest;
 import org.poolc.api.activity.dto.SessionCreateRequest;
+import org.poolc.api.activity.dto.SessionUpdateRequest;
 import org.poolc.api.auth.dto.AuthResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -242,13 +243,99 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void 세션정보조회() {
+    public void 세션정보모두조회() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response2 = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        ExtractableResponse<Response> response3 = createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now());
+
+        ExtractableResponse<Response> response = getSessionsRequest(accessToken, 1l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getList("data").size()).isEqualTo(2);
+
+    }
+
+    @Test
+    public void 호스트가아닌사람이세션정보조조회() {
         String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
+
         ExtractableResponse<Response> response = getSessionsRequest(accessToken, 1l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+
+    }
+
+    @Test
+    public void 없는활동세션정보조조회() {
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+
+        ExtractableResponse<Response> response = getSessionsRequest(accessToken, 4l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    @Test
+    public void 회차정보수정() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response2 = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        ExtractableResponse<Response> response3 = createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now());
+        ExtractableResponse<Response> response4 = getSessionsRequest(accessToken, 1l);
+
+        Long sessionID = response4.body().jsonPath().getLong("data[0].id");
+        String newDescription = "사실 정윤석이함";
+        LocalDate date = LocalDate.of(2011, 11, 11);
+
+        ExtractableResponse<Response> response = updateSessionRequest(accessToken, sessionID, date, newDescription);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> response5 = getSessionsRequest(accessToken, 1l);
+        assertThat(response5.body().jsonPath().getString("data[0].description")).isEqualTo(newDescription);
+
+    }
+
+    @Test
+    public void 없는회차정보수정() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+
+        ExtractableResponse<Response> response = updateSessionRequest(accessToken, 432l, LocalDate.now(), "dsds");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    @Test
+    public void 호스트가아닌사람이회차정보수정() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+
+        ExtractableResponse<Response> response2 = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        ExtractableResponse<Response> response3 = createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now());
+        ExtractableResponse<Response> response4 = getSessionsRequest(accessToken, 1l);
+
+        Long sessionID = response4.body().jsonPath().getLong("data[0].id");
+        String newDescription = "사실 정윤석이함";
+        LocalDate date = LocalDate.of(2011, 11, 11);
+
+        String accessToken2 = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = updateSessionRequest(accessToken2, sessionID, date, newDescription);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
 
     }
 
@@ -324,6 +411,18 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .auth().oauth2(token)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/activity/session/{activityID}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> updateSessionRequest(String token, Long id, LocalDate date, String description) {
+        SessionUpdateRequest request = new SessionUpdateRequest(date, description);
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token)
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/activity/session/{activityID}", id)
                 .then().log().all()
                 .extract();
     }
