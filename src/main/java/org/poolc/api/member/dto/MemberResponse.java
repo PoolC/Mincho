@@ -17,7 +17,6 @@ public class MemberResponse {
     private final Boolean isActivated;
     private final Boolean isAdmin;
 
-
     @JsonCreator
     public MemberResponse(Member member) {
         this.loginID = member.getLoginID();
@@ -28,7 +27,7 @@ public class MemberResponse {
         this.studentID = member.getStudentID();
         this.profileImageURL = member.getProfileImageURL();
         this.introduction = member.getIntroduction();
-        this.isActivated = member.getIsActivated();
-        this.isAdmin = member.getIsAdmin();
+        this.isActivated = member.isAcceptedMember();
+        this.isAdmin = member.isAdmin();
     }
 }

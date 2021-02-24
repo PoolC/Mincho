@@ -1,4 +1,4 @@
-package org.poolc.api.member.infra;
+package org.poolc.api.auth.infra;
 
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Component;

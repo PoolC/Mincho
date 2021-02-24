@@ -3,7 +3,7 @@ package org.poolc.api.board.configurations;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.board.domain.Board;
 import org.poolc.api.board.repository.BoardRepository;
-import org.poolc.api.member.infra.PasswordHashProvider;
+import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;

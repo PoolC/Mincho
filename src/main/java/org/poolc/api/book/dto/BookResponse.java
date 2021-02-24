@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import org.poolc.api.book.domain.Book;
-import org.poolc.api.enums.BookStatus;
+import org.poolc.api.book.domain.BookStatus;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)

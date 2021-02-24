@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("test")
+@ActiveProfiles("memberTest")
 public class AuthAcceptanceTest extends AcceptanceTest {
     @Test
     void tokenIsIssued() {

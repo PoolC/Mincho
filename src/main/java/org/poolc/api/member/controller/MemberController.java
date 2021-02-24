@@ -31,8 +31,6 @@ public class MemberController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MemberListResponse> getAllMembers(HttpServletRequest request) {
-        checkAdmin(request);
-
         Member member = memberService.findMemberbyUUID(request.getAttribute("UUID").toString());
 
         List<MemberResponse> memberList = memberService.getAllMembers()
@@ -68,8 +66,6 @@ public class MemberController {
 
     @GetMapping(value = "/{loginID}")
     public ResponseEntity<MemberResponse> adminGetMemberInfoByloginID(HttpServletRequest request, @PathVariable("loginID") String loginID) {
-        checkAdmin(request);
-
         Member member = memberService.findMemberbyLoginID(loginID);
 
         return ResponseEntity.ok().body(new MemberResponse(member));
@@ -77,8 +73,6 @@ public class MemberController {
 
     @DeleteMapping(value = "/{loginID}")
     public ResponseEntity deleteMember(HttpServletRequest request, @PathVariable("loginID") String loginID) {
-        checkAdmin(request);
-
         memberService.deleteMember(loginID);
 
         return ResponseEntity.ok().build();
@@ -86,8 +80,6 @@ public class MemberController {
 
     @PutMapping(path = "/activate/{loginID}")
     public ResponseEntity ActivateMember(HttpServletRequest request, @PathVariable("loginID") String loginID) {
-        checkAdmin(request);
-
         memberService.authorizeMember(loginID);
 
         return ResponseEntity.ok().build();
@@ -95,8 +87,6 @@ public class MemberController {
 
     @PutMapping(path = "/admin/{loginID}")
     public ResponseEntity updateMemberAdmin(HttpServletRequest request, @PathVariable("loginID") String loginID, @RequestBody Boolean isAdmin) {
-        checkAdmin(request);
-
         memberService.updateIsAdmin(loginID, isAdmin);
 
         return ResponseEntity.ok().build();
@@ -111,12 +101,6 @@ public class MemberController {
     @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})
     public ResponseEntity<String> noSuchElementHandler(Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
-    private void checkAdmin(HttpServletRequest request) {
-        if (request.getAttribute("isAdmin").equals("false")) {
-            throw new UnauthenticatedException("임원진이 아닙니다");
-        }
     }
 
     private void checkIsValidMemberCreateInput(RegisterMemberRequest request) {

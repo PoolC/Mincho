@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import org.poolc.api.book.domain.Book;
 import org.poolc.api.book.vo.BorrowerValues;
-import org.poolc.api.enums.BookStatus;
+import org.poolc.api.book.domain.BookStatus;
 
 import java.time.LocalDateTime;
 
@@ -27,7 +27,7 @@ public class BookWithBorrowerResponse {
         this.imageURL = book.getImageURL();
         this.status = book.getStatus();
         this.info = book.getInfo();
-        this.borrowDate = book.getBorrowDate();
+        this.borrowDate = book.getUpdatedAt();
         if (book.getBorrower() == null) {
             this.borrower = null;
         } else {
