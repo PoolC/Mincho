@@ -19,6 +19,7 @@ public class OneActivityResponse {
     private final List<TagResponse> tags;
     private final Long capacity;
     private final boolean isSeminar;
+    private final Long hour;
 
     @JsonCreator
     public OneActivityResponse(Activity activity) {
@@ -32,5 +33,6 @@ public class OneActivityResponse {
                 map(t -> new TagResponse(t)).collect(Collectors.toList());
         this.capacity = activity.getCapacity();
         this.isSeminar = activity.getIsSeminar();
+        this.hour = activity.getHour();
     }
 }

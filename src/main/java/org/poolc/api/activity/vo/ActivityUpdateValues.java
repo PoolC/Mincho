@@ -1,13 +1,14 @@
 package org.poolc.api.activity.vo;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
-import org.poolc.api.activity.dto.ActivityCreateRequest;
+import org.poolc.api.activity.dto.ActivityUpdateRequest;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
-public class ActivityCreateValues {
+public class ActivityUpdateValues {
 
     private final String title;
     private final String description;
@@ -19,7 +20,8 @@ public class ActivityCreateValues {
     private final String memberID;
     private final Long hour;
 
-    public ActivityCreateValues(ActivityCreateRequest request, String id) {
+    @JsonCreator
+    public ActivityUpdateValues(ActivityUpdateRequest request, String id) {
         this.title = request.getTitle();
         this.description = request.getDescription();
         this.startDate = request.getStartDate();

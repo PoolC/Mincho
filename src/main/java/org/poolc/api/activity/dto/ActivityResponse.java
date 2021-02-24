@@ -17,6 +17,7 @@ public class ActivityResponse {
     private final LocalDate startDate;
     private final Boolean available;
     private final List<TagResponse> tags;
+    private final Long hour;
 
     @JsonCreator
     public ActivityResponse(Activity activity) {
@@ -29,5 +30,6 @@ public class ActivityResponse {
         this.tags = activity.getTags().stream()
                 .map(t -> new TagResponse(t))
                 .collect(Collectors.toList());
+        this.hour = activity.getHour();
     }
 }

@@ -1,17 +1,20 @@
 package org.poolc.api.activity.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.activity.dto.ActivityCreateRequest;
-import org.poolc.api.activity.dto.ActivityResponse;
-import org.poolc.api.activity.dto.OneActivityResponse;
+import org.poolc.api.activity.dto.*;
 import org.poolc.api.activity.service.ActivityService;
+import org.poolc.api.activity.service.SessionService;
 import org.poolc.api.activity.vo.ActivityCreateValues;
+import org.poolc.api.activity.vo.ActivityUpdateValues;
+import org.poolc.api.activity.vo.SessionCreateValues;
+import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -24,6 +27,7 @@ import static java.util.stream.Collectors.toList;
 public class ActivityController {
 
     private final ActivityService activityService;
+    private final SessionService sessionService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HashMap<String, List<ActivityResponse>>> findActivities() {
@@ -37,8 +41,17 @@ public class ActivityController {
     @GetMapping(value = "/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HashMap<String, OneActivityResponse>> findOneActivity(@PathVariable("activityID") Long id) {
         HashMap<String, OneActivityResponse> responseBody = new HashMap<>();
-        System.out.println(id);
         responseBody.put("data", new OneActivityResponse(activityService.findOneActivity(id)));
+        return ResponseEntity.ok().body(responseBody);
+    }
+
+    @GetMapping(value = "/session/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<HashMap<String, List<SessionResponse>>> findSessions(@PathVariable("activityID") Long id) {
+        HashMap<String, List<SessionResponse>> responseBody = new HashMap<>();
+        List<SessionResponse> list = new ArrayList<>();
+        list.addAll(sessionService.findSessionsByActivityID(id).stream()
+                .map(s -> new SessionResponse(s)).collect(toList()));
+        responseBody.put("data", list);
         return ResponseEntity.ok().body(responseBody);
     }
 
@@ -48,8 +61,31 @@ public class ActivityController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping(value = "/session")
+    public ResponseEntity<Void> addSession(HttpServletRequest request, @RequestBody SessionCreateRequest requestBody) {
+        sessionService.createSession(request.getAttribute("UUID").toString(), new SessionCreateValues(requestBody));
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/{activityID}")
+    public ResponseEntity<Void> deleteActivity(HttpServletRequest request, @PathVariable("activityID") Long id) {
+        activityService.deleteActivity(id, request.getAttribute("UUID").toString(), request.getAttribute("isAdmin").toString());
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateActivity(HttpServletRequest request, @RequestBody ActivityUpdateRequest requestBody, @PathVariable("activityID") Long id) {
+        activityService.updateActivity(request.getAttribute("isAdmin").toString(), id, new ActivityUpdateValues(requestBody, request.getAttribute("UUID").toString()));
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})
     public ResponseEntity<String> noSuchElementHandler(Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler({UnauthenticatedException.class})
+    public ResponseEntity<String> notAllowdException(Exception e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 }

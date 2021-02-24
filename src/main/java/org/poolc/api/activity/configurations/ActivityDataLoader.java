@@ -41,14 +41,48 @@ public class ActivityDataLoader implements CommandLineRunner {
                 null,
                 false,
                 null);
+        Member member2 = new Member(UUID.randomUUID().toString(),
+                "MEMBER_ID2",
+                passwordHashProvider.encodePassword("MEMBER_PASSWORD2"),
+                "example@email.com2",
+                "examplePhoneNumber2",
+                "MEMBER_NAME2",
+                "exampleDepartment2",
+                "exampleStudentID2",
+                true,
+                false,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null);
+        Member member3 = new Member(UUID.randomUUID().toString(),
+                "MEMBER_ID3",
+                passwordHashProvider.encodePassword("MEMBER_PASSWORD3"),
+                "example@email.com3",
+                "examplePhoneNumber3",
+                "MEMBER_NAME3",
+                "exampleDepartment3",
+                "exampleStudentID3",
+                true,
+                true,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null);
         memberRepository.save(member);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
         LocalDate date = LocalDate.now();
         LocalDate date2 = LocalDate.of(2020, 1, 11);
-        Activity activity = new Activity("정윤석의 c++ ", "dsds", member, date, "dsds", false, 1l, false);
+        Activity activity = new Activity("정윤석의 c++ ", "dsds", member, date, "dsds", false, 1l, 3l, false);
         activity.getTags().add(new ActivityTag(activity, "꿀잼보장"));
         activityRepository.save(activity);
-        Activity activity2 = new Activity("정윤석의 c++ 2", "dsds", member, date2, "dsds", false, 1l, false);
-        Activity activity3 = new Activity("정윤석의 c++ 3", "dsds", member, date, "dsds", false, 1l, false);
+        Activity activity2 = new Activity("정윤석의 c++ 2", "dsds", member, date2, "dsds", false, 1l, 2l, false);
+        Activity activity3 = new Activity("정윤석의 c++ 3", "dsds", member, date, "dsds", false, 1l, 2l, false);
 
         activity2.getTags().add(new ActivityTag(activity2, "꿀잼보장"));
         activity2.getTags().add(new ActivityTag(activity2, "ㄹㅇ로"));
