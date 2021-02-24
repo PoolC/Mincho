@@ -1,11 +1,13 @@
 package org.poolc.api.auth.infra;
 
-import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class PasswordHashProvider {
-    private static final Argon2PasswordEncoder encoder = new Argon2PasswordEncoder();
+    private final PasswordEncoder encoder;
 
     public String encodePassword(String rawPassword) {
         return encoder.encode(rawPassword);
