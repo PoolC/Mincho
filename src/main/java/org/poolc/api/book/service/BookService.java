@@ -2,13 +2,12 @@ package org.poolc.api.book.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.book.domain.Book;
+import org.poolc.api.book.domain.BookStatus;
 import org.poolc.api.book.exception.DuplicateBookException;
 import org.poolc.api.book.repository.BookRepository;
 import org.poolc.api.book.vo.BookCreateValues;
 import org.poolc.api.book.vo.BookUpdateValues;
-import org.poolc.api.book.domain.BookStatus;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +18,6 @@ import java.util.NoSuchElementException;
 public class BookService {
 
     private final BookRepository bookRepository;
-
-    private final MemberRepository memberRepository;
 
     public void saveBook(BookCreateValues values) {
         boolean hasDuplicate = bookRepository.existsByTitleAndAuthor(values.getTitle(), values.getAuthor());
@@ -57,20 +54,22 @@ public class BookService {
     }
 
     public Book findOneBook(Long bookId) {
-        return bookRepository.findByIdWithBorrower(bookId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 책입니다"));
+        return bookRepository.findById(bookId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 책입니다"));
     }
 
-    public void borrowBook(String memberUUID, Long bookId) {
+    public void borrowBook(Member member, Long bookId) {
         Book book = findOneBook(bookId);
         validateAvailableBook(book);
-        Member member = memberRepository.findById(memberUUID).get();
         book.borrowBook(member);
+        bookRepository.flush();
     }
 
-    public void returnBook(String memberUUID, Long bookId) {
+    public void returnBook(Member member, Long bookId) {
         Book book = findOneBook(bookId);
-        validateMyBook(book, memberUUID);
+        validateMyBook(book, member.getUUID());
         book.returnBook();
+        bookRepository.flush();
     }
 
     private void validateAvailableBook(Book book) {

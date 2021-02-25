@@ -2,9 +2,9 @@ package org.poolc.api.member.configurations;
 
 
 import lombok.RequiredArgsConstructor;
+import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
-import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -33,6 +33,23 @@ public class MemberDataLoader implements CommandLineRunner {
                         .name("MEMBER_NAME")
                         .department("exampleDepartment")
                         .studentID("2021147593")
+                        .passwordResetToken(null)
+                        .passwordResetTokenValidUntil(null)
+                        .profileImageURL(null)
+                        .introduction("")
+                        .isExcepted(false)
+                        .roles(new HashSet<>() {{ add(MemberRole.MEMBER); }})
+                        .build());
+        memberRepository.save(
+                Member.builder()
+                        .UUID(UUID.randomUUID().toString())
+                        .loginID("MEMBER_ID2")
+                        .passwordHash(passwordHashProvider.encodePassword("MEMBER_PASSWORD2"))
+                        .email("example-1@email.com")
+                        .phoneNumber("010-3333-3333")
+                        .name("MEMBER_NAME2")
+                        .department("exampleDepartment")
+                        .studentID("2021147592")
                         .passwordResetToken(null)
                         .passwordResetTokenValidUntil(null)
                         .profileImageURL(null)

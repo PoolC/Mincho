@@ -35,7 +35,7 @@ public class JwtTokenProvider {
     public String getToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
 
-        if (!StringUtils.hasText(token)) {
+        if (isEmptyToken(token)) {
             return null;
         }
 
@@ -56,6 +56,10 @@ public class JwtTokenProvider {
         checkIsBearerToken(typeAndCredentials);
 
         return typeAndCredentials[1];
+    }
+
+    private boolean isEmptyToken(String token) {
+        return !StringUtils.hasText(token) || token.equals("Bearer");
     }
 
     private void checkIsBearerToken(String[] typeAndCredentials) {

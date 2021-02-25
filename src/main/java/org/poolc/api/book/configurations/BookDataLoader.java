@@ -2,8 +2,8 @@ package org.poolc.api.book.configurations;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.book.domain.Book;
-import org.poolc.api.book.repository.BookRepository;
 import org.poolc.api.book.domain.BookStatus;
+import org.poolc.api.book.repository.BookRepository;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -31,7 +31,5 @@ public class BookDataLoader implements CommandLineRunner {
                 "http",
                 "형철이의 삶에 대해 적었다",
                 BookStatus.AVAILABLE));
-
-        book.borrowBook(memberRepository.findByLoginID("MEMBER_ID").get());
     }
 }
