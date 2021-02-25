@@ -14,7 +14,7 @@ public class Book extends TimestampEntity {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -27,7 +27,7 @@ public class Book extends TimestampEntity {
     @Column(name = "author", length = 1024, nullable = false)
     private String author;
 
-    @Column(name = "imageURL", length = 1024)
+    @Column(name = "image_url", length = 1024)
     private String imageURL;
 
     @Column(name = "info", length = 64)
