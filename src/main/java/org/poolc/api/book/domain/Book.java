@@ -16,7 +16,7 @@ public class Book {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,7 +29,7 @@ public class Book {
     @Column(name = "author", length = 1024, nullable = false)
     private String author;
 
-    @Column(name = "imageURL", length = 1024)
+    @Column(name = "image_url", length = 1024)
     private String imageURL;
 
     @Column(name = "info", length = 64)
@@ -39,7 +39,7 @@ public class Book {
     @Enumerated(EnumType.STRING)
     private BookStatus status = BookStatus.AVAILABLE;
 
-    @Column(name = "borrowDate")
+    @Column(name = "borrow_date")
     private LocalDateTime borrowDate;
 
     public void borrowBook(Member member) {
