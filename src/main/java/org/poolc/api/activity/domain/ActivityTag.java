@@ -10,15 +10,15 @@ import static javax.persistence.FetchType.LAZY;
 @Getter
 @Table(name = "ActivityTag",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"activityID", "content"})})
+                @UniqueConstraint(columnNames = {"activity_id", "content"})})
 public class ActivityTag {
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "activityID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false)
     private Activity activity;
 
     private String content;

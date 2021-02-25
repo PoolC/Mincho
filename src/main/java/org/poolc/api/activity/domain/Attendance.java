@@ -11,15 +11,15 @@ import static javax.persistence.FetchType.LAZY;
 public class Attendance {
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "sessionID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "session_id", referencedColumnName = "id", nullable = false)
     private Session session;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "memberID", referencedColumnName = "memberID", nullable = false)
+    @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
     private ActivityMember memberID;
 
     public Attendance(Session session, ActivityMember memberID) {

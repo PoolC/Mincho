@@ -91,7 +91,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response2 = getActivitiesRequest(accessToken);
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response2.body().jsonPath().getList("data")).hasSize(3);
+        assertThat(response2.body().jsonPath().getList("data")).hasSize(4);
 
     }
 
@@ -128,7 +128,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response2 = getActivitiesRequest(accessToken);
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response2.body().jsonPath().getList("data")).hasSize(3);
+        assertThat(response2.body().jsonPath().getList("data")).hasSize(4);
 
     }
 
@@ -161,7 +161,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response2 = getActivitiesRequest(accessToken);
 
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response2.body().jsonPath().getList("data")).hasSize(2);
+        assertThat(response2.body().jsonPath().getList("data")).hasSize(3);
 
     }
 

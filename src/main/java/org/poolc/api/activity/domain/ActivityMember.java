@@ -11,20 +11,20 @@ import static javax.persistence.FetchType.LAZY;
 @Entity(name = "ActivityMember")
 @Table(name = "ActivityMember",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"activityID", "memberID"})})
+                @UniqueConstraint(columnNames = {"activity_id", "member_id"})})
 @Getter
 public class ActivityMember implements Serializable {
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "activityID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false)
     private Activity activity;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "memberID", referencedColumnName = "UUID", nullable = false)
+    @JoinColumn(name = "member_id", referencedColumnName = "UUID", nullable = false)
     private Member member;
 
     public ActivityMember(Activity activity, Member member) {

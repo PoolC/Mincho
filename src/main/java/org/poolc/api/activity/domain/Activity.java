@@ -19,7 +19,7 @@ import static javax.persistence.FetchType.LAZY;
 public class Activity {
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "title", columnDefinition = "varchar(1024)", nullable = false)
@@ -32,13 +32,13 @@ public class Activity {
     @JoinColumn(name = "host", referencedColumnName = "UUID", nullable = false)
     private Member host;
 
-    @Column(name = "startDate", columnDefinition = "date")
+    @Column(name = "start_date", columnDefinition = "date")
     private LocalDate startDate;
 
-    @Column(name = "classHour", columnDefinition = "varchar(1024)")
+    @Column(name = "class_hour", columnDefinition = "varchar(1024)")
     private String classHour;
 
-    @Column(name = "isSeminar", columnDefinition = "boolean default false")
+    @Column(name = "is_seminar", columnDefinition = "boolean default false")
     private Boolean isSeminar;
 
     @Column(name = "capacity", nullable = false)

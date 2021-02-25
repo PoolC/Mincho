@@ -17,11 +17,11 @@ import static javax.persistence.FetchType.LAZY;
 public class Session {
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "activityID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false)
     private Activity activity;
 
     @Column(name = "description", columnDefinition = "varchar(1024)", nullable = false)
@@ -30,7 +30,7 @@ public class Session {
     @Column(name = "date", columnDefinition = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "sessionNumber", nullable = false)
+    @Column(name = "session_number", nullable = false)
     private Long sessionNumber;
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
