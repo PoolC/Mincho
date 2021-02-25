@@ -38,15 +38,11 @@ public class Project extends TimestampEntity {
     @Column(name = "body", nullable = false)
     private String body;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProjectMember> members = new ArrayList<>();
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "project_members", joinColumns = @JoinColumn(name = "member_uuid"))
+    private List<String> memberUUIDs = new ArrayList<>();
 
-    public void setMembers(List<ProjectMember> members) {
-        this.members = members;
-    }
-
-    public void addMembers(List<ProjectMember> members) {
-        this.members.addAll(members);
+    protected Project() {
     }
 
     public Project(String name, String description, String genre, String duration, String thumbnailURL, String body) {
@@ -58,6 +54,14 @@ public class Project extends TimestampEntity {
         this.body = body;
     }
 
+    public void setMembers(List<String> members) {
+        this.memberUUIDs = members;
+    }
+
+    public void addMembers(List<String> members) {
+        this.memberUUIDs.addAll(members);
+    }
+
     public void update(ProjectUpdateValues projectUpdateValues) {
         this.name = projectUpdateValues.getName();
         this.description = projectUpdateValues.getDescription();
@@ -65,11 +69,6 @@ public class Project extends TimestampEntity {
         this.duration = projectUpdateValues.getDuration();
         this.thumbnailURL = projectUpdateValues.getThumbnailURL();
         this.body = projectUpdateValues.getBody();
-        this.members.clear();
+        this.memberUUIDs.clear();
     }
-
-    protected Project() {
-
-    }
-
 }
