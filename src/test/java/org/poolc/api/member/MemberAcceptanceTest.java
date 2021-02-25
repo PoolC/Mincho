@@ -12,7 +12,6 @@ import org.poolc.api.member.dto.RegisterMemberRequest;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
@@ -53,7 +52,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         MemberListResponse responseBody = response.body().as(MemberListResponse.class);
-        assertThat(responseBody.getData()).hasSize(7);
+        assertThat(responseBody.getData()).hasSize(8);
     }
 
     @Test

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import org.poolc.api.book.domain.Book;
 import org.poolc.api.book.domain.BookStatus;
-import org.poolc.api.member.domain.Member;
+import org.poolc.api.member.dto.MemberResponse;
+
+import java.util.Optional;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -16,10 +18,10 @@ public class BookResponse {
     private final String imageURL;
     private final BookStatus status;
     private final String info;
-    private final Member borrower;
+    private final MemberResponse borrower;
 
     @JsonCreator
-    public BookResponse(Long id, String title, String author, String imageURL, BookStatus status, String info, Member borrower) {
+    public BookResponse(Long id, String title, String author, String imageURL, BookStatus status, String info, MemberResponse borrower) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -30,7 +32,11 @@ public class BookResponse {
     }
 
     public static BookResponse of(Book book) {
+        MemberResponse memberResponse = Optional.ofNullable(book.getBorrower())
+                .map(MemberResponse::of)
+                .orElse(null);
+
         return new BookResponse(book.getId(), book.getTitle(), book.getAuthor(), book.getImageURL(), book.getStatus(),
-                book.getInfo(), book.getBorrower());
+                book.getInfo(), memberResponse);
     }
 }

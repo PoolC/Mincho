@@ -28,7 +28,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getBooksRequest(accessToken);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("data")).hasSize(2);
+        assertThat(response.body().jsonPath().getList("data")).hasSize(7);
     }
 
     @Test
@@ -162,7 +162,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
 
     @Test
     void registerBookAlreadyExist() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWOrD")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
@@ -176,7 +176,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 7L);
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "소정이는 핵을 쓴다", "개못핵", "d", "ㅇㄴ", 7L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -196,7 +196,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 8L);
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 6L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
@@ -206,7 +206,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶", "박형철", "d", "ㅇㄴ", 2L);
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶", "박형철", "d", "ㅇㄴ", 6L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
@@ -227,7 +227,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = deleteBookRequest(accessToken, 1L);
+        ExtractableResponse<Response> response = deleteBookRequest(accessToken, 6L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 

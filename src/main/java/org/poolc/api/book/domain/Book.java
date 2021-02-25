@@ -17,7 +17,7 @@ public class Book extends TimestampEntity {
     @Column(name = "ID")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "borrower", referencedColumnName = "UUID")
     private Member borrower = null;
 
