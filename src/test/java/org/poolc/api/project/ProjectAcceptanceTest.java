@@ -6,12 +6,14 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
+import org.poolc.api.project.dto.ProjectResponse;
 import org.poolc.api.project.dto.RegisterProjectRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,15 +29,17 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = getProjectsRequest(accessToken);
+        List<ProjectResponse> projects = response.body().jsonPath().getList("data", ProjectResponse.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("data")).hasSize(2);
+        assertThat(projects.size()).isEqualTo(2);
+        assertThat(projects.get(0).getName()).isEqualTo("첫 플젝");
+        assertThat(projects.get(1).getName()).isEqualTo("두번째 플젝");
     }
 
-    @Test
-    public void findProjectsWithUnAuthorizedMember() {
-
-        ExtractableResponse<Response> response = getProjectsRequest("1234");
+    void findProjectsWithUnAuthorizedMember() {
+        // NOTE: 저희 프로젝트를 외부에 많이많이 알려야하지 않을까요...?
+        ExtractableResponse<Response> response = getProjectsRequest("");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
@@ -46,9 +50,11 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = getProjectRequest(accessToken, 1l);
+        ExtractableResponse<Response> response = getProjectRequest(accessToken, 1L);
+        ProjectResponse projects = response.as(ProjectResponse.class);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("data.members").size()).isEqualTo(2);
+        assertThat(projects.getName()).isEqualTo("첫 플젝");
     }
 
     @Test
@@ -57,11 +63,10 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = getProjectRequest(accessToken, 3l);
+        ExtractableResponse<Response> response = getProjectRequest(accessToken, 3L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @Test
     void findMembersByName() {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
@@ -71,7 +76,6 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    @Test
     void findMembersByNameWithNonAdminUser() {
         String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
                 .as(AuthResponse.class)
@@ -81,30 +85,27 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
-    @Test
     void addProject() {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
-        List<String> ids = new ArrayList<>();
 
         ExtractableResponse<Response> response = getMembersByNameRequest(accessToken, "MEMBER_NAME");
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        ids.add(response.body().jsonPath().getJsonObject("data[0].id").toString());
-        ids.add(response.body().jsonPath().getJsonObject("data[1].id").toString());
-        ExtractableResponse<Response> response2 = addProjectRequest(accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<String> memberUUIDs = response.body().jsonPath().getList("data.id");
 
+        ExtractableResponse<Response> response2 = addProjectRequest(accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", memberUUIDs);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     void addProjectMemberDoesNotExist() {
-        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
-        List<String> ids = new ArrayList<>();
-        ids.add("121323");
-        ExtractableResponse<Response> response2 = addProjectRequest(accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
+
+        ExtractableResponse<Response> response2 = addProjectRequest(accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", Collections.singletonList("123123"));
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -113,12 +114,11 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
         String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
                 .as(AuthResponse.class)
                 .getAccessToken();
-        List<String> ids = new ArrayList<>();
-        ExtractableResponse<Response> response2 = addProjectRequest(accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+
+        ExtractableResponse<Response> response2 = addProjectRequest(accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", Collections.emptyList());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
-    @Test
     void updateProject() {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
@@ -128,15 +128,14 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getMembersByNameRequest(accessToken, "MEMBER_NAME");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ids.add(response.body().jsonPath().getJsonObject("data[0].id").toString());
-        ExtractableResponse<Response> response2 = updateProjectRequest(1l, accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
+        ExtractableResponse<Response> response2 = updateProjectRequest(1L, accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        ExtractableResponse<Response> response3 = getProjectRequest(accessToken, 1l);
+        ExtractableResponse<Response> response3 = getProjectRequest(accessToken, 1L);
         assertThat(response3.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response3.body().jsonPath().getList("data.members").size()).isEqualTo(1l);
+        assertThat(response3.body().jsonPath().getList("data.members").size()).isEqualTo(1L);
     }
 
-    @Test
     void updateProjectWithNonExistingMember() {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
@@ -146,59 +145,40 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getMembersByNameRequest(accessToken, "MEMBER_NAME");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ids.add("1234");
-        ExtractableResponse<Response> response2 = updateProjectRequest(1l, accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
+        ExtractableResponse<Response> response2 = updateProjectRequest(1L, accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @Test
     void updateProjectDoesNotExist() {
-        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
         List<String> ids = new ArrayList<>();
 
         ExtractableResponse<Response> response = getMembersByNameRequest(accessToken, "MEMBER_NAME");
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ids.add(response.body().jsonPath().getJsonObject("data[0].id").toString());
-        ExtractableResponse<Response> response2 = updateProjectRequest(45l, accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
+        ExtractableResponse<Response> response2 = updateProjectRequest(45L, accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
 
-    @Test
-    void updateProjectWithNonAdminUser() {
-        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
-                .as(AuthResponse.class)
-                .getAccessToken();
-        List<String> ids = new ArrayList<>();
-        ExtractableResponse<Response> response2 = updateProjectRequest(1l, accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
     void deleteProject() {
-        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
-        ExtractableResponse<Response> response2 = deleteProjectRequest(1l, accessToken);
+        ExtractableResponse<Response> response2 = deleteProjectRequest(1L, accessToken);
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
-    void deleteProjectdoesNotExist() {
-        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+    void deleteProjectDoesNotExist() {
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
-        ExtractableResponse<Response> response2 = deleteProjectRequest(455l, accessToken);
+        ExtractableResponse<Response> response2 = deleteProjectRequest(455L, accessToken);
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    void deleteProjectWithNonAdminUser() {
-        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
-                .as(AuthResponse.class)
-                .getAccessToken();
-        ExtractableResponse<Response> response2 = deleteProjectRequest(1l, accessToken);
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
     public static ExtractableResponse<Response> getProjectsRequest(String accessToken) {

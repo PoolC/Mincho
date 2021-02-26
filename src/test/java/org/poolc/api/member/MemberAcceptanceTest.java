@@ -12,14 +12,11 @@ import org.poolc.api.member.dto.RegisterMemberRequest;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
-@ActiveProfiles("test")
 public class MemberAcceptanceTest extends AcceptanceTest {
-
 
     @Test
     void testCreate() {
@@ -55,7 +52,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         MemberListResponse responseBody = response.body().as(MemberListResponse.class);
-        assertThat(responseBody.getData()).hasSize(6);
+        assertThat(responseBody.getData()).hasSize(8);
     }
 
     @Test
@@ -78,7 +75,6 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "UPDATE_MEMBER_PASSWORD", "NEW_PASSWORD", "NEW@naver.com", "01033334444");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     @Test
@@ -113,7 +109,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void updateMemberIsAdmin() {
+    void promoteAsAdmin() {
         String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
@@ -126,6 +122,22 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> certifiedResponse = AdminGetMemberRequestByLoginID(accessToken, not_admin_loginID);
         MemberResponse responseBody = certifiedResponse.as(MemberResponse.class);
         assertThat(responseBody.getIsAdmin()).isEqualTo(true);
+    }
+
+    @Test
+    void revokeAdminPrivileges() {
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        String willRevokeAdminID = "WILL_REVOKE_ADMIN_ID";
+
+        ExtractableResponse<Response> response = UpdateMemberIsAdmin(accessToken, willRevokeAdminID, false);
+        ExtractableResponse<Response> certifiedResponse = AdminGetMemberRequestByLoginID(accessToken, willRevokeAdminID);
+        MemberResponse responseBody = certifiedResponse.as(MemberResponse.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(responseBody.getIsAdmin()).isEqualTo(false);
     }
 
     @Test

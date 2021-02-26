@@ -2,13 +2,14 @@ package org.poolc.api.board.vo;
 
 import lombok.Getter;
 import org.poolc.api.board.dto.RegisterBoardRequest;
+import org.poolc.api.member.domain.MemberRole;
 
 @Getter
 public class BoardCreateValues {
     private final String name;
     private final String URLPath;
-    private final String readPermission;
-    private final String writePermission;
+    private final MemberRole readPermission;
+    private final MemberRole writePermission;
 
     public BoardCreateValues(RegisterBoardRequest registerBoardRequest) {
         this.name = registerBoardRequest.getName();

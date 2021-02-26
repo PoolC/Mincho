@@ -6,11 +6,11 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
-import org.poolc.api.book.dto.BookCreateRequest;
-import org.poolc.api.book.dto.BookUpdateRequest;
-import org.poolc.api.book.dto.BookWithBorrowerResponse;
+import org.poolc.api.book.dto.BookRequest;
+import org.poolc.api.book.dto.BookResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,15 +28,14 @@ public class BookAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getBooksRequest(accessToken);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("data")).hasSize(2);
+        assertThat(response.body().jsonPath().getList("data")).hasSize(7);
     }
 
     @Test
-    void findAllBooksWithUnAuthorizedMember() {
+    void findAllBooksAsPublicMember() {
+        ExtractableResponse<Response> response = getBooksRequest("");
 
-        ExtractableResponse<Response> response = getBooksRequest("1234");
-        
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
@@ -44,12 +43,14 @@ public class BookAcceptanceTest extends AcceptanceTest {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
+        borrowBookRequest(accessToken, 1L);
 
-        ExtractableResponse<Response> response = getBookRequest(accessToken, 1l);
-        BookWithBorrowerResponse bookWithBorrowerDto = response.as(BookWithBorrowerResponse.class);
+        ExtractableResponse<Response> response = getBookRequest(accessToken, 1L);
+        BookResponse bookResponse = response.as(BookResponse.class);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(bookWithBorrowerDto.getId()).isEqualTo(1l);
-        assertThat(bookWithBorrowerDto.getBorrower().getName()).isEqualTo("MEMBER_NAME");
+        assertThat(bookResponse.getId()).isEqualTo(1L);
+        assertThat(bookResponse.getBorrower().getName()).isEqualTo("MEMBER_NAME");
     }
 
     @Test
@@ -58,7 +59,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = getBookRequest(accessToken, 100l);
+        ExtractableResponse<Response> response = getBookRequest(accessToken, 100L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -68,17 +69,20 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = borrowBookRequest(accessToken, 2l);
+        ExtractableResponse<Response> response = borrowBookRequest(accessToken, 2L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     void borrowBookWithBorrower() {
+        borrowBookRequest(loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken(), 3L);
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = borrowBookRequest(accessToken, 1l);
+        ExtractableResponse<Response> response = borrowBookRequest(accessToken, 3L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
@@ -88,7 +92,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = borrowBookRequest(accessToken, 423l);
+        ExtractableResponse<Response> response = borrowBookRequest(accessToken, 423L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -97,8 +101,9 @@ public class BookAcceptanceTest extends AcceptanceTest {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
+        borrowBookRequest(accessToken, 4L);
 
-        ExtractableResponse<Response> response = returnBookRequest(accessToken, 1l);
+        ExtractableResponse<Response> response = returnBookRequest(accessToken, 4L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -108,33 +113,36 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = returnBookRequest(accessToken, 432l);
+        ExtractableResponse<Response> response = returnBookRequest(accessToken, 432L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
     void returnNotMyBook() {
-        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+        borrowBookRequest(loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken(), 5L);
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = returnBookRequest(accessToken, 1l);
+        ExtractableResponse<Response> response = returnBookRequest(accessToken, 5L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
     @Test
     void returnBookNotBorrowed() {
-        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = returnBookRequest(accessToken, 2l);
+        ExtractableResponse<Response> response = returnBookRequest(accessToken, 6L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
     }
 
     @Test
     void registerBook() {
-        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
@@ -149,12 +157,12 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = createBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ");
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
     void registerBookAlreadyExist() {
-        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
@@ -164,21 +172,21 @@ public class BookAcceptanceTest extends AcceptanceTest {
 
     @Test
     void updateBook() {
-        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 1l);
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "소정이는 핵을 쓴다", "개못핵", "d", "ㅇㄴ", 7L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     void updateNonExistingBook() {
-        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 432l);
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 432L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -188,27 +196,28 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 1l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 6L);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
     void updateBookAlreadyExistSameBook() {
-        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶", "박형철", "d", "ㅇㄴ", 2l);
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶", "박형철", "d", "ㅇㄴ", 6L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
+    @DirtiesContext
     @Test
     void deleteBook() {
-        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = deleteBookRequest(accessToken, 1l);
+        ExtractableResponse<Response> response = deleteBookRequest(accessToken, 1L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -218,17 +227,17 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = deleteBookRequest(accessToken, 1l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        ExtractableResponse<Response> response = deleteBookRequest(accessToken, 6L);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
     void deleteNonExistingBook() {
-        String accessToken = loginRequest("MEMBER_ID1", "MEMBER_PASSWORD1")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = deleteBookRequest(accessToken, 432l);
+        ExtractableResponse<Response> response = deleteBookRequest(accessToken, 432L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -273,7 +282,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
     }
 
     public static ExtractableResponse<Response> createBookRequest(String token, String title, String author, String imageURL, String info) {
-        BookCreateRequest request = new BookCreateRequest(title, author, imageURL, info);
+        BookRequest request = new BookRequest(title, author, imageURL, info);
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(token)
@@ -285,7 +294,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
     }
 
     public static ExtractableResponse<Response> updateBookRequest(String token, String title, String author, String imageURL, String info, Long id) {
-        BookUpdateRequest request = new BookUpdateRequest(title, author, imageURL, info);
+        BookRequest request = new BookRequest(title, author, imageURL, info);
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(token)

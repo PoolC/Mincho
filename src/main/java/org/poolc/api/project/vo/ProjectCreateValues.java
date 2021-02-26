@@ -1,6 +1,5 @@
 package org.poolc.api.project.vo;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import org.poolc.api.project.dto.RegisterProjectRequest;
 
@@ -15,9 +14,8 @@ public class ProjectCreateValues {
     private final String duration;
     private final String thumbnailURL;
     private final String body;
-    List<String> members;
+    List<String> memberUUIDs;
 
-    @JsonCreator
     public ProjectCreateValues(RegisterProjectRequest request) {
         this.name = request.getName();
         this.description = request.getDescription();
@@ -25,6 +23,6 @@ public class ProjectCreateValues {
         this.duration = request.getDuration();
         this.thumbnailURL = request.getThumbnailURL();
         this.body = request.getBody();
-        this.members = request.getMembers();
+        this.memberUUIDs = request.getMembers();
     }
 }

@@ -9,11 +9,9 @@ import org.poolc.api.auth.dto.AuthRequest;
 import org.poolc.api.auth.dto.AuthResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("test")
 public class AuthAcceptanceTest extends AcceptanceTest {
     @Test
     void tokenIsIssued() {

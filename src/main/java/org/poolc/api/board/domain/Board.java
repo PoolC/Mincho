@@ -4,11 +4,13 @@ import lombok.Getter;
 import org.poolc.api.board.vo.BoardCreateValues;
 import org.poolc.api.board.vo.BoardUpdateValue;
 import org.poolc.api.common.domain.TimestampEntity;
+import org.poolc.api.member.domain.MemberRole;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Set;
 
 @Entity(name = "Board")
 @Getter
@@ -26,15 +28,15 @@ public class Board extends TimestampEntity {
     private String urlPath;
 
     @Column(name = "readPermission", columnDefinition = "varchar(10)", nullable = false)
-    private String readPermission;
+    private MemberRole readPermission;
 
     @Column(name = "writePermission", columnDefinition = "varchar(10)", nullable = false)
-    private String writePermission;
+    private MemberRole writePermission;
 
     public Board() {
     }
 
-    public Board(String name, String urlPath, String readPermission, String writePermission) {
+    public Board(String name, String urlPath, MemberRole readPermission, MemberRole writePermission) {
         this.name = name;
         this.urlPath = urlPath;
         this.readPermission = readPermission;
@@ -53,5 +55,21 @@ public class Board extends TimestampEntity {
         this.urlPath = boardUpdateValue.getUrlPath();
         this.readPermission = boardUpdateValue.getReadPermission();
         this.writePermission = boardUpdateValue.getWritePermission();
+    }
+
+    public boolean memberHasReadPermissions(Set<MemberRole> roles) {
+        if (onlyAdminAllowed(readPermission, roles)) {
+            return false;
+        }
+
+        return !onlyMemberAllowed(readPermission, roles);
+    }
+
+    private boolean onlyAdminAllowed(MemberRole permission, Set<MemberRole> roles) {
+        return permission.equals(MemberRole.ADMIN) && !roles.contains(MemberRole.ADMIN);
+    }
+
+    private boolean onlyMemberAllowed(MemberRole permission, Set<MemberRole> roles) {
+        return permission.equals(MemberRole.MEMBER) && !roles.contains(MemberRole.MEMBER);
     }
 }

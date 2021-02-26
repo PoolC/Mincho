@@ -2,24 +2,22 @@ package org.poolc.api.book.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
-import org.poolc.api.enums.BookStatus;
+import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Book {
+public class Book extends TimestampEntity {
 
     @Id
     @GeneratedValue
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "borrower", referencedColumnName = "UUID")
     private Member borrower = null;
 
@@ -39,8 +37,16 @@ public class Book {
     @Enumerated(EnumType.STRING)
     private BookStatus status = BookStatus.AVAILABLE;
 
-    @Column(name = "borrow_date")
-    private LocalDateTime borrowDate;
+    protected Book() {
+    }
+
+    public Book(String title, String author, String imageURL, String info, BookStatus status) {
+        this.title = title;
+        this.author = author;
+        this.imageURL = imageURL;
+        this.info = info;
+        this.status = status;
+    }
 
     public void borrowBook(Member member) {
         this.status = BookStatus.UNAVAILABLE;
@@ -58,37 +64,4 @@ public class Book {
         this.imageURL = imageURL;
         this.info = info;
     }
-
-    public Book() {
-
-    }
-
-    public Book(String title, String author, String imageURL, String info, BookStatus status, LocalDateTime borrowDate) {
-        this.title = title;
-        this.author = author;
-        this.imageURL = imageURL;
-        this.info = info;
-        this.status = status;
-        this.borrowDate = borrowDate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Book book = (Book) o;
-        return Objects.equals(getId(), book.getId()) &&
-                Objects.equals(getTitle(), book.getTitle()) &&
-                Objects.equals(getAuthor(), book.getAuthor()) &&
-                Objects.equals(getImageURL(), book.getImageURL()) &&
-                Objects.equals(getInfo(), book.getInfo()) &&
-                getStatus() == book.getStatus() &&
-                Objects.equals(getBorrowDate(), book.getBorrowDate());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getBorrower(), getTitle(), getAuthor(), getImageURL(), getInfo(), getStatus(), getBorrowDate());
-    }
-
 }
