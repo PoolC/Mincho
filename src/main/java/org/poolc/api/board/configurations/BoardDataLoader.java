@@ -1,9 +1,10 @@
 package org.poolc.api.board.configurations;
 
 import lombok.RequiredArgsConstructor;
+import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.board.domain.Board;
 import org.poolc.api.board.repository.BoardRepository;
-import org.poolc.api.member.infra.PasswordHashProvider;
+import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -20,29 +21,25 @@ public class BoardDataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) {
         boardRepository.save(
-                new Board("공지사항", "notice", "PUBLIC", "ADMIN")
+                new Board("공지사항", "notice", MemberRole.PUBLIC, MemberRole.ADMIN)
         );
         boardRepository.save(
-                new Board("자유게시판", "free", "MEMBER", "MEMBER")
+                new Board("자유게시판", "free", MemberRole.MEMBER, MemberRole.MEMBER)
         );
         boardRepository.save(
-                new Board("구인홍보게시판", "recruit", "MEMBER", "MEMBER")
-        );
-
-        boardRepository.save(
-                new Board("학술게시판", "study_priv", "MEMBER", "MEMBER")
+                new Board("구인홍보게시판", "recruit", MemberRole.MEMBER, MemberRole.MEMBER)
         );
         boardRepository.save(
-                new Board("게임제작부", "gamedev", "MEMBER", "MEMBER")
+                new Board("학술게시판", "study_priv", MemberRole.MEMBER, MemberRole.MEMBER)
         );
         boardRepository.save(
-                new Board("임원진", "meeting", "ADMIN", "ADMIN")
+                new Board("게임제작부", "gamedev", MemberRole.MEMBER, MemberRole.MEMBER)
         );
         boardRepository.save(
-                new Board("삭제할게시판", "willbedeleted", "PUBLIC", "MEMBER")
+                new Board("삭제할게시판", "willbedeleted", MemberRole.PUBLIC, MemberRole.MEMBER)
         );
         boardRepository.save(
-                new Board("수정할게시판", "updateBoard", "PUBLIC", "MEMBER")
+                new Board("수정할게시판", "updateBoard", MemberRole.PUBLIC, MemberRole.MEMBER)
         );
     }
 }
