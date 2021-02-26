@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Getter
-public class ActivityCreateRequest {
+public class ActivityRequest {
     private final String title;
     private final String description;
     private final LocalDate startDate;
@@ -18,7 +18,7 @@ public class ActivityCreateRequest {
     private final Long hour;
 
     @JsonCreator
-    public ActivityCreateRequest(String title, String description, LocalDate startDate, Boolean isSeminar, String classHour, Long capacity, Long hour, List<String> tags) {
+    public ActivityRequest(String title, String description, LocalDate startDate, Boolean isSeminar, String classHour, Long capacity, Long hour, List<String> tags) {
         this.title = title;
         this.description = description;
         this.startDate = startDate;

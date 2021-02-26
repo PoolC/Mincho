@@ -2,7 +2,7 @@ package org.poolc.api.activity.vo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
-import org.poolc.api.activity.dto.ActivityUpdateRequest;
+import org.poolc.api.activity.dto.ActivityRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,7 +20,7 @@ public class ActivityUpdateValues {
     private final Long hour;
 
     @JsonCreator
-    public ActivityUpdateValues(ActivityUpdateRequest request) {
+    public ActivityUpdateValues(ActivityRequest request) {
         this.title = request.getTitle();
         this.description = request.getDescription();
         this.startDate = request.getStartDate();

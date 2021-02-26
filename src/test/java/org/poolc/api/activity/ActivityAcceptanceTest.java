@@ -4,8 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
-import org.poolc.api.AcceptanceTest;
-import org.poolc.api.activity.dto.*;
+import org.poolc.api.AcceptanceTestWithActiveProfile;
+import org.poolc.api.activity.dto.ActivityRequest;
+import org.poolc.api.activity.dto.AttendanceRequest;
+import org.poolc.api.activity.dto.SessionCreateRequest;
+import org.poolc.api.activity.dto.SessionUpdateRequest;
 import org.poolc.api.auth.dto.AuthResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
 @ActiveProfiles("activityTest")
-public class ActivityAcceptanceTest extends AcceptanceTest {
+public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
 
     @Test
     public void 액티비티전체조회() {
@@ -493,7 +496,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
     }
 
     public static ExtractableResponse<Response> createActivityRequest(String token, String title, String description, LocalDate startDate, Boolean isSeminar, String classHour, Long capacity, List<String> tags, Long hour) {
-        ActivityCreateRequest request = new ActivityCreateRequest(title, description, startDate, isSeminar, classHour, capacity, hour, tags);
+        ActivityRequest request = new ActivityRequest(title, description, startDate, isSeminar, classHour, capacity, hour, tags);
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(token)
@@ -505,7 +508,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
     }
 
     public static ExtractableResponse<Response> updateActivityRequest(String token, Long id, String title, String description, LocalDate startDate, Boolean isSeminar, String classHour, Long capacity, List<String> tags, Long hour) {
-        ActivityUpdateRequest request = new ActivityUpdateRequest(title, description, startDate, isSeminar, classHour, capacity, hour, tags);
+        ActivityRequest request = new ActivityRequest(title, description, startDate, isSeminar, classHour, capacity, hour, tags);
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(token)

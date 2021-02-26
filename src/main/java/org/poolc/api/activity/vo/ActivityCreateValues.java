@@ -1,7 +1,7 @@
 package org.poolc.api.activity.vo;
 
 import lombok.Getter;
-import org.poolc.api.activity.dto.ActivityCreateRequest;
+import org.poolc.api.activity.dto.ActivityRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,7 +18,7 @@ public class ActivityCreateValues {
     private final List<String> tags;
     private final Long hour;
 
-    public ActivityCreateValues(ActivityCreateRequest request) {
+    public ActivityCreateValues(ActivityRequest request) {
         this.title = request.getTitle();
         this.description = request.getDescription();
         this.startDate = request.getStartDate();

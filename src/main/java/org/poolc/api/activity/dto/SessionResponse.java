@@ -1,5 +1,6 @@
 package org.poolc.api.activity.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import org.poolc.api.activity.domain.Session;
 
@@ -13,10 +14,15 @@ public class SessionResponse {
     private final LocalDate date;
     private final String description;
 
-    public SessionResponse(Session session) {
-        this.id = session.getId();
-        this.sessionNumber = session.getSessionNumber();
-        this.date = session.getDate();
-        this.description = session.getDescription();
+    @JsonCreator
+    public SessionResponse(Long id, Long sessionNumber, LocalDate date, String description) {
+        this.id = id;
+        this.sessionNumber = sessionNumber;
+        this.date = date;
+        this.description = description;
+    }
+
+    public static SessionResponse of(Session session) {
+        return new SessionResponse(session.getId(), session.getSessionNumber(), session.getDate(), session.getDescription());
     }
 }

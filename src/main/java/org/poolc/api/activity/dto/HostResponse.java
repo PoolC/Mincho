@@ -7,14 +7,16 @@ import org.poolc.api.member.domain.Member;
 @Getter
 public class HostResponse {
 
+    private final String loginID;
     private final String name;
 
     @JsonCreator
-    public HostResponse(String name) {
+    public HostResponse(String loginID, String name) {
+        this.loginID = loginID;
         this.name = name;
     }
 
     public static HostResponse of(Member member) {
-        return new HostResponse(member.getName());
+        return new HostResponse(member.getLoginID(), member.getName());
     }
 }

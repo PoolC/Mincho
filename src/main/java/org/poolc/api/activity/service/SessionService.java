@@ -62,7 +62,7 @@ public class SessionService {
         if (!checkUserIsHost(uuid, activity.getHost().getUUID())) {
             throw new NotHostException("호스트가 아니면 출석체크를 할수 없습니다");
         }
-        session.attend(requestBody.getMembers().stream()
+        session.attend(requestBody.getMembersID().stream()
                 .map(s -> activityMemberRepository.findById(s))
                 .map(m -> new Attendance(session, m.orElseThrow(() -> new NoSuchElementException("해당하는 회원이 존재하지 않습니다"))))
                 .collect(Collectors.toList()));

@@ -9,11 +9,11 @@ import java.util.List;
 public class AttendanceRequest {
 
     private final long sessionID;
-    private final List<Long> members;
+    private final List<Long> membersID;
 
     @JsonCreator
     public AttendanceRequest(long sessionID, List<Long> members) {
         this.sessionID = sessionID;
-        this.members = members;
+        this.membersID = members;
     }
 }

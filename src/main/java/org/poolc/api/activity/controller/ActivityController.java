@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -43,27 +42,21 @@ public class ActivityController {
     }
 
     @GetMapping(value = "/session/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HashMap<String, List<SessionResponse>>> findSessions(@AuthenticationPrincipal Member member, @PathVariable("activityID") Long id) {
-        HashMap<String, List<SessionResponse>> responseBody = new HashMap<>();
-        List<SessionResponse> list = new ArrayList<>();
-        list.addAll(sessionService.findSessionsByActivityID(member, id).stream()
-                .map(s -> new SessionResponse(s)).collect(toList()));
-        responseBody.put("data", list);
-        return ResponseEntity.ok().body(responseBody);
+    public ResponseEntity<Map<String, List<SessionResponse>>> findSessions(@AuthenticationPrincipal Member member, @PathVariable("activityID") Long id) {
+        return ResponseEntity.ok().body(Collections.singletonMap("data", sessionService.findSessionsByActivityID(member, id).stream()
+                .map(SessionResponse::of)
+                .collect(toList())));
     }
 
     @GetMapping(value = "/member/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HashMap<String, List<ActivityMemberResponse>>> getActivityMembers(HttpServletRequest request, @PathVariable("activityID") Long id) {
-        HashMap<String, List<ActivityMemberResponse>> responseBody = new HashMap<>();
-        List<ActivityMemberResponse> list = new ArrayList<>();
-        list.addAll(activityService.findActivityMembers(id).stream()
-                .map(m -> new ActivityMemberResponse(m)).collect(toList()));
-        responseBody.put("data", list);
-        return ResponseEntity.ok().body(responseBody);
+    public ResponseEntity<Map<String, List<ActivityMemberResponse>>> getActivityMembers(@PathVariable("activityID") Long id) {
+        return ResponseEntity.ok().body(Collections.singletonMap("data", activityService.findActivityMembers(id).stream()
+                .map(ActivityMemberResponse::of)
+                .collect(toList())));
     }
 
     @GetMapping(value = "/check/{sessionID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HashMap<String, List<AttendanceCheckResponse>>> getAttendanceCheck(HttpServletRequest request, @PathVariable("sessionID") Long id) {
+    public ResponseEntity<HashMap<String, List<AttendanceCheckResponse>>> getAttendanceCheck(@PathVariable("sessionID") Long id) {
         HashMap<String, List<AttendanceCheckResponse>> responseBody = new HashMap<>();
         List<AttendanceCheckResponse> list = new ArrayList<>();
         Map<ActivityMember, Boolean> c = activityService.findActivityMembersWithAttendance(id);
@@ -74,7 +67,7 @@ public class ActivityController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addActivity(@AuthenticationPrincipal Member member, @RequestBody ActivityCreateRequest requestBody) {
+    public ResponseEntity<Void> addActivity(@AuthenticationPrincipal Member member, @RequestBody ActivityRequest requestBody) {
         activityService.createActivity(new ActivityCreateValues(requestBody), member);
         return ResponseEntity.ok().build();
     }
@@ -92,8 +85,8 @@ public class ActivityController {
     }
 
     @PostMapping(value = "/check")
-    public ResponseEntity<String> attendanceCheck(HttpServletRequest request, @RequestBody AttendanceRequest requestBody) {
-        sessionService.attend(request.getAttribute("UUID").toString(), requestBody);
+    public ResponseEntity<String> attendanceCheck(@AuthenticationPrincipal Member member, @RequestBody AttendanceRequest requestBody) {
+        sessionService.attend(member.getUUID(), requestBody);
         return ResponseEntity.ok().body("출석체크에 성공하였습니다");
     }
 
@@ -104,7 +97,7 @@ public class ActivityController {
     }
 
     @PutMapping(value = "/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateActivity(@AuthenticationPrincipal Member member, @RequestBody ActivityUpdateRequest requestBody, @PathVariable("activityID") Long id) {
+    public ResponseEntity<Void> updateActivity(@AuthenticationPrincipal Member member, @RequestBody ActivityRequest requestBody, @PathVariable("activityID") Long id) {
         activityService.updateActivity(member, id, new ActivityUpdateValues(requestBody));
         return ResponseEntity.ok().build();
     }

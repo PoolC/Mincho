@@ -11,7 +11,7 @@ public class AttendanceCheckResponse {
 
     @JsonCreator
     public AttendanceCheckResponse(ActivityMember member, Boolean attended) {
-        this.member = new ActivityMemberResponse(member);
+        this.member = ActivityMemberResponse.of(member);
         this.attended = attended;
     }
 }
