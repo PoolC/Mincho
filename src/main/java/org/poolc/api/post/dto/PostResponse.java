@@ -2,7 +2,7 @@ package org.poolc.api.post.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
-import org.poolc.api.post.domain.Comment;
+import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.post.domain.Post;
 
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ public class PostResponse {
     private final String title;
     private final String body;
     private final LocalDateTime createdAt;
-    
+
     private final List<Comment> comments;
     private final Long commentCount;
 

@@ -1,8 +1,9 @@
-package org.poolc.api.domain;
+package org.poolc.api.comment.domain;
 
 import lombok.Getter;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.post.domain.Post;
 
 import javax.persistence.*;
 
@@ -26,4 +27,14 @@ public class Comment extends TimestampEntity {
 
     @Column(name = "body", columnDefinition = "text", nullable = false)
     private String body;
+
+    
+    public Comment() {
+    }
+
+    public Comment(Post post, Member member, String body) {
+        this.post = post;
+        this.member = member;
+        this.body = body;
+    }
 }
