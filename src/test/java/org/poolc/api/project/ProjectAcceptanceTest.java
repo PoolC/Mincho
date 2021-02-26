@@ -85,13 +85,14 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
+    @Test
     void addProject() {
-        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
 
         ExtractableResponse<Response> response = getMembersByNameRequest(accessToken, "MEMBER_NAME");
-        List<String> memberUUIDs = response.body().jsonPath().getList("data.id");
+        List<String> memberUUIDs = response.body().jsonPath().getList("data.loginID");
 
         ExtractableResponse<Response> response2 = addProjectRequest(accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", memberUUIDs);
 
@@ -207,7 +208,7 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
                 .queryParam("name", name)
                 .auth().oauth2(accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/project/member")
+                .when().get("/member")
                 .then().log().all()
                 .extract();
     }

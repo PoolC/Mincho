@@ -13,10 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -34,7 +32,7 @@ public class MemberController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MemberListResponse> getAllMembers(@AuthenticationPrincipal Member member) {
         List<MemberResponse> memberList = memberService.getAllMembers()
-                .stream().map(m -> MemberResponse.of(member))
+                .stream().map(m -> MemberResponse.of(m))
                 .collect(Collectors.toList());
         MemberListResponse MemberListResponses = new MemberListResponse(memberList);
         return ResponseEntity.ok().body(MemberListResponses);
