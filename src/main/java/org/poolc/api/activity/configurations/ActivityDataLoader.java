@@ -4,14 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.poolc.api.activity.domain.Activity;
 import org.poolc.api.activity.domain.ActivityTag;
 import org.poolc.api.activity.repository.ActivityRepository;
+import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.member.infra.PasswordHashProvider;
+import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.UUID;
 
 @Component
@@ -19,60 +21,67 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ActivityDataLoader implements CommandLineRunner {
 
-    private final ActivityRepository activityRepository;
     private final MemberRepository memberRepository;
+    private final ActivityRepository activityRepository;
     private final PasswordHashProvider passwordHashProvider;
 
     @Override
     public void run(String... args) {
-        Member member = new Member(UUID.randomUUID().toString(),
-                "MEMBER_ID",
-                passwordHashProvider.encodePassword("MEMBER_PASSWORD"),
-                "example@email.com",
-                "examplePhoneNumber",
-                "MEMBER_NAME",
-                "exampleDepartment",
-                "exampleStudentID",
-                true,
-                false,
-                null,
-                null,
-                null,
-                null,
-                false,
-                null);
-        Member member2 = new Member(UUID.randomUUID().toString(),
-                "MEMBER_ID2",
-                passwordHashProvider.encodePassword("MEMBER_PASSWORD2"),
-                "example@email.com2",
-                "examplePhoneNumber2",
-                "MEMBER_NAME2",
-                "exampleDepartment2",
-                "exampleStudentID2",
-                true,
-                false,
-                null,
-                null,
-                null,
-                null,
-                false,
-                null);
-        Member member3 = new Member(UUID.randomUUID().toString(),
-                "MEMBER_ID3",
-                passwordHashProvider.encodePassword("MEMBER_PASSWORD3"),
-                "example@email.com3",
-                "examplePhoneNumber3",
-                "MEMBER_NAME3",
-                "exampleDepartment3",
-                "exampleStudentID3",
-                true,
-                true,
-                null,
-                null,
-                null,
-                null,
-                false,
-                null);
+        Member member = Member.builder()
+                .UUID(UUID.randomUUID().toString())
+                .loginID("MEMBER_ID")
+                .passwordHash(passwordHashProvider.encodePassword("MEMBER_PASSWORD"))
+                .email("example@email.com")
+                .phoneNumber("010-4444-4444")
+                .name("MEMBER_NAME")
+                .department("exampleDepartment")
+                .studentID("2021147593")
+                .passwordResetToken(null)
+                .passwordResetTokenValidUntil(null)
+                .profileImageURL(null)
+                .introduction("")
+                .isExcepted(false)
+                .roles(new HashSet<>() {{
+                    add(MemberRole.MEMBER);
+                }})
+                .build();
+        Member member2 = Member.builder()
+                .UUID(UUID.randomUUID().toString())
+                .loginID("MEMBER_ID2")
+                .passwordHash(passwordHashProvider.encodePassword("MEMBER_PASSWORD2"))
+                .email("example@email.com2")
+                .phoneNumber("010-4444-4442")
+                .name("MEMBER_NAME2")
+                .department("exampleDepartment2")
+                .studentID("2021147521")
+                .passwordResetToken(null)
+                .passwordResetTokenValidUntil(null)
+                .profileImageURL(null)
+                .introduction("")
+                .isExcepted(false)
+                .roles(new HashSet<>() {{
+                    add(MemberRole.MEMBER);
+                }})
+                .build();
+        Member member3 = Member.builder()
+                .UUID(UUID.randomUUID().toString())
+                .loginID("MEMBER_ID3")
+                .passwordHash(passwordHashProvider.encodePassword("MEMBER_PASSWORD3"))
+                .email("example@email.com3")
+                .phoneNumber("010-4444-4443")
+                .name("MEMBER_NAME3")
+                .department("exampleDepartment3")
+                .studentID("2021147522")
+                .passwordResetToken(null)
+                .passwordResetTokenValidUntil(null)
+                .profileImageURL(null)
+                .introduction("")
+                .isExcepted(false)
+                .roles(new HashSet<>() {{
+                    add(MemberRole.MEMBER);
+                    add(MemberRole.ADMIN);
+                }})
+                .build();
         memberRepository.save(member);
         memberRepository.save(member2);
         memberRepository.save(member3);

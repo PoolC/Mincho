@@ -17,11 +17,10 @@ public class ActivityUpdateValues {
     private final String classHour;
     private final Long capacity;
     private final List<String> tags;
-    private final String memberID;
     private final Long hour;
 
     @JsonCreator
-    public ActivityUpdateValues(ActivityUpdateRequest request, String id) {
+    public ActivityUpdateValues(ActivityUpdateRequest request) {
         this.title = request.getTitle();
         this.description = request.getDescription();
         this.startDate = request.getStartDate();
@@ -29,7 +28,6 @@ public class ActivityUpdateValues {
         this.classHour = request.getClassHour();
         this.capacity = request.getCapacity();
         this.tags = request.getTags();
-        this.memberID = id;
         this.hour = request.getHour();
     }
 }

@@ -20,7 +20,7 @@ public class AuthService {
 
     public String createAccessToken(String loginID, String password) {
         Member member = memberService.getMemberIfRegistered(loginID, password);
-        if (!member.getIsActivated()) {
+        if (!member.isAcceptedMember()) {
             throw new UnactivatedException("No activated user");
         }
         return jwtTokenProvider.createToken(member);

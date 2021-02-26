@@ -1,19 +1,26 @@
 package org.poolc.api.member.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.common.domain.TimestampEntity;
-import org.poolc.api.domain.ProjectMember;
 import org.poolc.api.member.dto.UpdateMemberRequest;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity(name = "Member")
 @Getter
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Member extends TimestampEntity {
+public class Member extends TimestampEntity implements UserDetails {
     // TODO: 시그니처 통일해주세요(unique, nullable 순서)
     // TODO: db 컬럼명은 snake_case 가 컨벤션입니다. 이왕 name field를 선언한거 snake_case에 맞게 바꿔주세요
 
@@ -42,12 +49,6 @@ public class Member extends TimestampEntity {
     @Column(name = "studentID", columnDefinition = "varchar(40)", nullable = false, unique = true)
     private String studentID;
 
-    @Column(name = "isActivated", columnDefinition = "boolean default false")
-    private Boolean isActivated = false;
-
-    @Column(name = "isAdmin", columnDefinition = "boolean default false")
-    private Boolean isAdmin = false;
-
     @Column(name = "passwordResetToken", columnDefinition = "varchar(255)")
     private String passwordResetToken;
 
@@ -61,15 +62,17 @@ public class Member extends TimestampEntity {
     private String introduction;
 
     @Column(name = "isExcepted", columnDefinition = "boolean default false")
-    private Boolean isExcepted = false;
+    private Boolean isExcepted;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    List<ProjectMember> projects;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "member_uuid"))
+    @Builder.Default
+    private Set<MemberRole> roles = new HashSet<>();
 
     protected Member() {
     }
 
-    public Member(String UUID, String loginID, String passwordHash, String email, String phoneNumber, String name, String department, String studentID, Boolean isActivated, Boolean isAdmin, String passwordResetToken, LocalDateTime passwordResetTokenValidUntil, String profileImageURL, String introduction, Boolean isExcepted, List<ProjectMember> projects) {
+    public Member(String UUID, String loginID, String passwordHash, String email, String phoneNumber, String name, String department, String studentID, String passwordResetToken, LocalDateTime passwordResetTokenValidUntil, String profileImageURL, String introduction, Boolean isExcepted, Set<MemberRole> roles) {
         this.UUID = UUID;
         this.loginID = loginID;
         this.passwordHash = passwordHash;
@@ -78,20 +81,86 @@ public class Member extends TimestampEntity {
         this.name = name;
         this.department = department;
         this.studentID = studentID;
-        this.isActivated = isActivated;
-        this.isAdmin = isAdmin;
         this.passwordResetToken = passwordResetToken;
         this.passwordResetTokenValidUntil = passwordResetTokenValidUntil;
         this.profileImageURL = profileImageURL;
         this.introduction = introduction;
         this.isExcepted = isExcepted;
-        this.projects = projects;
+        this.roles = roles;
     }
 
-    public void update(UpdateMemberRequest updateMemberRequest, String passwordHash) {
+    public void updateMemberInfo(UpdateMemberRequest updateMemberRequest, String passwordHash) {
         this.name = updateMemberRequest.getName();
         this.passwordHash = passwordHash;
         this.email = updateMemberRequest.getEmail();
         this.phoneNumber = updateMemberRequest.getPhoneNumber();
+    }
+
+    public boolean isAcceptedMember() {
+        return !roles.contains(MemberRole.UNACCEPTED);
+    }
+
+    public boolean isAdmin() {
+        return roles.contains(MemberRole.ADMIN);
+    }
+
+    public void acceptMember() {
+        roles.remove(MemberRole.UNACCEPTED);
+        roles.add(MemberRole.MEMBER);
+    }
+
+    public void changeAdminPrivileges(boolean toAdmin) {
+        if (toAdmin) {
+            grantAdminPrivileges();
+            return;
+        }
+
+        revokeAdminPrivileges();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(MemberRole::name)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String getUsername() {
+        return loginID;
+    }
+
+    @Override
+    public String getPassword() {
+        return passwordHash;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return !roles.contains(MemberRole.UNACCEPTED);
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return !roles.contains(MemberRole.EXPELLED);
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    private void grantAdminPrivileges() {
+        roles.add(MemberRole.ADMIN);
+    }
+
+    private void revokeAdminPrivileges() {
+        roles.remove(MemberRole.ADMIN);
     }
 }

@@ -1,7 +1,7 @@
 package org.poolc.api.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.domain.Board;
+import org.poolc.api.board.domain.Board;
 import org.poolc.api.domain.Post;
 import org.poolc.api.member.domain.Member;
 import org.springframework.stereotype.Repository;

@@ -1,7 +1,7 @@
 package org.poolc.api.book.vo;
 
 import lombok.Getter;
-import org.poolc.api.book.dto.BookCreateRequest;
+import org.poolc.api.book.dto.BookRequest;
 
 @Getter
 public class BookCreateValues {
@@ -11,7 +11,7 @@ public class BookCreateValues {
     private final String imageURL;
     private final String info;
 
-    public BookCreateValues(BookCreateRequest request) {
+    public BookCreateValues(BookRequest request) {
         this.title = request.getTitle();
         this.author = request.getAuthor();
         this.imageURL = request.getImageURL();

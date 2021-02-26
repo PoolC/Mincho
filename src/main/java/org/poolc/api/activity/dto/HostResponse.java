@@ -10,7 +10,11 @@ public class HostResponse {
     private final String name;
 
     @JsonCreator
-    public HostResponse(Member member) {
-        this.name = member.getName();
+    public HostResponse(String name) {
+        this.name = name;
+    }
+
+    public static HostResponse of(Member member) {
+        return new HostResponse(member.getName());
     }
 }

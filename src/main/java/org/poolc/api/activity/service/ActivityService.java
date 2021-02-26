@@ -33,27 +33,27 @@ public class ActivityService {
     private final EntityManager em;
 
     @Transactional
-    public void createActivity(ActivityCreateValues values) {
+    public void createActivity(ActivityCreateValues values, Member member) {
         Activity activity = new Activity(values.getTitle(), values.getDescription(),
-                memberRepository.findById(values.getMemberID()).orElseThrow(() -> new NoSuchElementException("해당 회원이 존재하지 않습니다!")),
+                member,
                 values.getStartDate(), values.getClassHour(), values.getIsSeminar(), values.getCapacity(), values.getHour(), false);
         activity.getTags().addAll(values.getTags().stream().map(t -> new ActivityTag(activity, t)).collect(Collectors.toList()));
         activityRepository.save(activity);
     }
 
     @Transactional
-    public void deleteActivity(Long id, String uuid, String isAdmin) {
+    public void deleteActivity(Long id, Member member) {
         Activity activity = activityRepository.findOneActivityWithHostAndTags(id).orElseThrow(() -> new NoSuchElementException("해당 회원이 존재하지 않습니다!"));
-        if (!checkWhetherAdminOrHost(isAdmin, uuid, activity.getHost().getUUID())) {
+        if (!checkWhetherAdminOrHost(member.isAdmin(), member.getUUID(), activity.getHost().getUUID())) {
             throw new NotAdminOrHostException("호스트나 관리자가 아닙니다");
         }
         activityRepository.delete(activity);
     }
 
     @Transactional
-    public void updateActivity(String isAdmin, Long id, ActivityUpdateValues values) {
+    public void updateActivity(Member member, Long id, ActivityUpdateValues values) {
         Activity activity = activityRepository.findOneActivityWithHostAndTags(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다"));
-        if (!checkWhetherAdminOrHost(isAdmin, values.getMemberID(), activity.getHost().getUUID())) {
+        if (!checkWhetherAdminOrHost(member.isAdmin(), member.getUUID(), activity.getHost().getUUID())) {
             throw new NotAdminOrHostException("호스트나 관리자가 아닙니다");
         }
         activity.update(values);
@@ -97,9 +97,9 @@ public class ActivityService {
         return result;
     }
 
-    private boolean checkWhetherAdminOrHost(String isAdmin, String MemberID, String activityHostID) {
+    private boolean checkWhetherAdminOrHost(Boolean isAdmin, String MemberID, String activityHostID) {
 
-        if ((MemberID.equals(activityHostID)) || (isAdmin.equals("true"))) {
+        if ((MemberID.equals(activityHostID)) || (isAdmin)) {
             return true;
         } else {
             return false;

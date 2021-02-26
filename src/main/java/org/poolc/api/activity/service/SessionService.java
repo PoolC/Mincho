@@ -11,6 +11,7 @@ import org.poolc.api.activity.repository.ActivityRepository;
 import org.poolc.api.activity.repository.SessionRepository;
 import org.poolc.api.activity.vo.SessionCreateValues;
 import org.poolc.api.activity.vo.SessionUpdateValues;
+import org.poolc.api.member.domain.Member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,22 +31,17 @@ public class SessionService {
     private final ActivityMemberRepository activityMemberRepository;
 
     @Transactional
-
-    public void createSession(String userID, SessionCreateValues sessionCreateValues) {
+    public void createSession(Member member, SessionCreateValues sessionCreateValues) {
         Activity activity = activityRepository.findOneActivityWithHostAndTags(sessionCreateValues.getActivityID()).orElseThrow(() -> new NoSuchElementException("존재하지 않는 활동입니다"));
-        if (!checkUserIsHost(activity.getHost().getUUID(), userID)) {
+        if (!checkUserIsHost(activity.getHost().getUUID(), member.getUUID())) {
             throw new NotHostException("호스트가 아닌 사람은 세션 정보를 입력할수 없습니다");
         }
         sessionRepository.save(new Session(activity, sessionCreateValues.getDescription(), sessionCreateValues.getDate(), sessionCreateValues.getSessionNumber()));
     }
 
 
-    public List<Session> findSessionsByActivityID(String userID, Long id) {
+    public List<Session> findSessionsByActivityID(Member member, Long id) {
         Activity activity = activityRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 활동입니다"));
-        if (!checkUserIsHost(activity.getHost().getUUID(), userID)) {
-            throw new NotHostException("호스트가 아닌 사람은 세션 정보를 조회할수 없습니다");
-        }
-
         return sessionRepository.findByActivity(activity);
     }
 

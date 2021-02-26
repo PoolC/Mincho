@@ -16,10 +16,9 @@ public class ActivityCreateValues {
     private final String classHour;
     private final Long capacity;
     private final List<String> tags;
-    private final String memberID;
     private final Long hour;
 
-    public ActivityCreateValues(ActivityCreateRequest request, String id) {
+    public ActivityCreateValues(ActivityCreateRequest request) {
         this.title = request.getTitle();
         this.description = request.getDescription();
         this.startDate = request.getStartDate();
@@ -27,7 +26,6 @@ public class ActivityCreateValues {
         this.classHour = request.getClassHour();
         this.capacity = request.getCapacity();
         this.tags = request.getTags();
-        this.memberID = id;
         this.hour = request.getHour();
     }
 }

@@ -245,24 +245,12 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response2 = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
-        ExtractableResponse<Response> response3 = createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now());
+        createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now());
 
         ExtractableResponse<Response> response = getSessionsRequest(accessToken, 1l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().jsonPath().getList("data").size()).isEqualTo(2);
-
-    }
-
-    @Test
-    public void 호스트가아닌사람이세션정보조조회() {
-        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
-                .as(AuthResponse.class)
-                .getAccessToken();
-
-
-        ExtractableResponse<Response> response = getSessionsRequest(accessToken, 1l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
 
     }
 
@@ -377,7 +365,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void 없는액티비티수강신청초과() {
+    public void 없는액티비티수강신청() {
         String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
                 .as(AuthResponse.class)
                 .getAccessToken();
