@@ -36,14 +36,11 @@ public class BookService {
     public void updateBook(Long bookId, BookUpdateValues values) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 책입니다"));
-        boolean hasDuplicate = bookRepository.existsByTitleAndAuthor(values.getTitle(), values.getAuthor());
-
-        if (hasDuplicate) {
-            throw new DuplicateBookException("이미 존재하는 책입니다");
-        }
+        duplicateBookCheck(book, values);
 
         book.update(values.getTitle(), values.getAuthor(), values.getImageURL(), values.getInfo());
     }
+
 
     public void deleteBook(Long bookId) {
         bookRepository.delete(findOneBook(bookId));
@@ -88,4 +85,14 @@ public class BookService {
         }
     }
 
+    private void duplicateBookCheck(Book book, BookUpdateValues values) {
+        if (!((book.getTitle().equals(values.getTitle())) && (book.getAuthor().equals(values.getAuthor())))) {
+
+            boolean hasDuplicate = bookRepository.existsByTitleAndAuthor(values.getTitle(), values.getAuthor());
+
+            if (hasDuplicate) {
+                throw new DuplicateBookException("이미 존재하는 책입니다");
+            }
+        }
+    }
 }

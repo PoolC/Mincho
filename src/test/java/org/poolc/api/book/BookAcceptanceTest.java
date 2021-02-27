@@ -176,7 +176,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = updateBookRequest(accessToken, "소정이는 핵을 쓴다", "개못핵", "d", "ㅇㄴ", 7L);
+        ExtractableResponse<Response> response = updateBookRequest(accessToken, "풀씨", "형철띠", "d", "ㅇㄴ", 7L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
