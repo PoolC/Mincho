@@ -7,6 +7,7 @@ import org.poolc.api.book.domain.Book;
 import org.poolc.api.book.domain.BookStatus;
 import org.poolc.api.member.dto.MemberResponse;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Getter
@@ -19,9 +20,11 @@ public class BookResponse {
     private final BookStatus status;
     private final String info;
     private final MemberResponse borrower;
+    private final LocalDate borrowDate;
 
     @JsonCreator
-    public BookResponse(Long id, String title, String author, String imageURL, BookStatus status, String info, MemberResponse borrower) {
+
+    public BookResponse(Long id, String title, String author, String imageURL, BookStatus status, String info, MemberResponse borrower, LocalDate borrowDate) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -29,6 +32,7 @@ public class BookResponse {
         this.status = status;
         this.info = info;
         this.borrower = borrower;
+        this.borrowDate = borrowDate;
     }
 
     public static BookResponse of(Book book) {
@@ -37,6 +41,6 @@ public class BookResponse {
                 .orElse(null);
 
         return new BookResponse(book.getId(), book.getTitle(), book.getAuthor(), book.getImageURL(), book.getStatus(),
-                book.getInfo(), memberResponse);
+                book.getInfo(), memberResponse, book.getBorrowDate());
     }
 }
