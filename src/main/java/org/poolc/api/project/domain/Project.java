@@ -40,7 +40,7 @@ public class Project extends TimestampEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "project_members", joinColumns = @JoinColumn(name = "project_id"))
-    private List<String> memberUUIDs = new ArrayList<>();
+    private List<String> memberLoginIDs = new ArrayList<>();
 
     protected Project() {
     }
@@ -55,11 +55,7 @@ public class Project extends TimestampEntity {
     }
 
     public void setMembers(List<String> members) {
-        this.memberUUIDs = members;
-    }
-
-    public void addMembers(List<String> members) {
-        this.memberUUIDs.addAll(members);
+        this.memberLoginIDs = members;
     }
 
     public void update(ProjectUpdateValues projectUpdateValues) {
@@ -69,6 +65,7 @@ public class Project extends TimestampEntity {
         this.duration = projectUpdateValues.getDuration();
         this.thumbnailURL = projectUpdateValues.getThumbnailURL();
         this.body = projectUpdateValues.getBody();
-        this.memberUUIDs.clear();
+        this.memberLoginIDs.clear();
+        this.memberLoginIDs.addAll(projectUpdateValues.getMemberLoginIDs());
     }
 }

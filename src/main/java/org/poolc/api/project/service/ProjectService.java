@@ -7,6 +7,7 @@ import org.poolc.api.project.repository.ProjectRepository;
 import org.poolc.api.project.vo.ProjectCreateValues;
 import org.poolc.api.project.vo.ProjectUpdateValues;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -18,11 +19,12 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final MemberService memberService;
 
+    @Transactional
     public void createProject(ProjectCreateValues values) {
-        checkMembersExist(values.getMemberUUIDs());
+        checkMembersExist(values.getMemberLoginIDs());
 
         Project project = new Project(values.getName(), values.getDescription(), values.getGenre(), values.getDuration(), values.getThumbnailURL(), values.getBody());
-        project.setMembers(values.getMemberUUIDs());
+        project.setMembers(values.getMemberLoginIDs());
 
         projectRepository.save(project);
     }
@@ -36,16 +38,19 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
-    public void updateProject(ProjectUpdateValues projectUpdateValues, Long projectID) {
+    @Transactional
+    public void updateProject(ProjectUpdateValues values, Long projectID) {
         Project project = findOne(projectID);
-        project.update(projectUpdateValues);
+        checkMembersExist(values.getMemberLoginIDs());
+        project.update(values);
     }
 
+    @Transactional
     public void deleteProject(Long projectId) {
         projectRepository.delete(findOne(projectId));
     }
 
-    private void checkMembersExist(List<String> memberUUIDs) {
-        memberUUIDs.forEach(memberService::findMemberbyUUID);
+    private void checkMembersExist(List<String> memberLoginIDs) {
+        memberLoginIDs.forEach(memberService::findMemberbyLoginID);
     }
 }

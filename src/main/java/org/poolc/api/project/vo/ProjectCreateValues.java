@@ -14,7 +14,7 @@ public class ProjectCreateValues {
     private final String duration;
     private final String thumbnailURL;
     private final String body;
-    List<String> memberUUIDs;
+    List<String> memberLoginIDs;
 
     public ProjectCreateValues(RegisterProjectRequest request) {
         this.name = request.getName();
@@ -23,6 +23,6 @@ public class ProjectCreateValues {
         this.duration = request.getDuration();
         this.thumbnailURL = request.getThumbnailURL();
         this.body = request.getBody();
-        this.memberUUIDs = request.getMembers();
+        this.memberLoginIDs = request.getMemberLoginIDs();
     }
 }
