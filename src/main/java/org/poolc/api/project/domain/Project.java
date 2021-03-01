@@ -39,7 +39,7 @@ public class Project extends TimestampEntity {
     private String body;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "project_members", joinColumns = @JoinColumn(name = "member_uuid"))
+    @CollectionTable(name = "project_members", joinColumns = @JoinColumn(name = "project_id"))
     private List<String> memberUUIDs = new ArrayList<>();
 
     protected Project() {
