@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -38,6 +39,15 @@ public class MemberController {
         return ResponseEntity.ok().body(MemberListResponses);
     }
 
+    @GetMapping(value = "/name", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MemberListResponse> findMembersForProject(HttpServletRequest request) {
+        List<MemberResponse> memberList = memberService.getAllMembersByName(request.getParameter("name"))
+                .stream().map(MemberResponse::of)
+                .collect(Collectors.toList());
+        MemberListResponse MemberListResponses = new MemberListResponse(memberList);
+        return ResponseEntity.ok().body(MemberListResponses);
+    }
+
     @PostMapping
     public ResponseEntity<Void> createMember(@RequestBody RegisterMemberRequest request) {
         checkIsValidMemberCreateInput(request);
@@ -53,7 +63,8 @@ public class MemberController {
     }
 
     @PutMapping(path = "/me")
-    public ResponseEntity updateMember(@AuthenticationPrincipal Member member, @RequestBody UpdateMemberRequest updateMemberRequest) {
+    public ResponseEntity updateMember(@AuthenticationPrincipal Member member, @RequestBody UpdateMemberRequest
+            updateMemberRequest) {
         checkIsValidMemberUpdateInput(updateMemberRequest);
         memberService.updateMember(member.getUUID(), updateMemberRequest);
         return ResponseEntity.ok().build();

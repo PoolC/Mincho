@@ -1,17 +1,20 @@
 package org.poolc.api.member.service;
 
 import org.poolc.api.auth.exception.UnauthenticatedException;
+import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.poolc.api.member.exception.DuplicateMemberException;
-import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.member.vo.MemberCreateValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Service
 public class MemberService {
@@ -47,7 +50,9 @@ public class MemberService {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRole.UNACCEPTED); }})
+                        .roles(new HashSet<>() {{
+                            add(MemberRole.UNACCEPTED);
+                        }})
                         .build());
     }
 
@@ -93,5 +98,9 @@ public class MemberService {
         return memberRepository.findByLoginID(loginID)
                 .filter(member -> passwordHashProvider.matches(password, member.getPasswordHash()))
                 .orElseThrow(() -> new UnauthenticatedException("No user found with given loginID and password"));
+    }
+
+    public List<Member> getAllMembersByName(String name) {
+        return memberRepository.findByName(name);
     }
 }
