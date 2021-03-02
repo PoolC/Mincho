@@ -32,7 +32,7 @@ public class MemberController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MemberListResponse> getAllMembers(@AuthenticationPrincipal Member member) {
         List<MemberResponse> memberList = memberService.getAllMembers()
-                .stream().map(m -> MemberResponse.of(m))
+                .stream().map(MemberResponse::of)
                 .collect(Collectors.toList());
         MemberListResponse MemberListResponses = new MemberListResponse(memberList);
         return ResponseEntity.ok().body(MemberListResponses);
