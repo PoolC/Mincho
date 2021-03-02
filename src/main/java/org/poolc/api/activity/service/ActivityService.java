@@ -16,11 +16,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -76,6 +80,14 @@ public class ActivityService {
         return activityRepository.findActivitiesWithHostAndTags();
     }
 
+    public List<Activity> findActivitiesInSemester(String val) {
+        YearSemester yearSemester = getYearSemesterFromString(val);
+        LocalDate startDate = getFirstDateFromYearSemester(yearSemester);
+        LocalDate endDate = getLastDateFromYearSemester(yearSemester);
+        return activityRepository.findActivitiesWithHostAndTagsInSemester(startDate, endDate);
+    }
+
+
     public Activity findOneActivity(Long id) {
         return activityRepository.findOneActivityWithHostAndTags(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다"));
     }
@@ -108,4 +120,37 @@ public class ActivityService {
         }
     }
 
+    private YearSemester getYearSemesterFromString(String val) {
+        String[] splits = val.split("-");
+        if (splits.length != 2) {
+            throw new IllegalArgumentException("제대로된 형식의 시간이 아닙니다");
+        }
+        Integer year = tryParse(splits[0]);
+        Integer semester = tryParse(splits[1]);
+        return new YearSemester(year, semester);
+    }
+
+    private Integer tryParse(String text) {
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("제대로된 형식의 시간이 아닙니다");
+        }
+    }
+
+    private LocalDate getFirstDateFromYearSemester(YearSemester yearSemester) {
+        if (yearSemester.getSemester() == 1) {
+            return LocalDate.of(yearSemester.getYear(), 3, 1);
+        } else {
+            return LocalDate.of(yearSemester.getYear(), 9, 1);
+        }
+    }
+
+    private LocalDate getLastDateFromYearSemester(YearSemester yearSemester) {
+        if (yearSemester.getSemester() == 1) {
+            return LocalDate.of(yearSemester.getYear(), 8, 1).with(lastDayOfMonth());
+        } else {
+            return LocalDate.of(yearSemester.getYear(), 2, 1).with(lastDayOfMonth());
+        }
+    }
 }

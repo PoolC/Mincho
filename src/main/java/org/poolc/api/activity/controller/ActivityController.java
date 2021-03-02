@@ -27,10 +27,22 @@ public class ActivityController {
     private final SessionService sessionService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, List<ActivityResponse>>> findActivities() {
-        return ResponseEntity.ok().body(Collections.singletonMap("data", activityService.findActivities().stream()
-                .map(ActivityResponse::of)
-                .collect(toList())));
+    public ResponseEntity<Map<String, List<ActivityResponse>>> findActivities(@RequestParam Optional<String> when) {
+        Map<String, List<ActivityResponse>> result = new HashMap<>();
+        when.ifPresentOrElse(
+                (val)
+                        -> {
+                    result.put("data", activityService.findActivitiesInSemester(val).stream()
+                            .map(ActivityResponse::of)
+                            .collect(toList()));
+                },
+                () -> {
+                    result.put("data", activityService.findActivities().stream()
+                            .map(ActivityResponse::of)
+                            .collect(toList()));
+                }
+        );
+        return ResponseEntity.ok().body(result);
     }
 
     @GetMapping(value = "/years", produces = MediaType.APPLICATION_JSON_VALUE)

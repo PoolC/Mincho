@@ -46,6 +46,41 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
     }
 
     @Test
+    public void 한학기활동전체조회() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = getActivitiesRequestWithPeriod(accessToken, "2021-1");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getList("data")).hasSize(3);
+    }
+
+    @Test
+    public void 한학기활동전체조회with이상한queryparam() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = getActivitiesRequestWithPeriod(accessToken, "20211");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void 한학기활동전체조회with이상한queryparam2() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = getActivitiesRequestWithPeriod(accessToken, "A-B");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    @Test
     public void 액티비티하나조회() {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
@@ -475,7 +510,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
 
         assertThat(response7.body().jsonPath().getBoolean("data[0].attended")).isEqualTo(true);
         assertThat(response7.body().jsonPath().getBoolean("data[1].attended")).isEqualTo(true);
-        
+
 
     }
 
@@ -488,6 +523,18 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> getActivitiesRequestWithPeriod(String accessToken, String when) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .param("when", when)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/activity")
+                .then().log().all()
+                .extract();
+    }
+
 
     public static ExtractableResponse<Response> getActivityRequest(String accessToken, Long id) {
         return RestAssured
