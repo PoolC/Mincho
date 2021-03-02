@@ -475,17 +475,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
 
         assertThat(response7.body().jsonPath().getBoolean("data[0].attended")).isEqualTo(true);
         assertThat(response7.body().jsonPath().getBoolean("data[1].attended")).isEqualTo(true);
-
-        List<String> members2 = new ArrayList<>();
-        members2.add(response5.body().jsonPath().getString("data[0].member.loginID"));
-
-        ExtractableResponse<Response> response8 = attendRequest(accessToken3, 8l, members2);
-
-        ExtractableResponse<Response> response9 = getAttendanceRequest(accessToken3, 8l);
-
-        assertThat(response9.body().jsonPath().getBoolean("data[0].attended")).isEqualTo(true);
-        assertThat(response9.body().jsonPath().getBoolean("data[1].attended")).isEqualTo(false);
-
+        
 
     }
 
