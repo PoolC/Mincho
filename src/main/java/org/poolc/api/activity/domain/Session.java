@@ -1,9 +1,13 @@
-package org.poolc.api.domain;
+package org.poolc.api.activity.domain;
 
 import lombok.Getter;
+import org.poolc.api.activity.vo.SessionUpdateValues;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static javax.persistence.FetchType.LAZY;
@@ -13,11 +17,11 @@ import static javax.persistence.FetchType.LAZY;
 public class Session {
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "activityID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false)
     private Activity activity;
 
     @Column(name = "description", columnDefinition = "varchar(1024)", nullable = false)
@@ -26,8 +30,13 @@ public class Session {
     @Column(name = "date", columnDefinition = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "sessionNumber", nullable = false)
+    @Column(name = "session_number", nullable = false)
     private Long sessionNumber;
+
+    @ElementCollection(fetch = LAZY)
+    @CollectionTable(name = "attendance", joinColumns = @JoinColumn(name = "session_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"session_id", "member_loginid"})})
+    @Column(name = "member_loginid")
+    private List<String> attendedMemberLoginIDs = new ArrayList<>();
 
     public Session() {
     }
@@ -37,6 +46,21 @@ public class Session {
         this.description = description;
         this.date = date;
         this.sessionNumber = sessionNumber;
+    }
+
+    public void update(SessionUpdateValues values) {
+        this.date = values.getDate();
+        this.description = values.getDescription();
+    }
+
+    @Transactional
+    public void clear() {
+        this.getAttendedMemberLoginIDs().clear();
+    }
+
+    @Transactional
+    public void attend(List<String> attendances) {
+        this.attendedMemberLoginIDs.addAll(attendances);
     }
 
     @Override
@@ -55,4 +79,5 @@ public class Session {
     public int hashCode() {
         return Objects.hash(getId(), getActivity(), getDescription(), getDate(), getSessionNumber());
     }
+
 }
