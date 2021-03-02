@@ -63,7 +63,8 @@ public class MemberController {
     }
 
     @PutMapping(path = "/me")
-    public ResponseEntity updateMember(@AuthenticationPrincipal Member member, @RequestBody UpdateMemberRequest updateMemberRequest) {
+    public ResponseEntity updateMember(@AuthenticationPrincipal Member member, @RequestBody UpdateMemberRequest
+            updateMemberRequest) {
         checkIsValidMemberUpdateInput(updateMemberRequest);
         memberService.updateMember(member.getUUID(), updateMemberRequest);
         return ResponseEntity.ok().build();
