@@ -86,7 +86,7 @@ public class ActivityDataLoader implements CommandLineRunner {
         memberRepository.save(member2);
         memberRepository.save(member3);
         LocalDate date = LocalDate.now();
-        LocalDate date2 = LocalDate.of(2020, 1, 11);
+        LocalDate date2 = LocalDate.of(2020, 9, 11);
         Activity activity = new Activity("정윤석의 c++ ", "dsds", member, date, "dsds", false, 1l, 3l, true);
         activity.getTags().add(new ActivityTag(activity, "꿀잼보장"));
         activityRepository.save(activity);

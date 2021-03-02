@@ -2,7 +2,6 @@ package org.poolc.api.activity.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.activity.domain.Activity;
-import org.poolc.api.activity.domain.ActivityMember;
 import org.poolc.api.activity.domain.ActivityTag;
 import org.poolc.api.activity.domain.Session;
 import org.poolc.api.activity.exception.NotAdminOrHostException;
@@ -10,6 +9,7 @@ import org.poolc.api.activity.repository.ActivityRepository;
 import org.poolc.api.activity.repository.SessionRepository;
 import org.poolc.api.activity.vo.ActivityCreateValues;
 import org.poolc.api.activity.vo.ActivityUpdateValues;
+import org.poolc.api.activity.vo.YearSemester;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class ActivityService {
 
     @Transactional
     public void deleteActivity(Long id, Member member) {
-        Activity activity = activityRepository.findOneActivityWithHostAndTags(id).orElseThrow(() -> new NoSuchElementException("해당 회원이 존재하지 않습니다!"));
+        Activity activity = activityRepository.findOneActivityWithHostAndTags(id).orElseThrow(() -> new NoSuchElementException("해당 활동이 존재하지 않습니다!"));
         if (!checkWhetherAdminOrHost(member.isAdmin(), member.getUUID(), activity.getHost().getUUID())) {
             throw new NotAdminOrHostException("호스트나 관리자가 아닙니다");
         }
@@ -61,15 +61,14 @@ public class ActivityService {
 
     @Transactional
     public void apply(Long id, String uuid) {
-        Activity activity = activityRepository.findOneActivityWithMembers(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 없습니다"));
+        Activity activity = activityRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 없습니다"));
         if (!activity.getAvailable()) {
             throw new IllegalStateException("아직 신청할수 없습니다.");
-        } else if (activity.getCapacity() <= activity.getMembers().size()) {
+        } else if (activity.getCapacity() <= activity.getMemberLoginIDs().size()) {
             throw new IllegalStateException("정원을 초과하였습니다");
         } else {
             Member member = memberRepository.findById(uuid).orElseThrow(() -> new NoSuchElementException("해당하는 회원이 없습니다"));
-            ActivityMember activityMember = new ActivityMember(activity, member);
-            activity.apply(activityMember);
+            activity.apply(member.getLoginID());
         }
     }
 
@@ -81,20 +80,23 @@ public class ActivityService {
         return activityRepository.findOneActivityWithHostAndTags(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다"));
     }
 
-    public List<ActivityMember> findActivityMembers(Long id) {
-        return activityRepository.findOneActivityWithMembers(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다")).getMembers();
+    public List<Member> findActivityMembers(Long id) {
+        return memberRepository.findAllMembersByLoginIDList(activityRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다")).getMemberLoginIDs());
     }
 
     @Transactional
-    public Map<ActivityMember, Boolean> findActivityMembersWithAttendance(Long id) {
+    public Map<Member, Boolean> findActivityMembersWithAttendance(Long id) {
         Session session = sessionRepository.findByIdWithAttendances(id).orElseThrow(() -> new NoSuchElementException("해당하는 세션이 없습니다"));
-        List<ActivityMember> members = activityRepository.findOneActivityWithMembers(session.getActivity().getId())
-                .orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다"))
-                .getMembers();
-        Map<ActivityMember, Boolean> result = new HashMap<>();
+        List<Member> members = memberRepository.findAllMembersByLoginIDList(session.getActivity().getMemberLoginIDs());
+        Map<Member, Boolean> result = new HashMap<>();
         members.stream().forEach(m -> result.put(m, false));
-        session.getAttendances().forEach(m -> result.put(m.getMemberID(), true));
+        session.getAttendedMemberLoginIDs().forEach(m -> result.put(memberRepository.findByLoginID(m).orElseThrow(() -> new NoSuchElementException("해당하는 세션이 없습니다")), true));
         return result;
+    }
+
+
+    public List<YearSemester> findActivityYears() {
+        return activityRepository.findAll().stream().map(a -> YearSemester.of(a.getStartDate())).distinct().collect(Collectors.toList());
     }
 
     private boolean checkWhetherAdminOrHost(Boolean isAdmin, String MemberID, String activityHostID) {

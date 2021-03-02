@@ -13,7 +13,7 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
     List<Session> findByActivity(Activity activity);
 
-    @Query(value = "select distinct s from Session s left join fetch s.attendances where s.id=:id")
+    @Query(value = "select distinct s from Session s left join fetch s.attendedMemberLoginIDs where s.id=:id")
     Optional<Session> findByIdWithAttendances(@Param("id") Long id);
 
 

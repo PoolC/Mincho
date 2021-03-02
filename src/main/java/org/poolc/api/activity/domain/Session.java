@@ -33,8 +33,10 @@ public class Session {
     @Column(name = "session_number", nullable = false)
     private Long sessionNumber;
 
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Attendance> attendances = new ArrayList<>();
+    @ElementCollection(fetch = LAZY)
+    @CollectionTable(name = "attendance", joinColumns = @JoinColumn(name = "session_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"session_id", "member_loginid"})})
+    @Column(name = "member_loginid")
+    private List<String> attendedMemberLoginIDs = new ArrayList<>();
 
     public Session() {
     }
@@ -52,9 +54,13 @@ public class Session {
     }
 
     @Transactional
-    public void attend(List<Attendance> attendances) {
-        this.attendances.clear();
-        this.attendances.addAll(attendances);
+    public void clear() {
+        this.getAttendedMemberLoginIDs().clear();
+    }
+
+    @Transactional
+    public void attend(List<String> attendances) {
+        this.attendedMemberLoginIDs.addAll(attendances);
     }
 
     @Override

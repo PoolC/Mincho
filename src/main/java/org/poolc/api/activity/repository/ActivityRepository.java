@@ -17,6 +17,4 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query(value = "select distinct a from Activity a left join fetch a.host left join a.tags t where a.id=:id")
     Optional<Activity> findOneActivityWithHostAndTags(@Param("id") Long id);
 
-    @Query(value = "select distinct a from Activity a left join fetch a.members am left join fetch am.member where a.id=:id")
-    Optional<Activity> findOneActivityWithMembers(@Param("id") Long id);
 }

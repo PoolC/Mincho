@@ -1,16 +1,13 @@
 package org.poolc.api.activity.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.activity.domain.ActivityMember;
 import org.poolc.api.activity.dto.*;
 import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.activity.service.SessionService;
-import org.poolc.api.activity.vo.ActivityCreateValues;
-import org.poolc.api.activity.vo.ActivityUpdateValues;
-import org.poolc.api.activity.vo.SessionCreateValues;
-import org.poolc.api.activity.vo.SessionUpdateValues;
+import org.poolc.api.activity.vo.*;
 import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.member.dto.MemberResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +33,11 @@ public class ActivityController {
                 .collect(toList())));
     }
 
+    @GetMapping(value = "/years", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, List<String>>> getYears() {
+        return ResponseEntity.ok().body(Collections.singletonMap("data", activityService.findActivityYears().stream().map(a -> a.toString()).distinct().sorted().collect(toList())));
+    }
+
     @GetMapping(value = "/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, ActivityResponse>> findOneActivity(@PathVariable("activityID") Long id) {
         return ResponseEntity.ok().body(Collections.singletonMap("data", ActivityResponse.of(activityService.findOneActivity(id))));
@@ -49,19 +51,19 @@ public class ActivityController {
     }
 
     @GetMapping(value = "/member/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, List<ActivityMemberResponse>>> getActivityMembers(@PathVariable("activityID") Long id) {
+    public ResponseEntity<Map<String, List<MemberResponse>>> getActivityMembers(@PathVariable("activityID") Long id) {
         return ResponseEntity.ok().body(Collections.singletonMap("data", activityService.findActivityMembers(id).stream()
-                .map(ActivityMemberResponse::of)
+                .map(MemberResponse::of)
                 .collect(toList())));
     }
 
     @GetMapping(value = "/check/{sessionID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HashMap<String, List<AttendanceCheckResponse>>> getAttendanceCheck(@PathVariable("sessionID") Long id) {
-        HashMap<String, List<AttendanceCheckResponse>> responseBody = new HashMap<>();
-        List<AttendanceCheckResponse> list = new ArrayList<>();
-        Map<ActivityMember, Boolean> c = activityService.findActivityMembersWithAttendance(id);
+    public ResponseEntity<HashMap<String, List<AttendanceResponse>>> getAttendanceCheck(@PathVariable("sessionID") Long id) {
+        HashMap<String, List<AttendanceResponse>> responseBody = new HashMap<>();
+        List<AttendanceResponse> list = new ArrayList<>();
+        Map<Member, Boolean> c = activityService.findActivityMembersWithAttendance(id);
         list.addAll(c.entrySet().stream()
-                .map(e -> new AttendanceCheckResponse(e.getKey(), e.getValue())).collect(toList()));
+                .map(e -> new AttendanceResponse(e.getKey(), e.getValue())).collect(toList()));
         responseBody.put("data", list);
         return ResponseEntity.ok().body(responseBody);
     }
@@ -86,7 +88,7 @@ public class ActivityController {
 
     @PostMapping(value = "/check")
     public ResponseEntity<String> attendanceCheck(@AuthenticationPrincipal Member member, @RequestBody AttendanceRequest requestBody) {
-        sessionService.attend(member.getUUID(), requestBody);
+        sessionService.attend(member.getUUID(), new AttendanceValues(requestBody));
         return ResponseEntity.ok().body("출석체크에 성공하였습니다");
     }
 
@@ -114,7 +116,7 @@ public class ActivityController {
     }
 
     @ExceptionHandler({UnauthenticatedException.class})
-    public ResponseEntity<String> notAllowdException(Exception e) {
+    public ResponseEntity<String> notAllowedException(Exception e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 }
