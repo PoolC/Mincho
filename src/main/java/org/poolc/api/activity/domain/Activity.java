@@ -32,13 +32,13 @@ public class Activity {
     @JoinColumn(name = "host", referencedColumnName = "UUID", nullable = false)
     private Member host;
 
-    @Column(name = "start_date", columnDefinition = "date")
+    @Column(name = "start_date", columnDefinition = "date", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "class_hour", columnDefinition = "varchar(1024)")
+    @Column(name = "class_hour", columnDefinition = "varchar(1024)", nullable = false)
     private String classHour;
 
-    @Column(name = "is_seminar", columnDefinition = "boolean default false")
+    @Column(name = "is_seminar", columnDefinition = "boolean default false", nullable = false)
     private Boolean isSeminar;
 
     @Column(name = "capacity", nullable = false)
@@ -47,7 +47,7 @@ public class Activity {
     @Column(name = "hour", nullable = false)
     private Long hour;
 
-    @Column(name = "available", columnDefinition = "boolean default false")
+    @Column(name = "available", columnDefinition = "boolean default false", nullable = false)
     private Boolean available;
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
