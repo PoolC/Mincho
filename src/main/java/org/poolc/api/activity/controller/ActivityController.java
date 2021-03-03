@@ -47,7 +47,7 @@ public class ActivityController {
 
     @GetMapping(value = "/years", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, List<String>>> getYears() {
-        return ResponseEntity.ok().body(Collections.singletonMap("data", activityService.findActivityYears().stream().map(a -> a.toString()).distinct().sorted().collect(toList())));
+        return ResponseEntity.ok().body(Collections.singletonMap("data", activityService.findActivityYears().stream().map(a -> a.toString()).distinct().sorted(Comparator.reverseOrder()).collect(toList())));
     }
 
     @GetMapping(value = "/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)

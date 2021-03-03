@@ -51,10 +51,10 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = getActivitiesRequestWithPeriod(accessToken, "2021-1");
+        ExtractableResponse<Response> response = getActivitiesRequestWithPeriod(accessToken, "2020-2");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("data")).hasSize(3);
+        assertThat(response.body().jsonPath().getList("data")).hasSize(1);
     }
 
     @Test

@@ -150,7 +150,7 @@ public class ActivityService {
         if (yearSemester.getSemester() == 1) {
             return LocalDate.of(yearSemester.getYear(), 8, 1).with(lastDayOfMonth());
         } else {
-            return LocalDate.of(yearSemester.getYear(), 2, 1).with(lastDayOfMonth());
+            return LocalDate.of(yearSemester.getYear() + 1, 2, 1).with(lastDayOfMonth());
         }
     }
 }
