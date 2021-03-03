@@ -3,6 +3,7 @@ package org.poolc.api.activity.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import org.poolc.api.activity.domain.Activity;
+import org.poolc.api.member.dto.MemberResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 public class ActivityResponse {
     private final Long id;
     private final String title;
-    private final String hostName;
+    private final MemberResponse host;
     private final String classHour;
     private final LocalDate startDate;
     private final boolean available;
@@ -22,10 +23,10 @@ public class ActivityResponse {
     private final Long hour;
 
     @JsonCreator
-    public ActivityResponse(Long id, String title, String hostName, String classHour, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour) {
+    public ActivityResponse(Long id, String title, MemberResponse host, String classHour, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour) {
         this.id = id;
         this.title = title;
-        this.hostName = hostName;
+        this.host = host;
         this.classHour = classHour;
         this.startDate = startDate;
         this.available = available;
@@ -40,7 +41,8 @@ public class ActivityResponse {
         List<TagResponse> tags = activity.getTags().stream()
                 .map(t -> new TagResponse(t))
                 .collect(Collectors.toList());
-        return new ActivityResponse(activity.getId(), activity.getTitle(), activity.getHost().getName(),
+        MemberResponse host = MemberResponse.of(activity.getHost());
+        return new ActivityResponse(activity.getId(), activity.getTitle(), host,
                 activity.getClassHour(), activity.getStartDate(), activity.getAvailable(), tags, activity.getCapacity(), activity.getIsSeminar(), activity.getHour());
     }
 }
