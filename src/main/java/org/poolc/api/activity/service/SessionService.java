@@ -41,7 +41,7 @@ public class SessionService {
     }
 
 
-    public List<Session> findSessionsByActivityID(Member member, Long id) {
+    public List<Session> findSessionsByActivityID(Long id) {
         Activity activity = activityRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 활동입니다"));
         return sessionRepository.findByActivity(activity);
     }

@@ -58,6 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/activity/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/session/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/check/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/activity/member/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.POST, "/activity").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.POST, "/activity/session").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.POST, "/activity/apply/*").hasAuthority(MemberRole.MEMBER.name())
