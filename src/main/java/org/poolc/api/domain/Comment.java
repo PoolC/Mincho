@@ -3,6 +3,7 @@ package org.poolc.api.domain;
 import lombok.Getter;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.post.domain.Post;
 
 import javax.persistence.*;
 

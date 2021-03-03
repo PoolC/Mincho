@@ -2,7 +2,7 @@ package org.poolc.api.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.domain.Comment;
-import org.poolc.api.domain.Post;
+import org.poolc.api.post.domain.Post;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

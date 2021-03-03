@@ -41,7 +41,7 @@ public class AuthDoc extends ApiDoc {
         given(authService.createAccessToken(loginID, password)).willReturn(RESULT_TOKEN);
         given(memberService.getMemberIfRegistered(loginID, password)).willReturn(null);
         given(member.getUUID()).willReturn(UUID);
-        given(member.getIsAdmin()).willReturn(true);
+        given(member.isAdmin()).willReturn(true);
 
         mockMvc.perform(post("/login").content(new ObjectMapper().writeValueAsString(new AuthRequest(loginID, password))).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -12,7 +12,6 @@ import org.poolc.api.post.dto.PostsResponse;
 import org.poolc.api.post.dto.RegisterPostRequest;
 import org.poolc.api.post.dto.UpdatePostRequest;
 import org.poolc.api.post.exception.UnauthorizedException;
-import org.poolc.api.post.service.CommentService;
 import org.poolc.api.post.service.PostService;
 import org.poolc.api.post.vo.PostCreateValues;
 import org.poolc.api.post.vo.PostUpdateValues;
@@ -34,7 +33,6 @@ public class PostController {
     private final BoardService boardService;
     private final MemberService memberService;
     private final PostService postService;
-    private final CommentService commentService;
 
     private String PUBLIC = "PUBLIC";
     private String MEMBER = "MEMBER";
