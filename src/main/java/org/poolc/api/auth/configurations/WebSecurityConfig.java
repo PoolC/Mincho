@@ -38,16 +38,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/project/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/project/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/project/**").permitAll()
+
                 .antMatchers(HttpMethod.POST, "/board").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/board/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/board/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/board/**").permitAll()
+
+                .antMatchers(HttpMethod.POST, "/comment").hasAuthority(MemberRole.MEMBER.name())
+                .antMatchers(HttpMethod.PUT, "/comment/*").hasAuthority(MemberRole.MEMBER.name())
+                .antMatchers(HttpMethod.DELETE, "/comment/*").hasAuthority(MemberRole.MEMBER.name())
+                .antMatchers("/comment/**").permitAll()
+
                 .antMatchers(HttpMethod.POST, "/book").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/book/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/book/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/book/borrow/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.PUT, "/book/return/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers("/book/**").hasAuthority(MemberRole.MEMBER.name())
+
                 .antMatchers(HttpMethod.POST, "/member").permitAll()
                 .antMatchers(HttpMethod.GET, "/member").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/member/*").hasAuthority(MemberRole.ADMIN.name())
