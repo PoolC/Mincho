@@ -21,9 +21,10 @@ public class ActivityResponse {
     private final Long capacity;
     private final boolean isSeminar;
     private final Long hour;
+    private final String description;
 
     @JsonCreator
-    public ActivityResponse(Long id, String title, MemberResponse host, String classHour, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour) {
+    public ActivityResponse(Long id, String title, MemberResponse host, String classHour, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour, String description) {
         this.id = id;
         this.title = title;
         this.host = host;
@@ -34,6 +35,7 @@ public class ActivityResponse {
         this.capacity = capacity;
         this.isSeminar = isSeminar;
         this.hour = hour;
+        this.description = description;
     }
 
 
@@ -43,6 +45,6 @@ public class ActivityResponse {
                 .collect(Collectors.toList());
         MemberResponse host = MemberResponse.of(activity.getHost());
         return new ActivityResponse(activity.getId(), activity.getTitle(), host,
-                activity.getClassHour(), activity.getStartDate(), activity.getAvailable(), tags, activity.getCapacity(), activity.getIsSeminar(), activity.getHour());
+                activity.getClassHour(), activity.getStartDate(), activity.getAvailable(), tags, activity.getCapacity(), activity.getIsSeminar(), activity.getHour(), activity.getDescription());
     }
 }
