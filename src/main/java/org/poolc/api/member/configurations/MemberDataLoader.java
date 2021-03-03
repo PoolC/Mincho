@@ -38,7 +38,9 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRole.MEMBER); }})
+                        .roles(new HashSet<>() {{
+                            add(MemberRole.MEMBER);
+                        }})
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -55,7 +57,28 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRole.MEMBER); }})
+                        .roles(new HashSet<>() {{
+                            add(MemberRole.MEMBER);
+                        }})
+                        .build());
+        memberRepository.save(
+                Member.builder()
+                        .UUID(UUID.randomUUID().toString())
+                        .loginID("MEMBER_ID3")
+                        .passwordHash(passwordHashProvider.encodePassword("MEMBER_PASSWORD3"))
+                        .email("example15@email.com")
+                        .phoneNumber("010-4444-1234")
+                        .name("MEMBER_NAME")
+                        .department("exampleDepartment")
+                        .studentID("2021111111")
+                        .passwordResetToken(null)
+                        .passwordResetTokenValidUntil(null)
+                        .profileImageURL(null)
+                        .introduction("")
+                        .isExcepted(false)
+                        .roles(new HashSet<>() {{
+                            add(MemberRole.MEMBER);
+                        }})
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -72,7 +95,9 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRole.UNACCEPTED); }})
+                        .roles(new HashSet<>() {{
+                            add(MemberRole.UNACCEPTED);
+                        }})
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -129,7 +154,9 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRole.MEMBER); }})
+                        .roles(new HashSet<>() {{
+                            add(MemberRole.MEMBER);
+                        }})
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -146,7 +173,9 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRole.MEMBER); }})
+                        .roles(new HashSet<>() {{
+                            add(MemberRole.MEMBER);
+                        }})
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -163,7 +192,9 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{ add(MemberRole.MEMBER); }})
+                        .roles(new HashSet<>() {{
+                            add(MemberRole.MEMBER);
+                        }})
                         .build());
     }
 }

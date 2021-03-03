@@ -2,6 +2,9 @@ package org.poolc.api.project.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.poolc.api.member.domain.Member;
+import org.poolc.api.member.repository.MemberRepository;
+import org.poolc.api.project.domain.Project;
 import org.poolc.api.project.dto.ProjectResponse;
 import org.poolc.api.project.dto.RegisterProjectRequest;
 import org.poolc.api.project.dto.UpdateProjectRequest;
@@ -13,10 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final MemberRepository memberRepository;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addNewProject(@RequestBody RegisterProjectRequest requestBody) {
@@ -33,10 +34,10 @@ public class ProjectController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HashMap<String, List<ProjectResponse>>> findProjects() {
+    public ResponseEntity<Map<String, List<ProjectResponse>>> findProjects() {
         HashMap<String, List<ProjectResponse>> responseBody = new HashMap<>() {{
             put("data", projectService.findProjects().stream()
-                    .map(ProjectResponse::of)
+                    .map(p -> ProjectResponse.of(p, new ArrayList<>()))
                     .collect(Collectors.toList()));
         }};
 
@@ -44,17 +45,10 @@ public class ProjectController {
     }
 
     @GetMapping(value = "/{projectID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProjectResponse> findOneProject(@PathVariable Long projectID) {
-        return ResponseEntity.ok().body(ProjectResponse.of(projectService.findOne(projectID)));
-    }
-
-    @GetMapping(value = "/member", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HashMap<String, List<ProjectResponse>>> findMembersForProject(@RequestParam String name) {
-        HashMap<String, List<ProjectResponse>> responseBody = new HashMap<>() {{
-            put("data", Collections.emptyList());
-        }};
-
-        return ResponseEntity.ok().body(responseBody);
+    public ResponseEntity<Map<String, ProjectResponse>> findOneProject(@PathVariable Long projectID) {
+        Project project = projectService.findOne(projectID);
+        List<Member> members = memberRepository.findAllMembersByLoginIDList(project.getMemberLoginIDs());
+        return ResponseEntity.ok().body(Collections.singletonMap("data", ProjectResponse.of(projectService.findOne(projectID), members)));
     }
 
     @PutMapping(value = "/{projectID}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -6,6 +6,7 @@ import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -33,6 +34,9 @@ public class Book extends TimestampEntity {
     @Column(name = "info", length = 64)
     private String info;
 
+    @Column(name = "borrow_date")
+    private LocalDate borrowDate;
+
     @Column(name = "status", columnDefinition = "varchar(64) default 'AVAILABLE'")
     @Enumerated(EnumType.STRING)
     private BookStatus status = BookStatus.AVAILABLE;
@@ -50,11 +54,13 @@ public class Book extends TimestampEntity {
 
     public void borrowBook(Member member) {
         this.status = BookStatus.UNAVAILABLE;
+        this.borrowDate = LocalDate.now();
         this.borrower = member;
     }
 
     public void returnBook() {
         this.status = BookStatus.AVAILABLE;
+        this.borrowDate = null;
         this.borrower = null;
     }
 

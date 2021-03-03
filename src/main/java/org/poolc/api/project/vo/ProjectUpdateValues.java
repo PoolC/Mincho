@@ -14,7 +14,7 @@ public class ProjectUpdateValues {
     private final String duration;
     private final String thumbnailURL;
     private final String body;
-    List<String> members;
+    List<String> memberLoginIDs;
 
     @JsonCreator
     public ProjectUpdateValues(UpdateProjectRequest request) {
@@ -24,6 +24,6 @@ public class ProjectUpdateValues {
         this.duration = request.getDuration();
         this.thumbnailURL = request.getThumbnailURL();
         this.body = request.getBody();
-        this.members = request.getMembers();
+        this.memberLoginIDs = request.getMemberLoginIDs();
     }
 }

@@ -14,16 +14,16 @@ public class RegisterProjectRequest {
     private final String duration;
     private final String thumbnailURL;
     private final String body;
-    List<String> members;
+    List<String> memberLoginIDs;
 
     @JsonCreator
-    public RegisterProjectRequest(String name, String description, String genre, String duration, String thumbnailURL, String body, List<String> members) {
+    public RegisterProjectRequest(String name, String description, String genre, String duration, String thumbnailURL, String body, List<String> memberLoginIDs) {
         this.name = name;
         this.description = description;
         this.genre = genre;
         this.duration = duration;
         this.thumbnailURL = thumbnailURL;
         this.body = body;
-        this.members = members;
+        this.memberLoginIDs = memberLoginIDs;
     }
 }
