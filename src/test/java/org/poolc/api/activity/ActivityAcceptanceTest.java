@@ -302,6 +302,31 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
     }
 
     @Test
+    public void 하나세션정보조회() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now());
+
+        ExtractableResponse<Response> response = getSessionRequest("", 9l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+    }
+
+    @Test
+    public void 없세션정보조회() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = getSessionRequest(accessToken, 9l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    @Test
     public void 없는활동세션정보조회() {
         String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
                 .as(AuthResponse.class)
@@ -598,6 +623,16 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .auth().oauth2(token)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/activity/session/{activityID}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> getSessionRequest(String token, Long id) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(token)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/activity/onesession/{activityID}", id)
                 .then().log().all()
                 .extract();
     }

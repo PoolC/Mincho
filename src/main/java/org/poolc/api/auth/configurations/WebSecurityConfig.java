@@ -56,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/member/**").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.GET, "/activity").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/activity/onesession/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/session/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/check/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/member/*").hasAuthority(MemberRole.MEMBER.name())

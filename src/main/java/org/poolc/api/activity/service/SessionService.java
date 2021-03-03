@@ -48,6 +48,10 @@ public class SessionService {
         return sessionRepository.findByActivity(activity);
     }
 
+    public Session findOneSessionByID(Long id) {
+        return sessionRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회차입니다"));
+    }
+
     @Transactional
     public void updateSession(Long id, SessionUpdateValues values) {
         Session session = sessionRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 회차입니다"));
