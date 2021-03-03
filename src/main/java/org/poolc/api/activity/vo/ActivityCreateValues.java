@@ -22,7 +22,7 @@ public class ActivityCreateValues {
         this.title = request.getTitle();
         this.description = request.getDescription();
         this.startDate = request.getStartDate();
-        this.isSeminar = request.getIsSeminar();
+        this.isSeminar = request.getSeminar();
         this.classHour = request.getClassHour();
         this.capacity = request.getCapacity();
         this.tags = request.getTags();
