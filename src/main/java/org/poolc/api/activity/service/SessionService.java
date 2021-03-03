@@ -32,12 +32,14 @@ public class SessionService {
 
 
     @Transactional
-    public void createSession(Member member, SessionCreateValues sessionCreateValues) {
+    public Session createSession(Member member, SessionCreateValues sessionCreateValues) {
         Activity activity = activityRepository.findOneActivityWithHostAndTags(sessionCreateValues.getActivityID()).orElseThrow(() -> new NoSuchElementException("존재하지 않는 활동입니다"));
         if (!checkUserIsHost(activity.getHost().getUUID(), member.getUUID())) {
             throw new NotHostException("호스트가 아닌 사람은 세션 정보를 입력할수 없습니다");
         }
-        sessionRepository.save(new Session(activity, sessionCreateValues.getDescription(), sessionCreateValues.getDate(), sessionCreateValues.getSessionNumber()));
+        Session session = new Session(activity, sessionCreateValues.getDescription(), sessionCreateValues.getDate(), sessionCreateValues.getSessionNumber());
+        sessionRepository.save(session);
+        return session;
     }
 
 

@@ -87,9 +87,8 @@ public class ActivityController {
     }
 
     @PostMapping(value = "/session")
-    public ResponseEntity<Void> addSession(@AuthenticationPrincipal Member member, @RequestBody SessionCreateRequest requestBody) {
-        sessionService.createSession(member, new SessionCreateValues(requestBody));
-        return ResponseEntity.ok().build();
+    public ResponseEntity<SessionResponse> addSession(@AuthenticationPrincipal Member member, @RequestBody SessionCreateRequest requestBody) {
+        return ResponseEntity.ok().body(SessionResponse.of(sessionService.createSession(member, new SessionCreateValues(requestBody))));
     }
 
     @PostMapping(value = "/apply/{activityID}")
