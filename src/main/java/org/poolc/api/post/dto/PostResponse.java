@@ -2,7 +2,7 @@ package org.poolc.api.post.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
-import org.poolc.api.comment.domain.Comment;
+import org.poolc.api.domain.Comment;
 import org.poolc.api.post.domain.Post;
 
 import java.time.LocalDateTime;
@@ -32,14 +32,11 @@ public class PostResponse {
         this.commentCount = commentCount;
     }
 
-    public PostResponse(Post post) {
-        this.postId = post.getId();
-        this.memberUuid = post.getMember().getUUID();
-        this.memberName = post.getMember().getName();
-        this.title = post.getTitle();
-        this.body = post.getBody();
-        this.createdAt = post.getCreatedAt();
-        this.comments = post.getCommentList();
-        this.commentCount = (long) this.comments.size();
+    public static PostResponse of(Post post) {
+        return new PostResponse(post.getId(), post.getMember().getUUID(),
+                post.getMember().getName(), post.getTitle(), post.getBody(),
+                post.getCreatedAt(), post.getCommentList(),
+                (long) post.getCommentList().size());
     }
+
 }

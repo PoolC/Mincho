@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.poolc.api.board.domain.Board;
 import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.common.domain.TimestampEntity;
+import org.poolc.api.domain.Comment;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.vo.PostCreateValues;
 import org.poolc.api.post.vo.PostUpdateValues;

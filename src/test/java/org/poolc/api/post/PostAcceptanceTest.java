@@ -16,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
-@ActiveProfiles({"boardTest", "test", "postTest"})
+@ActiveProfiles({"boardTest", "postTest"})
 public class PostAcceptanceTest extends AcceptanceTest {
     private Long noticePostId = 9L;
     private Long freePostId = 10L;

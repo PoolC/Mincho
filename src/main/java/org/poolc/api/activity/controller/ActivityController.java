@@ -62,6 +62,11 @@ public class ActivityController {
                 .collect(toList())));
     }
 
+    @GetMapping(value = "/onesession/{sessionID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SessionResponse> findOneSession(@PathVariable("sessionID") Long id) {
+        return ResponseEntity.ok().body(SessionResponse.of(sessionService.findOneSessionByID(id)));
+    }
+
     @GetMapping(value = "/member/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, List<MemberResponse>>> getActivityMembers(@PathVariable("activityID") Long id) {
         return ResponseEntity.ok().body(Collections.singletonMap("data", activityService.findActivityMembers(id).stream()

@@ -44,10 +44,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/board/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/board/**").permitAll()
 
-                .antMatchers(HttpMethod.POST, "/comment").hasAuthority(MemberRole.MEMBER.name())
-                .antMatchers(HttpMethod.PUT, "/comment/*").hasAuthority(MemberRole.MEMBER.name())
-                .antMatchers(HttpMethod.DELETE, "/comment/*").hasAuthority(MemberRole.MEMBER.name())
-                .antMatchers("/comment/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/post").permitAll()
+                .antMatchers(HttpMethod.GET, "/post/board/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/post/*").permitAll()
+                .antMatchers("/post/**").hasAuthority(MemberRole.MEMBER.name())
 
                 .antMatchers(HttpMethod.POST, "/book").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/book/*").hasAuthority(MemberRole.ADMIN.name())
@@ -62,8 +62,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/member/activate/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/member/admin/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/member/**").hasAuthority(MemberRole.MEMBER.name())
+
                 .antMatchers(HttpMethod.GET, "/activity").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/activity/onesession/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/session/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/check/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/member/*").hasAuthority(MemberRole.MEMBER.name())
