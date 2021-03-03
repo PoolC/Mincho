@@ -135,7 +135,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
         tags.add("한시간만 들어도 알고리즘 정복가능");
         ExtractableResponse<Response> response = updateActivityRequest(accessToken, 1l, "김성하의 재미있는 sql세미나", "이거 들으면 취업가능", localDate, true, "3시간", 200l, tags, 200l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
+        ExtractableResponse<Response> response3 = updateActivityRequest(accessToken, 1l, "김성하의 재미있는 sql세미나", "이거 들으면 취업가능", localDate, true, "3시간", 200l, tags, 200l);
         ExtractableResponse<Response> response2 = getActivitiesRequest(accessToken);
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response2.body().jsonPath().getList("data")).hasSize(4);
