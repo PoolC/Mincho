@@ -53,6 +53,9 @@ public class Activity {
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ActivityTag> tags = new ArrayList<>();
 
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Session> sessions = new ArrayList<>();
+
     @ElementCollection(fetch = LAZY)
     @CollectionTable(name = "activity_members", joinColumns = @JoinColumn(name = "activity_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"activity_id", "member_loginid"})})
     @Column(name = "member_loginid")
