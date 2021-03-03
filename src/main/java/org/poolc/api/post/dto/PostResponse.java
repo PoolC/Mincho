@@ -32,14 +32,11 @@ public class PostResponse {
         this.commentCount = commentCount;
     }
 
-    public PostResponse(Post post) {
-        this.postId = post.getId();
-        this.memberUuid = post.getMember().getUUID();
-        this.memberName = post.getMember().getName();
-        this.title = post.getTitle();
-        this.body = post.getBody();
-        this.createdAt = post.getCreatedAt();
-        this.comments = post.getCommentList();
-        this.commentCount = (long) this.comments.size();
+    public static PostResponse of(Post post) {
+        return new PostResponse(post.getId(), post.getMember().getUUID(),
+                post.getMember().getName(), post.getTitle(), post.getBody(),
+                post.getCreatedAt(), post.getCommentList(),
+                (long) post.getCommentList().size());
     }
+
 }

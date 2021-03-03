@@ -3,9 +3,9 @@ package org.poolc.api.board.configurations;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.board.domain.Board;
 import org.poolc.api.board.repository.BoardRepository;
-import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.repository.MemberRepository;
+import org.poolc.api.post.repository.PostRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,14 @@ import org.springframework.stereotype.Component;
 public class BoardDataLoader implements CommandLineRunner {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
-    private final PasswordHashProvider passwordHashProvider;
+    private final PostRepository postRepository;
+
+    private final String 비임원 = "MEMBER_ID";
+    private final String 임원 = "ADMIN_ID";
+
+    private final Long noticeBoardId = 1L;
+    private final Long freeBoardId = 2L;
+    private final Long adminBoardId = 6L;
 
     @Override
     public void run(String... args) {
@@ -34,6 +41,9 @@ public class BoardDataLoader implements CommandLineRunner {
         );
         boardRepository.save(
                 new Board("게임제작부", "gamedev", MemberRole.MEMBER, MemberRole.MEMBER)
+        );
+        boardRepository.save(
+                new Board("임원진", "meeting", MemberRole.ADMIN, MemberRole.ADMIN)
         );
         boardRepository.save(
                 new Board("삭제할게시판", "willbedeleted", MemberRole.PUBLIC, MemberRole.MEMBER)

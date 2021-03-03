@@ -30,7 +30,7 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public List<Post> getPostByBoardId(Board board) {
+    public List<Post> getPostsByBoard(Board board) {
         return postRepository.findAllByBoard(board);
     }
 

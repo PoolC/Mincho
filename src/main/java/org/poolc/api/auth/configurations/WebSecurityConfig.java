@@ -38,22 +38,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/project/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/project/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/project/**").permitAll()
+
                 .antMatchers(HttpMethod.POST, "/board").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/board/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/board/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/board/**").permitAll()
+
+                .antMatchers(HttpMethod.GET, "/post").permitAll()
+                .antMatchers(HttpMethod.GET, "/post/board/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/post/*").permitAll()
+                .antMatchers("/post/**").hasAuthority(MemberRole.MEMBER.name())
+
                 .antMatchers(HttpMethod.POST, "/book").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/book/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/book/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/book/borrow/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.PUT, "/book/return/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers("/book/**").hasAuthority(MemberRole.MEMBER.name())
+
                 .antMatchers(HttpMethod.POST, "/member").permitAll()
                 .antMatchers(HttpMethod.GET, "/member").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/member/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/member/activate/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/member/admin/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/member/**").hasAuthority(MemberRole.MEMBER.name())
+
                 .antMatchers(HttpMethod.GET, "/activity").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/session/*").permitAll()

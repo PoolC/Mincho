@@ -57,6 +57,18 @@ public class Board extends TimestampEntity {
         this.writePermission = boardUpdateValue.getWritePermission();
     }
 
+    public boolean isPublicReadPermission() {
+        return this.readPermission.equals(MemberRole.PUBLIC);
+    }
+
+    public boolean memberHasWritePermissions(Set<MemberRole> roles) {
+        if (onlyAdminAllowed(writePermission, roles)) {
+            return false;
+        }
+
+        return !onlyMemberAllowed(writePermission, roles);
+    }
+
     public boolean memberHasReadPermissions(Set<MemberRole> roles) {
         if (onlyAdminAllowed(readPermission, roles)) {
             return false;
