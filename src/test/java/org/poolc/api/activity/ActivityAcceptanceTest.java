@@ -622,7 +622,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .given().log().all()
                 .auth().oauth2(token)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/activity/session/{activityID}", id)
+                .when().get("/activity/session/activity/{activityID}", id)
                 .then().log().all()
                 .extract();
     }
@@ -632,7 +632,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .given().log().all()
                 .auth().oauth2(token)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/activity/onesession/{activityID}", id)
+                .when().get("/activity/session/{activityID}", id)
                 .then().log().all()
                 .extract();
     }

@@ -55,14 +55,14 @@ public class ActivityController {
         return ResponseEntity.ok().body(Collections.singletonMap("data", ActivityResponse.of(activityService.findOneActivity(id))));
     }
 
-    @GetMapping(value = "/session/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/session/activity/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, List<SessionResponse>>> findSessions(@PathVariable("activityID") Long id) {
         return ResponseEntity.ok().body(Collections.singletonMap("data", sessionService.findSessionsByActivityID(id).stream()
                 .map(SessionResponse::of)
                 .collect(toList())));
     }
 
-    @GetMapping(value = "/onesession/{sessionID}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/session/{sessionID}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SessionResponse> findOneSession(@PathVariable("sessionID") Long id) {
         return ResponseEntity.ok().body(SessionResponse.of(sessionService.findOneSessionByID(id)));
     }
