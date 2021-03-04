@@ -57,7 +57,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<Void> createPost(@AuthenticationPrincipal Member writer,
                                            @RequestBody RegisterPostRequest registerPostRequest) {
-        Board correspondingBoard = boardService.get(registerPostRequest.getBoardId());
+        Board correspondingBoard = boardService.findBoardById(registerPostRequest.getBoardId());
 
         checkWritePermissions(writer, correspondingBoard);
 
@@ -80,9 +80,9 @@ public class PostController {
         return ResponseEntity.ok().body(postResponse);
     }
 
-    @GetMapping(value = "/board/{boardId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, List<PostResponse>>> findPostsByBoard(@AuthenticationPrincipal Member user, @PathVariable Long boardId) {
-        Board correspondingBoard = boardService.get(boardId);
+    @GetMapping(value = "/board/{urlPath}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, List<PostResponse>>> findPostsByBoard(@AuthenticationPrincipal Member user, @PathVariable String urlPath) {
+        Board correspondingBoard = boardService.findBoardByUrlPath(urlPath);
 
         checkReadPermissions(user, correspondingBoard);
 

@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    Optional<Board> findByName(String boardName);
+    Optional<Board> findByUrlPath(String urlPath);
 
     boolean existsByNameOrUrlPath(String name, String URLPath);
 

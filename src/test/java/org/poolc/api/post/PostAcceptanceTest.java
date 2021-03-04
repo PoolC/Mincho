@@ -32,6 +32,11 @@ public class PostAcceptanceTest extends AcceptanceTest {
     private Long adminBoardId = 6L;
     private Long notExistBoardId = 1000L;
 
+    private String noticeUrlPath = "notice";
+    private String freeUrlPath = "free";
+    private String adminUrlPath = "meeting";
+    private String notExistUrlPath = "notExist";
+
     @Test
     void 전체게시물조회() {
         ExtractableResponse<Response> response = getAllPostRequest();
@@ -128,14 +133,14 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 로그인xPUBLIC게시판게시물전체조회() {
-        ExtractableResponse<Response> response = getPostsByBoardIdRequestNoLogin(noticeBoardId);
+        ExtractableResponse<Response> response = getPostsByBoardIdRequestNoLogin(noticeUrlPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     void 로그인xMEMBER게시판게시물전체조회() {
-        ExtractableResponse<Response> response = getPostsByBoardIdRequestNoLogin(freeBoardId);
+        ExtractableResponse<Response> response = getPostsByBoardIdRequestNoLogin(freeUrlPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
 
@@ -143,7 +148,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 로그인xADMIN게시판게시물전체조회() {
-        ExtractableResponse<Response> response = getPostsByBoardIdRequestNoLogin(adminBoardId);
+        ExtractableResponse<Response> response = getPostsByBoardIdRequestNoLogin(adminUrlPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
@@ -152,7 +157,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
     void 멤버PUBLIC게시판게시물전체조회() {
         String accessToken = 작성자비임원진로그인();
 
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, noticeBoardId);
+        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, noticeUrlPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -161,7 +166,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
     void 멤버MEMBER게시판게시물전체조회() {
         String accessToken = 작성자비임원진로그인();
 
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeBoardId);
+        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeUrlPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -170,7 +175,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
     void 멤버ADMIN게시판게시물전체조회() {
         String accessToken = 작성자비임원진로그인();
 
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, adminBoardId);
+        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, adminUrlPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
@@ -179,7 +184,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
     void 임원PUBLIC게시판게시물전체조회() {
         String accessToken = 임원진로그인();
 
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeBoardId);
+        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeUrlPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -188,7 +193,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
     void 임원MEMBER게시판게시물전체조회() {
         String accessToken = 임원진로그인();
 
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeBoardId);
+        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeUrlPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -197,7 +202,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
     void 임원ADMIN게시판게시물전체조회() {
         String accessToken = 임원진로그인();
 
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeBoardId);
+        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeUrlPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -206,7 +211,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
     void 없는게시판게시물전체조회() {
         String accessToken = 임원진로그인();
 
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, notExistBoardId);
+        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, notExistUrlPath);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -358,21 +363,21 @@ public class PostAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> getPostsByBoardIdRequest(String accessToken, Long boardId) {
+    public static ExtractableResponse<Response> getPostsByBoardIdRequest(String accessToken, String urlPath) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/post/board/{boardId}", boardId)
+                .when().get("/post/board/{urlPath}", urlPath)
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> getPostsByBoardIdRequestNoLogin(Long boardId) {
+    public static ExtractableResponse<Response> getPostsByBoardIdRequestNoLogin(String urlPath) {
         return RestAssured
                 .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/post/board/{boardId}", boardId)
+                .when().get("/post/board/{urlPath}", urlPath)
                 .then().log().all()
                 .extract();
     }

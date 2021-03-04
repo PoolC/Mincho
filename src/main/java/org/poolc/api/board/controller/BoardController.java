@@ -52,7 +52,7 @@ public class BoardController {
 
     @GetMapping(value = "/{boardId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BoardResponse> getBoard(@AuthenticationPrincipal Member member, @PathVariable Long boardId) {
-        Board board = boardService.get(boardId);
+        Board board = boardService.findBoardById(boardId);
 
         checkMemberPermissions(board, member.getRoles());
 
