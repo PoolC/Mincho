@@ -4,6 +4,7 @@ package org.poolc.api.comment.controller;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.comment.domain.Comment;
+import org.poolc.api.comment.dto.CommentResponse;
 import org.poolc.api.comment.dto.RegisterCommentRequest;
 import org.poolc.api.comment.dto.UpdateCommentRequest;
 import org.poolc.api.comment.service.CommentService;
@@ -24,15 +25,15 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<Void> createComment(@AuthenticationPrincipal Member user,
-                                              @RequestBody RegisterCommentRequest registerCommentRequest) {
+    public ResponseEntity<CommentResponse> createComment(@AuthenticationPrincipal Member user,
+                                                         @RequestBody RegisterCommentRequest registerCommentRequest) {
         Post correspondingPost = postService.getPost(registerCommentRequest.getPostId());
 
         String body = registerCommentRequest.getBody();
         CommentCreateValues commentCreateValues = new CommentCreateValues(correspondingPost, user, body);
-        commentService.createComment(commentCreateValues);
+        CommentResponse response = commentService.createComment(commentCreateValues);
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.accepted().body(response);
     }
 
     @PutMapping(value = "/{commentId}")

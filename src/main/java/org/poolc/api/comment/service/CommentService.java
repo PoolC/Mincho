@@ -2,6 +2,7 @@ package org.poolc.api.comment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.comment.domain.Comment;
+import org.poolc.api.comment.dto.CommentResponse;
 import org.poolc.api.comment.repository.CommentRepository;
 import org.poolc.api.comment.vo.CommentCreateValues;
 import org.poolc.api.comment.vo.CommentUpdateValues;
@@ -16,13 +17,14 @@ import java.util.NoSuchElementException;
 public class CommentService {
     private final CommentRepository commentRepository;
 
-    public void createComment(CommentCreateValues values) {
-        commentRepository.save(
-                Comment.builder()
-                        .body(values.getBody())
-                        .member(values.getMember())
-                        .post(values.getPost())
-                        .build());
+    public CommentResponse createComment(CommentCreateValues values) {
+        Comment newComment = Comment.builder()
+                .body(values.getBody())
+                .member(values.getMember())
+                .post(values.getPost())
+                .build();
+        commentRepository.save(newComment);
+        return CommentResponse.of(newComment);
     }
 
     public List<Comment> findCommentsByPost(Post post) {
