@@ -7,7 +7,6 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
-import org.poolc.api.comment.dto.CommentResponse;
 import org.poolc.api.comment.dto.RegisterCommentRequest;
 import org.poolc.api.comment.dto.UpdateCommentRequest;
 import org.springframework.http.HttpStatus;
@@ -20,68 +19,10 @@ import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 @ActiveProfiles({"postTest", "boardTest"})
 public class CommentAcceptanceTest extends AcceptanceTest {
     private Long noticePostId = 9L;
-    private Long freePostId = noticePostId + 1;
-    private Long adminPostId = noticePostId + 2;
-    private Long writerWillDeletePostId = noticePostId + 3;
-    private Long noWriterWillDeletePostId = noticePostId + 4;
-    private Long adminWillDeletePostId = noticePostId + 5;
-    private Long willUpdatePostId = noticePostId + 6;
 
-
-    private Long noticeBoardId = 1L;
-    private Long freeBoardId = 2L;
-    private Long adminBoardId = 6L;
-    private Long notExistBoardId = 1000L;
-
-    private Long firstCommentId = 16L;
     private Long updateCommentId = 17L;
-    private Long thirdCommentId = 18L;
     private Long writerWillDeleteCommentId = 19L;
-    private Long adminWillDeleteCommentId = 20L;
     private Long willNotDeleteCommentId = 21L;
-
-    private Long notExistCommentId = 1000L;
-
-    @Test
-    void 전체댓글조회() {
-        String accessToken = 임원진로그인();
-        ExtractableResponse<Response> response = getAllCommentRequest(accessToken);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @Test
-    void 멤버가임원댓글조회() {
-        String accessToken = 작성자비임원진로그인();
-        ExtractableResponse<Response> response = getCommentRequest(accessToken, firstCommentId);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @Test
-    void 멤버가멤버댓글조회() {
-        String accessToken = 작성자비임원진로그인();
-        ExtractableResponse<Response> response = getCommentRequest(accessToken, firstCommentId);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @Test
-    void 없는댓글조회() {
-        String accessToken = 임원진로그인();
-        ExtractableResponse<Response> response = getCommentRequest(accessToken, notExistCommentId);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    void 특정Post에있는전체댓글조희() {
-        String accessToken = 임원진로그인();
-        ExtractableResponse<Response> response = getCommentsByPostRequest(accessToken, noticePostId);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("data").size()).isEqualTo(2);
-    }
 
     @Test
     void 댓글생성() {
@@ -99,10 +40,6 @@ public class CommentAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = updateCommentRequest(accessToken, updateCommentId, updateCommentRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        ExtractableResponse<Response> toCheckResponse = getCommentRequest(accessToken, updateCommentId);
-        CommentResponse responseBody = toCheckResponse.as(CommentResponse.class);
-        assertThat(responseBody.getBody()).isEqualTo("update");
     }
 
     @Test
@@ -121,9 +58,6 @@ public class CommentAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        ExtractableResponse<Response> toCheckResponse = getCommentRequest(accessToken, writerWillDeleteCommentId);
-        assertThat(toCheckResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     @Test
@@ -140,36 +74,6 @@ public class CommentAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = deleteComment(accessToken, willNotDeleteCommentId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    public static ExtractableResponse<Response> getCommentRequest(String accessToken, Long commentId) {
-        return RestAssured
-                .given().log().all()
-                .auth().oauth2(accessToken)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/comment/{commentId}", commentId)
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> getAllCommentRequest(String accessToken) {
-        return RestAssured
-                .given().log().all()
-                .auth().oauth2(accessToken)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/comment")
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> getCommentsByPostRequest(String accessToken, Long postId) {
-        return RestAssured
-                .given().log().all()
-                .auth().oauth2(accessToken)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/comment/post/{postId}", postId)
-                .then().log().all()
-                .extract();
     }
 
     public static ExtractableResponse<Response> createCommentRequest(String accessToken, RegisterCommentRequest request) {

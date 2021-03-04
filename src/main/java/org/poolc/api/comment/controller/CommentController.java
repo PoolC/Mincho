@@ -4,7 +4,6 @@ package org.poolc.api.comment.controller;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.comment.domain.Comment;
-import org.poolc.api.comment.dto.CommentResponse;
 import org.poolc.api.comment.dto.RegisterCommentRequest;
 import org.poolc.api.comment.dto.UpdateCommentRequest;
 import org.poolc.api.comment.service.CommentService;
@@ -13,14 +12,9 @@ import org.poolc.api.comment.vo.CommentUpdateValues;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.service.PostService;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/comment")
@@ -28,18 +22,6 @@ import java.util.stream.Collectors;
 public class CommentController {
     private final PostService postService;
     private final CommentService commentService;
-
-    //TODO: test용, 끝나면 지울 것
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HashMap<String, List<CommentResponse>>> getAllComments() {
-        HashMap<String, List<CommentResponse>> responseBody = new HashMap<>() {{
-            put("data", commentService.findAll().stream()
-                    .map(CommentResponse::of)
-                    .collect(Collectors.toList()));
-        }};
-
-        return ResponseEntity.ok().body(responseBody);
-    }
 
     @PostMapping
     public ResponseEntity<Void> createComment(@AuthenticationPrincipal Member user,
@@ -51,31 +33,6 @@ public class CommentController {
         commentService.createComment(commentCreateValues);
 
         return ResponseEntity.accepted().build();
-    }
-
-
-    @GetMapping(value = "/post/{postId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HashMap<String, List<CommentResponse>>> getCommentsByPost(@AuthenticationPrincipal Member user, @PathVariable Long postId) {
-        Post correspondingPost = postService.getPost(postId);
-        correspondingPost.getBoard().memberHasReadPermissions(user.getRoles());
-
-        HashMap<String, List<CommentResponse>> responseBody = new HashMap<>() {{
-            put("data", commentService.findCommentsByPost(correspondingPost).stream()
-                    .map(CommentResponse::of)
-                    .collect(Collectors.toList()));
-        }};
-
-        return ResponseEntity.ok().body(responseBody);
-    }
-
-    @GetMapping(value = "/{commentId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommentResponse> getComment(@AuthenticationPrincipal Member member,
-                                                      @PathVariable Long commentId) {
-        Comment correspondingComment = commentService.findOne(commentId);
-        correspondingComment.getPost().getBoard().memberHasReadPermissions(member.getRoles());
-
-        CommentResponse commentResponseBody = CommentResponse.of(correspondingComment);
-        return ResponseEntity.ok().body(commentResponseBody);
     }
 
     @PutMapping(value = "/{commentId}")
