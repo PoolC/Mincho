@@ -44,7 +44,7 @@ public class Post extends TimestampEntity {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<Comment> commentList = new ArrayList<>();
 
-    public Post() { // TODO: JPA를 위한 기본 생성자는 의도치않은 생성을 피하기 위해 protected으로 선언해주세요
+    protected Post() {
     }
 
     public Post(Board board, Member member, String title, String body, List<Comment> commentList) {

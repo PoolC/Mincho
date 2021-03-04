@@ -1,6 +1,7 @@
 package org.poolc.api.activity.repository;
 
 import org.poolc.api.activity.domain.Activity;
+import org.poolc.api.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +21,10 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Query(value = "select distinct a from Activity a left join fetch a.host left join fetch a.tags t where a.startDate between :firstDate and :lastDate")
     List<Activity> findActivitiesWithHostAndTagsInSemester(@Param("firstDate") LocalDate firstDate, @Param("lastDate") LocalDate lastDate);
+
+    @Query(value = "select distinct a from Activity a where a.host = :host")
+    List<Activity> findActivitiesByHost(@Param("host") Member host);
+
+    @Query(value = "select distinct a from Activity a left join fetch a.memberLoginIDs am where am =:loginId")
+    List<Activity> findActivitiesByActivityMembers(@Param("loginId") String loginId);
 }

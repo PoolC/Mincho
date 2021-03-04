@@ -36,6 +36,7 @@ public class ProjectResponse {
 
     public static ProjectResponse of(Project project, List<Member> members) {
         return new ProjectResponse(project.getId(), project.getName(), project.getBody(), project.getDescription(),
-                project.getGenre(), project.getDuration(), project.getThumbnailURL(), members.stream().map(MemberResponse::of).collect(Collectors.toList()));
+                project.getGenre(), project.getDuration(), project.getThumbnailURL(),
+                members.stream().map(MemberResponse::of).collect(Collectors.toList()));
     }
 }

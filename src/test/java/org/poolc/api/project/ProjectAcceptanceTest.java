@@ -23,6 +23,29 @@ import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 public class ProjectAcceptanceTest extends AcceptanceTest {
 
     @Test
+    void project멤버조회() {
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = getMembersByNameRequest(accessToken, "MEMBER_NAME");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<String> memberLoginIDs = response.body().jsonPath().getList("data.loginID");
+
+        ExtractableResponse<Response> response2 = addProjectRequest(accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", memberLoginIDs);
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> response3 = getProjectRequest(accessToken, 3l);
+
+        String accessToken2 = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+        ExtractableResponse<Response> response4 = getMemberRequest(accessToken2);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
     public void findProjects() {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
@@ -85,6 +108,7 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         ExtractableResponse<Response> response3 = getProjectRequest(accessToken, 3l);
+
 
     }
 
@@ -242,6 +266,16 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
                 .auth().oauth2(accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/project/{projectID}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> getMemberRequest(String accessToken) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/member/me")
                 .then().log().all()
                 .extract();
     }
