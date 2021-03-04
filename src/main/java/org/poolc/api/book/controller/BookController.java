@@ -3,12 +3,10 @@ package org.poolc.api.book.controller;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.book.dto.BookRequest;
 import org.poolc.api.book.dto.BookResponse;
-import org.poolc.api.book.exception.DuplicateBookException;
 import org.poolc.api.book.service.BookService;
 import org.poolc.api.book.vo.BookCreateValues;
 import org.poolc.api.book.vo.BookUpdateValues;
 import org.poolc.api.member.domain.Member;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static java.util.stream.Collectors.toList;
 
@@ -69,21 +66,5 @@ public class BookController {
     public ResponseEntity returnBook(@AuthenticationPrincipal Member member, @PathVariable("bookID") Long id) {
         bookService.returnBook(member, id);
         return ResponseEntity.ok().build();
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> noSuchElementHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> illegalStateException(Exception e) {
-        System.out.println(e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
-    }
-
-    @ExceptionHandler(DuplicateBookException.class)
-    public ResponseEntity<String> runTimeHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }
