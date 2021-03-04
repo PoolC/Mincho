@@ -11,7 +11,6 @@ import org.poolc.api.project.dto.UpdateProjectRequest;
 import org.poolc.api.project.service.ProjectService;
 import org.poolc.api.project.vo.ProjectCreateValues;
 import org.poolc.api.project.vo.ProjectUpdateValues;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -61,10 +60,5 @@ public class ProjectController {
     public ResponseEntity<Void> deleteOneProject(@PathVariable Long projectID) {
         projectService.deleteProject(projectID);
         return ResponseEntity.ok().build();
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> noSuchElementHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

@@ -5,10 +5,8 @@ import org.poolc.api.activity.dto.*;
 import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.activity.service.SessionService;
 import org.poolc.api.activity.vo.*;
-import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.dto.MemberResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -125,14 +123,5 @@ public class ActivityController {
         sessionService.updateSession(id, new SessionUpdateValues(requestBody, member.getUUID()));
         return ResponseEntity.ok().build();
     }
-
-    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class, IllegalStateException.class})
-    public ResponseEntity<String> noSuchElementHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
-    @ExceptionHandler({UnauthenticatedException.class})
-    public ResponseEntity<String> notAllowedException(Exception e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-    }
+    
 }
