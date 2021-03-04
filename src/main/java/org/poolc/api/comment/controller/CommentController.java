@@ -13,7 +13,6 @@ import org.poolc.api.comment.vo.CommentUpdateValues;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.service.PostService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -105,17 +103,6 @@ public class CommentController {
         commentService.deleteComment(commentId);
 
         return ResponseEntity.ok().build();
-    }
-
-
-    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})
-    public ResponseEntity<String> noSuchElementHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<String> UnauthorizedExceptionHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
     private void checkWriter(Member member, Comment correspondingComment) {
