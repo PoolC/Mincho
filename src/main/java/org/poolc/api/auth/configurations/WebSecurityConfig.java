@@ -44,6 +44,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/board/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/board/**").permitAll()
 
+                .antMatchers(HttpMethod.GET, "/comment").permitAll()
+                .antMatchers(HttpMethod.GET, "/comment/post/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/comment/*").permitAll()
+                .antMatchers("/comment/**").hasAuthority(MemberRole.MEMBER.name())
+                
                 .antMatchers(HttpMethod.GET, "/post").permitAll()
                 .antMatchers(HttpMethod.GET, "/post/board/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/post/*").permitAll()
