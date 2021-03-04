@@ -3,6 +3,8 @@ package org.poolc.api.post.configurations;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.board.domain.Board;
 import org.poolc.api.board.repository.BoardRepository;
+import org.poolc.api.comment.domain.Comment;
+import org.poolc.api.comment.repository.CommentRepository;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.post.domain.Post;
@@ -18,6 +20,7 @@ public class PostDataLoader implements CommandLineRunner {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     private final String 비임원 = "MEMBER_ID";
     private final String 임원 = "ADMIN_ID";
@@ -25,6 +28,11 @@ public class PostDataLoader implements CommandLineRunner {
     private final Long noticeBoardId = 1L;
     private final Long freeBoardId = 2L;
     private final Long adminBoardId = 6L;
+
+    private Long noticePostId = 9L;
+    private Long freePostId = 10L;
+
+    private final String COMMENTER = "COMMENT_WRITER_ID";
 
     @Override
     public void run(String... args) {
@@ -43,5 +51,16 @@ public class PostDataLoader implements CommandLineRunner {
         postRepository.save(new Post(freeBoard, notAdmin, "작성자XwillBeDeleted", "willBeDeleted", null));
         postRepository.save(new Post(freeBoard, notAdmin, "임원willBeDeleted", "willBeDeleted", null));
         postRepository.save(new Post(freeBoard, notAdmin, "test4", "test4", null));
+
+        Post noticePost = postRepository.findById(noticePostId).get();
+        Post freePost = postRepository.findById(freePostId).get();
+
+        commentRepository.save(new Comment(noticePost, notAdmin, "test1"));
+        commentRepository.save(new Comment(freePost, notAdmin, "test2"));
+        commentRepository.save(new Comment(noticePost, notAdmin, "test3"));
+        commentRepository.save(new Comment(freePost, notAdmin, "test4"));
+        commentRepository.save(new Comment(freePost, notAdmin, "test5"));
+        commentRepository.save(new Comment(freePost, notAdmin, "test6"));
+
     }
 }
