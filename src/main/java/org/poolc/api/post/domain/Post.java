@@ -59,7 +59,7 @@ public class Post extends TimestampEntity {
         this.board = postCreateValues.getBoard();
         this.member = postCreateValues.getMember();
         this.title = postCreateValues.getTitle();
-        this.body = postCreateValues.getTitle();
+        this.body = postCreateValues.getBody();
         this.commentList = null;
     }
 
