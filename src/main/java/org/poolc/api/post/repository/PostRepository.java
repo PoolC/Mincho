@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    @Query(value = "SELECT p FROM Post p WHERE p.board = :board ORDER BY p.createdAt DESC")
+    @Query(value = "SELECT p FROM Post p left join fetch p.commentList c WHERE p.board = :board ORDER BY p.createdAt DESC, c.createdAt ASC")
     List<Post> findAllByBoard(@Param("board") Board board);
 }
 
