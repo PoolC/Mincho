@@ -1,6 +1,5 @@
 package org.poolc.api.member.controller;
 
-import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.dto.MemberListResponse;
 import org.poolc.api.member.dto.MemberResponse;
@@ -9,7 +8,6 @@ import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.poolc.api.member.service.MemberService;
 import org.poolc.api.member.vo.MemberCreateValues;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -96,16 +93,6 @@ public class MemberController {
         memberService.updateIsAdmin(loginID, toAdmin);
 
         return ResponseEntity.ok().build();
-    }
-
-    @ExceptionHandler(UnauthenticatedException.class)
-    public ResponseEntity<String> unauthenticatedHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-    }
-
-    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})
-    public ResponseEntity<String> noSuchElementHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     private void checkIsValidMemberCreateInput(RegisterMemberRequest request) {
