@@ -20,10 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -55,16 +52,16 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createPost(@AuthenticationPrincipal Member writer,
-                                           @RequestBody RegisterPostRequest registerPostRequest) {
+    public ResponseEntity<Map<String, Long>> createPost(@AuthenticationPrincipal Member writer,
+                                                        @RequestBody RegisterPostRequest registerPostRequest) {
         Board correspondingBoard = boardService.findBoardById(registerPostRequest.getBoardId());
 
         checkWritePermissions(writer, correspondingBoard);
 
         PostCreateValues postCreateValues = new PostCreateValues(writer, correspondingBoard, registerPostRequest);
-        postService.create(postCreateValues);
+        Long postId = postService.create(postCreateValues);
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.accepted().body(Collections.singletonMap("postId", postId));
     }
 
 

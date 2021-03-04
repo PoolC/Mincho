@@ -17,8 +17,10 @@ import java.util.NoSuchElementException;
 public class PostService {
     private final PostRepository postRepository;
 
-    public void create(PostCreateValues postCreateValues) {
-        postRepository.save(new Post(postCreateValues));
+    public Long create(PostCreateValues postCreateValues) {
+        Post newPost = new Post(postCreateValues);
+        postRepository.save(newPost);
+        return newPost.getId();
     }
 
     public Post getPost(Long postId) {
