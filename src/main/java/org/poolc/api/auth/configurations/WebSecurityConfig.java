@@ -48,7 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/comment/post/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/comment/*").permitAll()
                 .antMatchers("/comment/**").hasAuthority(MemberRole.MEMBER.name())
-                
+
                 .antMatchers(HttpMethod.GET, "/post").permitAll()
                 .antMatchers(HttpMethod.GET, "/post/board/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/post/*").permitAll()
@@ -72,6 +72,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/activity/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/session/activity/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/session/*").permitAll()
+                .antMatchers(HttpMethod.PUT, "/activity/open/*").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.PUT, "/activity/close/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.GET, "/activity/check/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/member/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.POST, "/activity").hasAuthority(MemberRole.MEMBER.name())

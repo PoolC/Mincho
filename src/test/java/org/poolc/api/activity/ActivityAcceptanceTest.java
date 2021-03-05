@@ -150,6 +150,99 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
     }
 
     @Test
+    public void 액티비티open() {
+        String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = openActivityRequest(accessToken, 6l);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> response2 = getActivityRequest(accessToken, 6l);
+
+        assertThat(response2.body().jsonPath().getBoolean("data.available")).isEqualTo(true);
+
+    }
+
+    @Test
+    public void 없는activityOpen() {
+        String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = openActivityRequest(accessToken, 432l);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    @Test
+    public void 열려있는activityOpen() {
+        String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = openActivityRequest(accessToken, 6l);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> response2 = openActivityRequest(accessToken, 6l);
+
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    @Test
+    public void 액티비티openAndClose() {
+        String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = openActivityRequest(accessToken, 6l);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> response2 = getActivityRequest(accessToken, 6l);
+
+        assertThat(response2.body().jsonPath().getBoolean("data.available")).isEqualTo(true);
+
+        ExtractableResponse<Response> response3 = closeActivityRequest(accessToken, 6l);
+
+        assertThat(response3.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> response4 = getActivityRequest(accessToken, 6l);
+
+        assertThat(response4.body().jsonPath().getBoolean("data.available")).isEqualTo(false);
+
+
+    }
+
+    @Test
+    public void 없는activityClose() {
+        String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = closeActivityRequest(accessToken, 432l);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    @Test
+    public void 닫혀있activityClose() {
+        String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = closeActivityRequest(accessToken, 6l);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    @Test
     public void 없는액티비티조회시에러() {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
                 .as(AuthResponse.class)
@@ -774,7 +867,25 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/member/{loginId}", loginId)
+                .when().put("/member/{loginId}", loginId)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> openActivityRequest(String accessToken, Long activityID) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .when().put("/activity/open/{activityID}", activityID)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> closeActivityRequest(String accessToken, Long activityID) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .when().put("/activity/close/{activityID}", activityID)
                 .then().log().all()
                 .extract();
     }

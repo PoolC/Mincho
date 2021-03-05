@@ -64,6 +64,20 @@ public class ActivityService {
     }
 
     @Transactional
+    public void openActivity(Long id) {
+        Activity activity = activityRepository.findOneActivityWithHostAndTags(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다"));
+        checkActivityIsClosed(activity);
+        activity.open();
+    }
+
+    @Transactional
+    public void closeActivity(Long id) {
+        Activity activity = activityRepository.findOneActivityWithHostAndTags(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다"));
+        checkActivityIsOpen(activity);
+        activity.close();
+    }
+
+    @Transactional
     public void apply(Long id, String uuid) {
         Activity activity = activityRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 없습니다"));
         if (!activity.getAvailable()) {
@@ -99,7 +113,7 @@ public class ActivityService {
     public List<Activity> findActivitiesByHost(Member host) {
         return activityRepository.findActivitiesByHost(host);
     }
-    
+
     public List<Activity> findActivitiesByActivityMembers(String loginId) {
         return activityRepository.findActivitiesByActivityMembers(loginId);
     }
@@ -161,4 +175,17 @@ public class ActivityService {
             return LocalDate.of(yearSemester.getYear() + 1, 2, 1).with(lastDayOfMonth());
         }
     }
+
+    private void checkActivityIsClosed(Activity activity) {
+        if (activity.getAvailable()) {
+            throw new IllegalStateException("이미 신청가능한 활동입니다");
+        }
+    }
+
+    private void checkActivityIsOpen(Activity activity) {
+        if (!activity.getAvailable()) {
+            throw new IllegalStateException("이미 닫혀있는 활동입니다");
+        }
+    }
+
 }

@@ -123,5 +123,17 @@ public class ActivityController {
         sessionService.updateSession(id, new SessionUpdateValues(requestBody, member.getUUID()));
         return ResponseEntity.ok().build();
     }
-    
+
+    @PutMapping(value = "/open/{activityID}")
+    public ResponseEntity<Void> openActivity(@PathVariable("activityID") Long id) {
+        activityService.openActivity(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/close/{activityID}")
+    public ResponseEntity<Void> closeActivity(@PathVariable("activityID") Long id) {
+        activityService.closeActivity(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

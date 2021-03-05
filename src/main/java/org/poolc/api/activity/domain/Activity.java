@@ -114,4 +114,11 @@ public class Activity {
                 .map(t -> new ActivityTag(this, t)).collect(Collectors.toList()));
     }
 
+    public void open() {
+        this.available = true;
+    }
+
+    public void close() {
+        this.available = false;
+    }
 }
