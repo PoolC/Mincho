@@ -14,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.Collections;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
@@ -143,7 +146,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         String not_admin_loginID = "NOT_ADMIN_ID";
 
-        ExtractableResponse<Response> response = UpdateMemberIsAdmin(accessToken, not_admin_loginID, true);
+        ExtractableResponse<Response> response = UpdateMemberIsAdmin(accessToken, not_admin_loginID, Collections.singletonMap("toAdmin", true));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         ExtractableResponse<Response> certifiedResponse = AdminGetMemberRequestByLoginID(accessToken, not_admin_loginID);
@@ -159,7 +162,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         String willRevokeAdminID = "WILL_REVOKE_ADMIN_ID";
 
-        ExtractableResponse<Response> response = UpdateMemberIsAdmin(accessToken, willRevokeAdminID, false);
+        ExtractableResponse<Response> response = UpdateMemberIsAdmin(accessToken, willRevokeAdminID, Collections.singletonMap("toAdmin", false));
         ExtractableResponse<Response> certifiedResponse = AdminGetMemberRequestByLoginID(accessToken, willRevokeAdminID);
         MemberResponse responseBody = certifiedResponse.as(MemberResponse.class);
 
@@ -268,7 +271,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> UpdateMemberIsAdmin(String accessToken, String loginID, Boolean isAdmin) {
+    public static ExtractableResponse<Response> UpdateMemberIsAdmin(String accessToken, String loginID, Map<String, Boolean> isAdmin) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)

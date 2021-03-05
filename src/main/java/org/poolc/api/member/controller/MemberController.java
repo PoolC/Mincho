@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -118,8 +119,8 @@ public class MemberController {
     }
 
     @PutMapping(path = "/admin/{loginID}")
-    public ResponseEntity updateMemberAdmin(@PathVariable("loginID") String loginID, @RequestBody Boolean toAdmin) {
-        memberService.updateIsAdmin(loginID, toAdmin);
+    public ResponseEntity updateMemberAdmin(@PathVariable("loginID") String loginID, @RequestBody Map<String, Boolean> toAdmin) {
+        memberService.updateIsAdmin(loginID, toAdmin.get("toAdmin"));
 
         return ResponseEntity.ok().build();
     }
