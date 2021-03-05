@@ -94,6 +94,7 @@ public class Member extends TimestampEntity implements UserDetails {
         this.passwordHash = passwordHash;
         this.email = updateMemberRequest.getEmail();
         this.phoneNumber = updateMemberRequest.getPhoneNumber();
+        this.introduction = updateMemberRequest.getIntroduction();
     }
 
     public boolean isAcceptedMember() {

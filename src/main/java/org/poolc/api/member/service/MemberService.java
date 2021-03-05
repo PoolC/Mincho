@@ -48,7 +48,7 @@ public class MemberService {
                         .passwordResetToken(null)
                         .passwordResetTokenValidUntil(null)
                         .profileImageURL(null)
-                        .introduction("")
+                        .introduction(values.getIntroduction())
                         .isExcepted(false)
                         .roles(new HashSet<>() {{
                             add(MemberRole.UNACCEPTED);

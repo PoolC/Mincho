@@ -12,6 +12,7 @@ public class MemberCreateValues {
     private final String phoneNumber;
     private final String department;
     private final String studentID;
+    private final String introduction;
 
     public MemberCreateValues(RegisterMemberRequest request) {
         name = request.getName();
@@ -21,5 +22,6 @@ public class MemberCreateValues {
         phoneNumber = request.getPhoneNumber();
         department = request.getDepartment();
         studentID = request.getStudentID();
+        introduction = request.getIntroduction();
     }
 }
