@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,6 +41,16 @@ public class BoardController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BoardsResponse> getAllBoard(@AuthenticationPrincipal Member member) {
+        //TODO: MEMBER DEFAULT 값이 PUBLIC으로 만들시 삭제
+        if (member == null) {
+            List<BoardResponse> boards = boardService.getAllBoards().stream()
+                    .filter(board -> board.isPublicReadPermission())
+                    .map(BoardResponse::new)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok().body(new BoardsResponse(boards));
+        }
+
         List<BoardResponse> boards = boardService.getAllBoards().stream()
                 .filter(board -> board.memberHasReadPermissions(member.getRoles()))
                 .map(BoardResponse::new)
@@ -51,6 +62,16 @@ public class BoardController {
     @GetMapping(value = "/{boardId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BoardResponse> getBoard(@AuthenticationPrincipal Member member, @PathVariable Long boardId) {
         Board board = boardService.findBoardById(boardId);
+
+        //TODO: MEMBER DEFAULT 값이 PUBLIC으로 만들시 삭제
+        if (member == null) {
+            Set<MemberRole> roles = new HashSet<>();
+            roles.add(MemberRole.PUBLIC);
+
+            checkMemberPermissions(board, roles);
+
+            return ResponseEntity.ok().body(new BoardResponse(board));
+        }
 
         checkMemberPermissions(board, member.getRoles());
 

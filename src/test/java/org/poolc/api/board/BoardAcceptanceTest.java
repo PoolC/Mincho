@@ -20,7 +20,7 @@ import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
 @ActiveProfiles("boardTest")
 public class BoardAcceptanceTest extends AcceptanceTest {
-    private final Long notExistBoardId = 9L;
+    private final Long notExistBoardId = 1000L;
     private final Long noticeBoardId = 1L;
     private final Long deleteBoardId = 6L;
     private final Long updateBoardId = 7L;
@@ -55,6 +55,17 @@ public class BoardAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 외부인_특정PUBLIC게시판조회() {
+        String accessToken = "";
+
+        ExtractableResponse<Response> response = getBoardRequest(accessToken, noticeBoardId);
+        BoardResponse responseBody = response.as(BoardResponse.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(responseBody.getName().equals("공지사항"));
+    }
+
+    @Test
     void 없는특정게시판조회() {
         String accessToken = 비임원진로그인();
 
@@ -72,6 +83,16 @@ public class BoardAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(requestBody.getData()).hasSize(8);
+    }
+
+    @Test
+    void 외부인_전체게시판조회() {
+        String accessToken = "";
+
+        ExtractableResponse<Response> response = getBoardsRequest(accessToken);
+        BoardsResponse requestBody = response.as(BoardsResponse.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
