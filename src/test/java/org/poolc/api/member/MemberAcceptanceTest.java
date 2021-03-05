@@ -12,10 +12,12 @@ import org.poolc.api.member.dto.RegisterMemberRequest;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
+@DirtiesContext
 public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
@@ -23,9 +25,34 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = createMemberRequest("testName", "testId",
                 "testPassword", "testPassword",
                 "test@email.com", "010-1234-4321",
-                "컴퓨터과학과", "2021147500");
+                "컴퓨터과학과", "2021147500", "자기소개");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+    }
+
+    @Test
+    void testCreateWrongPasswordCheck() {
+        ExtractableResponse<Response> response = createMemberRequest("WrongPassword", "WrongPasswordId",
+                "WrongPassword", "testPassword1",
+                "fffff@email.com", "010-1234-9999",
+                "컴퓨터과학과", "2000147500", "자기소개");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void testDuplicateCreate() {
+        ExtractableResponse<Response> response = createMemberRequest("DuplicateName", "DuplicateTestId",
+                "DuplicateTestPassword", "DuplicateTestPassword",
+                "fffff@email.com", "010-1234-9999",
+                "컴퓨터과학과", "2000146500", "자기소개");
+
+        ExtractableResponse<Response> notPass = createMemberRequest("DuplicateName", "DuplicateTestId",
+                "DuplicateTestPassword", "DuplicateTestPassword",
+                "fffff@email.com", "010-1234-9999",
+                "컴퓨터과학과", "2000146500", "자기소개");
+
+        assertThat(notPass.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @Test
@@ -52,7 +79,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         MemberListResponse responseBody = response.body().as(MemberListResponse.class);
-        assertThat(responseBody.getData()).hasSize(8);
+        assertThat(responseBody.getData()).hasSize(9);
     }
 
     @Test
@@ -72,7 +99,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "UPDATE_MEMBER_PASSWORD", "NEW_PASSWORD", "NEW@naver.com", "01033334444");
+        ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "UPDATE_MEMBER_PASSWORD", "NEW_PASSWORD", "NEW@naver.com", "01033334444", "야이야");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -83,7 +110,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "UPDATE_MEMBER_PASSWORD", "UPDATE_MEMBER_PASSWORD", "NEW@naver.com", "01033334444");
+        ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "UPDATE_MEMBER_PASSWORD", "UPDATE_MEMBER_PASSWORD", "NEW@naver.com", "01033334444", "야이야");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
@@ -173,8 +200,8 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
-    public static ExtractableResponse<Response> createMemberRequest(String name, String loginID, String password, String passwordCheck, String email, String phone, String department, String studentID) {
-        RegisterMemberRequest request = new RegisterMemberRequest(name, loginID, password, passwordCheck, email, phone, department, studentID);
+    public static ExtractableResponse<Response> createMemberRequest(String name, String loginID, String password, String passwordCheck, String email, String phone, String department, String studentID, String introduction) {
+        RegisterMemberRequest request = new RegisterMemberRequest(name, loginID, password, passwordCheck, email, phone, department, studentID, introduction);
 
         return RestAssured
                 .given().log().all()
@@ -216,8 +243,8 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> updateMemberInfoRequest(String accessToken, String name, String password, String passwordCheck, String email, String phoneNumber) {
-        UpdateMemberRequest request = new UpdateMemberRequest(name, password, passwordCheck, email, phoneNumber);
+    public static ExtractableResponse<Response> updateMemberInfoRequest(String accessToken, String name, String password, String passwordCheck, String email, String phoneNumber, String introduction) {
+        UpdateMemberRequest request = new UpdateMemberRequest(name, password, passwordCheck, email, phoneNumber, introduction);
 
         return RestAssured
                 .given().log().all()
