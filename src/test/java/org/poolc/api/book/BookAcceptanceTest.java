@@ -32,6 +32,16 @@ public class BookAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 로그인X_findAllBooks() {
+        String accessToken = "";
+
+        ExtractableResponse<Response> response = getBooksRequest(accessToken);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getList("data")).hasSize(7);
+    }
+
+    @Test
     void findAllBooksAsPublicMember() {
         ExtractableResponse<Response> response = getBooksRequest("");
 
@@ -45,6 +55,17 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
         borrowBookRequest(accessToken, 1L);
 
+        ExtractableResponse<Response> response = getBookRequest(accessToken, 1L);
+        BookResponse bookResponse = response.as(BookResponse.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(bookResponse.getId()).isEqualTo(1L);
+        assertThat(bookResponse.getBorrower().getName()).isEqualTo("MEMBER_NAME");
+    }
+
+    @Test
+    void 로그인X_findOneBook() {
+        String accessToken = "";
         ExtractableResponse<Response> response = getBookRequest(accessToken, 1L);
         BookResponse bookResponse = response.as(BookResponse.class);
 
@@ -178,7 +199,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = updateBookRequest(accessToken, "풀씨", "형철띠", "d", "ㅇㄴ", 7L);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        
+
     }
 
     @Test

@@ -150,6 +150,14 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
     }
 
     @Test
+    public void 비로그인_액티비티하나조회() {
+        String accessToken = "";
+        ExtractableResponse<Response> response = getActivityRequest(accessToken, 6l);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
     public void 액티비티open() {
         String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
                 .as(AuthResponse.class)
