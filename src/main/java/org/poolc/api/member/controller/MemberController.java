@@ -88,7 +88,19 @@ public class MemberController {
     public ResponseEntity<MemberResponse> adminGetMemberInfoByloginID(@PathVariable("loginID") String loginID) {
         Member member = memberService.findMemberbyLoginID(loginID);
 
-        return ResponseEntity.ok().body(MemberResponse.of(member));
+        List<Member> memberList = new ArrayList<>(); // TODO: 이부분 수정해야할 듯
+
+        List<ActivityResponse> activitiesByActivityMembers = activityService.findActivitiesByActivityMembers(loginID)
+                .stream().map(ActivityResponse::of)
+                .collect(Collectors.toList());
+        List<ActivityResponse> activitiesByHost = activityService.findActivitiesByHost(member)
+                .stream().map(ActivityResponse::of)
+                .collect(Collectors.toList());
+        List<ProjectResponse> projects = projectService.findProjectsByProjectMembers(loginID)
+                .stream().map(project -> ProjectResponse.of(project, memberList))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(MemberResponse.of(member, activitiesByHost, activitiesByActivityMembers, projects));
     }
 
     @DeleteMapping(value = "/{loginID}")
