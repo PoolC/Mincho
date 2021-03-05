@@ -43,8 +43,7 @@ public class BoardService {
 
     public void update(Long boardId, BoardUpdateValue boardUpdateValue) {
         Board findBoard = findBoardById(boardId);
-
-        checkDuplicateNameOrUrlPath(boardUpdateValue.getName(), boardUpdateValue.getUrlPath());
+        checkDuplicateNameAndUrlPath(findBoard, boardUpdateValue);
 
         findBoard.update(boardUpdateValue);
         boardRepository.flush();
@@ -54,11 +53,39 @@ public class BoardService {
         boardRepository.delete(findBoardById(boardId));
     }
 
-    private void checkDuplicateNameOrUrlPath(String name, String URLPath) {
-        boolean hasDuplicate = boardRepository.existsByNameOrUrlPath(name, URLPath);
+    private void checkDuplicateNameOrUrlPath(String name, String urlPath) {
+        boolean hasDuplicate = boardRepository.existsByNameOrUrlPath(name, urlPath);
 
         if (hasDuplicate) {
-            throw new DuplicateBoardException("중복된 게시판 이름입니다.");
+            throw new DuplicateBoardException("중복된 이름입니다.");
+        }
+    }
+
+    private void checkDuplicateNameAndUrlPath(Board board, BoardUpdateValue boardUpdateValue) {
+        String updateName = boardUpdateValue.getName();
+        if (!board.isSameName(updateName)) {
+            checkDuplicateName(updateName);
+        }
+
+        String updateUrlPath = boardUpdateValue.getUrlPath();
+        if (!board.isSameUrlPath(updateUrlPath)) {
+            checkDuplicateUrlPath(updateUrlPath);
+        }
+    }
+
+    private void checkDuplicateName(String name) {
+        boolean hasDuplicate = boardRepository.existsByName(name);
+
+        if (hasDuplicate) {
+            throw new DuplicateBoardException("중복된 이름입니다.");
+        }
+    }
+
+    private void checkDuplicateUrlPath(String urlPath) {
+        boolean hasDuplicate = boardRepository.existsByUrlPath(urlPath);
+
+        if (hasDuplicate) {
+            throw new DuplicateBoardException("중복된 urlPath입니다.");
         }
     }
 }

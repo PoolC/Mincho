@@ -57,6 +57,14 @@ public class Board extends TimestampEntity {
         this.writePermission = boardUpdateValue.getWritePermission();
     }
 
+    public boolean isSameName(String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean isSameUrlPath(String urlPath) {
+        return this.urlPath.equals(urlPath);
+    }
+
     public boolean isPublicReadPermission() {
         return this.readPermission.equals(MemberRole.PUBLIC);
     }

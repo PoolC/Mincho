@@ -13,4 +13,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     boolean existsByNameOrUrlPath(String name, String URLPath);
 
+    boolean existsByName(String name);
+
+    boolean existsByUrlPath(String URLPath);
+
 }

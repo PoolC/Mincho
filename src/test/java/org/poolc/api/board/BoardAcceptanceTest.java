@@ -127,10 +127,12 @@ public class BoardAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 임원진게시판수정() {
+    void 임원진게시판_nameAndUrlPath_수정() {
         String accessToken = 임원진로그인();
 
-        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("수정할게시", "updateBoard2", MemberRole.PUBLIC, MemberRole.ADMIN);
+        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("noDuplicate", "noDuplicate", MemberRole.PUBLIC, MemberRole.ADMIN);
+        ExtractableResponse<Response> 조회response = getBoardRequest(accessToken, updateBoardId);
+
         ExtractableResponse<Response> response = updateBoard(accessToken, updateBoardId, updateBoardRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -139,6 +141,64 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         BoardResponse requestBody = 확인Response.as(BoardResponse.class);
         assertThat(requestBody.getReadPermission()).isEqualTo(MemberRole.PUBLIC);
         assertThat(requestBody.getWritePermission()).isEqualTo(MemberRole.ADMIN);
+    }
+
+    @Test
+    void 임원진게시판_urlpath만_수정() {
+        String accessToken = 임원진로그인();
+
+        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("삭제할게시", "updateBoard2", MemberRole.PUBLIC, MemberRole.ADMIN);
+        ExtractableResponse<Response> 조회response = getBoardRequest(accessToken, updateBoardId);
+
+        ExtractableResponse<Response> response = updateBoard(accessToken, updateBoardId, updateBoardRequest);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> 확인Response = getBoardRequest(accessToken, updateBoardId);
+        BoardResponse requestBody = 확인Response.as(BoardResponse.class);
+        assertThat(requestBody.getReadPermission()).isEqualTo(MemberRole.PUBLIC);
+        assertThat(requestBody.getWritePermission()).isEqualTo(MemberRole.ADMIN);
+    }
+
+    @Test
+    void 임원진게시판_name만_수정() {
+        String accessToken = 임원진로그인();
+
+        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("test", "willbedeleted", MemberRole.PUBLIC, MemberRole.ADMIN);
+        ExtractableResponse<Response> 조회response = getBoardRequest(accessToken, updateBoardId);
+
+        ExtractableResponse<Response> response = updateBoard(accessToken, updateBoardId, updateBoardRequest);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> 확인Response = getBoardRequest(accessToken, updateBoardId);
+        BoardResponse requestBody = 확인Response.as(BoardResponse.class);
+        assertThat(requestBody.getReadPermission()).isEqualTo(MemberRole.PUBLIC);
+        assertThat(requestBody.getWritePermission()).isEqualTo(MemberRole.ADMIN);
+    }
+
+    @Test
+    void 임원진게시판수정_nameDuplicate() {
+        String accessToken = 임원진로그인();
+
+        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("수정할게시판", "updateBoard2", MemberRole.PUBLIC, MemberRole.ADMIN);
+        ExtractableResponse<Response> 조회response = getBoardRequest(accessToken, updateBoardId);
+
+        ExtractableResponse<Response> response = updateBoard(accessToken, updateBoardId, updateBoardRequest);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    void 임원진게시판수정_urlPathduplicate() {
+        String accessToken = 임원진로그인();
+
+        UpdateBoardRequest updateBoardRequest = new UpdateBoardRequest("test", "updateBoard", MemberRole.PUBLIC, MemberRole.ADMIN);
+        ExtractableResponse<Response> 조회response = getBoardRequest(accessToken, updateBoardId);
+
+        ExtractableResponse<Response> response = updateBoard(accessToken, updateBoardId, updateBoardRequest);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @Test
