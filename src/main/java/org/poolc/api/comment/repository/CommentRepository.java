@@ -11,6 +11,6 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    @Query(value = "SELECT c FROM Comment c WHERE c.post = :post")
+    @Query(value = "SELECT DISTINCT c FROM Comment c WHERE c.post = :post")
     List<Comment> findAllByPost(@Param("post") Post post);
 }
