@@ -24,6 +24,64 @@ import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 @ActiveProfiles("activityTest")
 public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
 
+
+    @Test
+    public void host멤버본인조회() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+        ExtractableResponse<Response> response = getMemberRequest(accessToken);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void host멤버타인조회() {
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+        ExtractableResponse<Response> response = getOtherMemberRequest(accessToken, "MEMBER_ID");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void participant멤버본인조회() {
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken, 7l);
+
+        String accessToken2 = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response2 = applyActivityRequest(accessToken2, 7l);
+        ExtractableResponse<Response> response3 = getActivityMembersRequest(accessToken, 7l);
+
+        ExtractableResponse<Response> response4 = getMemberRequest(accessToken);
+        assertThat(response4.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void participant멤버타인조회() {
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken, 7l);
+
+        String accessToken2 = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response2 = applyActivityRequest(accessToken2, 7l);
+        ExtractableResponse<Response> response3 = getActivityMembersRequest(accessToken, 7l);
+
+        ExtractableResponse<Response> response4 = getOtherMemberRequest(accessToken, "MEMBER_ID");
+        assertThat(response4.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+    }
+
     @Test
     public void 년도조회() {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
@@ -697,6 +755,26 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .auth().oauth2(token)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/activity/years")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> getMemberRequest(String accessToken) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/member/me")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> getOtherMemberRequest(String accessToken, String loginId) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/member/{loginId}", loginId)
                 .then().log().all()
                 .extract();
     }

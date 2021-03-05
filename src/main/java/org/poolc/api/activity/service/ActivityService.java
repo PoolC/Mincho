@@ -96,6 +96,14 @@ public class ActivityService {
         return memberRepository.findAllMembersByLoginIDList(activityRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다")).getMemberLoginIDs());
     }
 
+    public List<Activity> findActivitiesByHost(Member host) {
+        return activityRepository.findActivitiesByHost(host);
+    }
+    
+    public List<Activity> findActivitiesByActivityMembers(String loginId) {
+        return activityRepository.findActivitiesByActivityMembers(loginId);
+    }
+
     @Transactional
     public Map<Member, Boolean> findActivityMembersWithAttendance(Long id) {
         Session session = sessionRepository.findByIdWithAttendances(id).orElseThrow(() -> new NoSuchElementException("해당하는 세션이 없습니다"));

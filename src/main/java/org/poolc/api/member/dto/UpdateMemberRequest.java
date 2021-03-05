@@ -10,13 +10,15 @@ public class UpdateMemberRequest {
     private final String passwordCheck;
     private final String email;
     private final String phoneNumber;
+    private final String introduction;
 
     @JsonCreator
-    public UpdateMemberRequest(String name, String password, String passwordCheck, String email, String phoneNumber) {
+    public UpdateMemberRequest(String name, String password, String passwordCheck, String email, String phoneNumber, String introduction) {
         this.name = name;
         this.password = password;
         this.passwordCheck = passwordCheck;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.introduction = introduction;
     }
 }

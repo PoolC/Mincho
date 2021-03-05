@@ -38,6 +38,10 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
+    public List<Project> findProjectsByProjectMembers(String loginId) {
+        return projectRepository.findProjectsByProjectMembers(loginId);
+    }
+
     @Transactional
     public void updateProject(ProjectUpdateValues values, Long projectID) {
         Project project = findOne(projectID);

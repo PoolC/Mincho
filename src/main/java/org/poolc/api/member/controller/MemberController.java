@@ -1,5 +1,8 @@
 package org.poolc.api.member.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.poolc.api.activity.dto.ActivityResponse;
+import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.dto.MemberListResponse;
 import org.poolc.api.member.dto.MemberResponse;
@@ -7,25 +10,25 @@ import org.poolc.api.member.dto.RegisterMemberRequest;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.poolc.api.member.service.MemberService;
 import org.poolc.api.member.vo.MemberCreateValues;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.poolc.api.project.dto.ProjectResponse;
+import org.poolc.api.project.service.ProjectService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/member")
+@RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-
-    @Autowired
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
-    }
+    private final ProjectService projectService;
+    private final ActivityService activityService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MemberListResponse> getAllMembers(@AuthenticationPrincipal Member member) {
@@ -56,7 +59,21 @@ public class MemberController {
 
     @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok().body(MemberResponse.of(member));
+        String loginID = member.getLoginID();
+
+        List<Member> memberList = new ArrayList<>(); // TODO: 이부분 수정해야할 듯
+
+        List<ActivityResponse> activitiesByActivityMembers = activityService.findActivitiesByActivityMembers(loginID)
+                .stream().map(ActivityResponse::of)
+                .collect(Collectors.toList());
+        List<ActivityResponse> activitiesByHost = activityService.findActivitiesByHost(member)
+                .stream().map(ActivityResponse::of)
+                .collect(Collectors.toList());
+        List<ProjectResponse> projects = projectService.findProjectsByProjectMembers(loginID)
+                .stream().map(project -> ProjectResponse.of(project, memberList))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(MemberResponse.of(member, activitiesByHost, activitiesByActivityMembers, projects));
     }
 
     @PutMapping(path = "/me")
@@ -71,7 +88,19 @@ public class MemberController {
     public ResponseEntity<MemberResponse> adminGetMemberInfoByloginID(@PathVariable("loginID") String loginID) {
         Member member = memberService.findMemberbyLoginID(loginID);
 
-        return ResponseEntity.ok().body(MemberResponse.of(member));
+        List<Member> memberList = new ArrayList<>(); // TODO: 이부분 수정해야할 듯
+
+        List<ActivityResponse> activitiesByActivityMembers = activityService.findActivitiesByActivityMembers(loginID)
+                .stream().map(ActivityResponse::of)
+                .collect(Collectors.toList());
+        List<ActivityResponse> activitiesByHost = activityService.findActivitiesByHost(member)
+                .stream().map(ActivityResponse::of)
+                .collect(Collectors.toList());
+        List<ProjectResponse> projects = projectService.findProjectsByProjectMembers(loginID)
+                .stream().map(project -> ProjectResponse.of(project, memberList))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(MemberResponse.of(member, activitiesByHost, activitiesByActivityMembers, projects));
     }
 
     @DeleteMapping(value = "/{loginID}")

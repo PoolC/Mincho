@@ -36,7 +36,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .passwordResetToken(null)
                         .passwordResetTokenValidUntil(null)
                         .profileImageURL(null)
-                        .introduction("")
+                        .introduction("자기소개")
                         .isExcepted(false)
                         .roles(new HashSet<>() {{
                             add(MemberRole.MEMBER);
@@ -55,7 +55,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .passwordResetToken(null)
                         .passwordResetTokenValidUntil(null)
                         .profileImageURL(null)
-                        .introduction("")
+                        .introduction("자기소개")
                         .isExcepted(false)
                         .roles(new HashSet<>() {{
                             add(MemberRole.MEMBER);
@@ -74,7 +74,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .passwordResetToken(null)
                         .passwordResetTokenValidUntil(null)
                         .profileImageURL(null)
-                        .introduction("")
+                        .introduction("자기소개")
                         .isExcepted(false)
                         .roles(new HashSet<>() {{
                             add(MemberRole.MEMBER);
@@ -93,7 +93,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .passwordResetToken(null)
                         .passwordResetTokenValidUntil(null)
                         .profileImageURL(null)
-                        .introduction("")
+                        .introduction("자기소개")
                         .isExcepted(false)
                         .roles(new HashSet<>() {{
                             add(MemberRole.UNACCEPTED);
@@ -112,7 +112,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .passwordResetToken(null)
                         .passwordResetTokenValidUntil(null)
                         .profileImageURL(null)
-                        .introduction("")
+                        .introduction("자기소개")
                         .isExcepted(false)
                         .roles(new HashSet<>() {{
                             add(MemberRole.ADMIN);
@@ -132,7 +132,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .passwordResetToken(null)
                         .passwordResetTokenValidUntil(null)
                         .profileImageURL(null)
-                        .introduction("")
+                        .introduction("자기소개")
                         .isExcepted(false)
                         .roles(new HashSet<>() {{
                             add(MemberRole.ADMIN);

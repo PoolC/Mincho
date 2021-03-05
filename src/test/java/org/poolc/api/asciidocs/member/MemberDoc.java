@@ -28,7 +28,7 @@ public class MemberDoc extends ApiDoc {
         RegisterMemberRequest requestValues = new RegisterMemberRequest("exampleName", "exampleLoginID",
                 "examplePassword", "examplePassword",
                 "example@email.com", "examplePhoneNumber",
-                "exampleDepartment", "exampleStudentID");
+                "exampleDepartment", "exampleStudentID", "introduction");
         MemberCreateValues createValues = new MemberCreateValues(requestValues);
 
         doNothing().when(memberService).create(createValues);
