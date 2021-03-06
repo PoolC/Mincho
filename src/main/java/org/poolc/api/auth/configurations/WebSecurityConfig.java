@@ -68,6 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/member/admin/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/member/**").hasAuthority(MemberRole.MEMBER.name())
 
+                .antMatchers("/file").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.GET, "/activity").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/session/activity/*").permitAll()

@@ -1,2 +1,4 @@
 export PROJECT_NAME_HERE_SECRET_KEY=example_secret_key
 export EXPIRE_LENGTH_IN_MILLISECONDS=3600000
+export FETCH_URL=example_fetch_url
+export FILE_DIR=example_file_dir
