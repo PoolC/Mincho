@@ -74,8 +74,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/poolc").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/poolc/**").permitAll()
 
-                .antMatchers("/file").hasAuthority(MemberRole.MEMBER.name())
-                
                 .antMatchers(HttpMethod.GET, "/activity").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/session/activity/*").permitAll()
@@ -91,6 +89,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/activity/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.PUT, "/activity/session/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.DELETE, "/activity/*").hasAuthority(MemberRole.MEMBER.name())
+                .antMatchers("/file").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers("/**").permitAll()
 
 
