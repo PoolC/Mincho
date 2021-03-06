@@ -73,7 +73,7 @@ public class Poolc {
         this.presidentName = updateValues.getPresidentName();
         this.phoneNumber = updateValues.getPhoneNumber();
         this.location = updateValues.getLocation();
-        this.location_url = updateValues.getLocation_url();
+        this.location_url = updateValues.getLocationUrl();
         this.introduction = updateValues.getIntroduction();
         this.mainImageUrl = updateValues.getMainImageUrl();
         this.isSubscriptionPeriod = updateValues.getIsSubscriptionPeriod();
@@ -82,6 +82,6 @@ public class Poolc {
 
     // TODO: DB에 poolc 정보를 넣을 수 있으면 삭제
     public static Poolc of(PoolcCreateValues createValues) {
-        return new Poolc(createValues.getPresidentName(), createValues.getPhoneNumber(), createValues.getLocation(), createValues.getLocation_url(), createValues.getIntroduction(), createValues.getMainImageUrl(), createValues.getIsSubscriptionPeriod(), createValues.getApplyUri());
+        return new Poolc(createValues.getPresidentName(), createValues.getPhoneNumber(), createValues.getLocation(), createValues.getLocationUrl(), createValues.getIntroduction(), createValues.getMainImageUrl(), createValues.getIsSubscriptionPeriod(), createValues.getApplyUri());
     }
 }
