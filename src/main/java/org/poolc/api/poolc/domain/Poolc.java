@@ -25,22 +25,22 @@ public class Poolc {
     @Column(name = "phone_number", columnDefinition = "varchar(40)", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "location", columnDefinition = "varchar(40)", nullable = false)
+    @Column(name = "location", columnDefinition = "varchar(100)", nullable = false)
     private String location;
 
-    @Column(name = "location_url", columnDefinition = "varchar(40)")
-    private String location_url;
+    @Column(name = "location_url", columnDefinition = "varchar(1024)")
+    private String locationUrl;
 
     @Column(name = "introduction", columnDefinition = "text", nullable = false)
     private String introduction;
 
-    @Column(name = "main_image_url", columnDefinition = "varchar(40)")
+    @Column(name = "main_image_url", columnDefinition = "varchar(1024)")
     private String mainImageUrl;
 
     @Column(columnDefinition = "boolean default false")
     private Boolean isSubscriptionPeriod;
 
-    @Column(name = "apply_uri", columnDefinition = "varchar(40)")
+    @Column(name = "apply_uri", columnDefinition = "varchar(1024)")
     private String applyUri;
 
     public Poolc() {
@@ -51,7 +51,7 @@ public class Poolc {
         this.presidentName = presidentName;
         this.phoneNumber = phoneNumber;
         this.location = location;
-        this.location_url = location_url;
+        this.locationUrl = location_url;
         this.introduction = introduction;
         this.mainImageUrl = mainImageUrl;
         this.isSubscriptionPeriod = isSubscriptionPeriod;
@@ -62,7 +62,7 @@ public class Poolc {
         this.presidentName = presidentName;
         this.phoneNumber = phoneNumber;
         this.location = location;
-        this.location_url = location_url;
+        this.locationUrl = location_url;
         this.introduction = introduction;
         this.mainImageUrl = mainImageUrl;
         this.isSubscriptionPeriod = isSubscriptionPeriod;
@@ -73,7 +73,7 @@ public class Poolc {
         this.presidentName = updateValues.getPresidentName();
         this.phoneNumber = updateValues.getPhoneNumber();
         this.location = updateValues.getLocation();
-        this.location_url = updateValues.getLocationUrl();
+        this.locationUrl = updateValues.getLocationUrl();
         this.introduction = updateValues.getIntroduction();
         this.mainImageUrl = updateValues.getMainImageUrl();
         this.isSubscriptionPeriod = updateValues.getIsSubscriptionPeriod();

@@ -28,7 +28,7 @@ public class PoolcResponse {
     }
 
     public static PoolcResponse of(Poolc poolc) {
-        return new PoolcResponse(poolc.getPresidentName(), poolc.getPhoneNumber(), poolc.getLocation(), poolc.getLocation_url(), poolc.getIntroduction(), poolc.getMainImageUrl(), poolc.getIsSubscriptionPeriod(), poolc.getApplyUri());
+        return new PoolcResponse(poolc.getPresidentName(), poolc.getPhoneNumber(), poolc.getLocation(), poolc.getLocationUrl(), poolc.getIntroduction(), poolc.getMainImageUrl(), poolc.getIsSubscriptionPeriod(), poolc.getApplyUri());
     }
 
 }
