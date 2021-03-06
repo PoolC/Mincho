@@ -70,6 +70,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/member/admin/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/member/**").hasAuthority(MemberRole.MEMBER.name())
 
+                .antMatchers(HttpMethod.POST, "/poolc").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.PUT, "/poolc").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers("/poolc/**").permitAll()
+
                 .antMatchers(HttpMethod.GET, "/activity").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/activity/session/activity/*").permitAll()
@@ -86,6 +90,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/activity/session/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.DELETE, "/activity/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers("/**").permitAll()
+
+
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService),
