@@ -8,7 +8,7 @@ public class UpdatePoolcRequest {
     private final String presidentName;
     private final String phoneNumber;
     private final String location;
-    private final String location_url;
+    private final String locationUrl;
     private final String introduction;
     private final String mainImageUrl;
     private final Boolean isSubscriptionPeriod;
@@ -19,7 +19,7 @@ public class UpdatePoolcRequest {
         this.presidentName = presidentName;
         this.phoneNumber = phoneNumber;
         this.location = location;
-        this.location_url = location_url;
+        this.locationUrl = location_url;
         this.introduction = introduction;
         this.mainImageUrl = mainImageUrl;
         this.isSubscriptionPeriod = isSubscriptionPeriod;

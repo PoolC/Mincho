@@ -27,7 +27,7 @@ public class PoolcAcceptanceTest extends AcceptanceTest {
                 .mainImageUrl(null)
                 .applyUri(null)
                 .isSubscriptionPeriod(false)
-                .location_url(null)
+                .locationUrl(null)
                 .build();
 
         ExtractableResponse<Response> poolcRequest = createPoolcRequest(accessToken, request);

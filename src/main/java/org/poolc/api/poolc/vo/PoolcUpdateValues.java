@@ -8,7 +8,7 @@ public class PoolcUpdateValues {
     private final String presidentName;
     private final String phoneNumber;
     private final String location;
-    private final String location_url;
+    private final String locationUrl;
     private final String introduction;
     private final String mainImageUrl;
     private final Boolean isSubscriptionPeriod;
@@ -18,7 +18,7 @@ public class PoolcUpdateValues {
         this.presidentName = request.getPresidentName();
         this.phoneNumber = request.getPhoneNumber();
         this.location = request.getLocation();
-        this.location_url = request.getLocation_url();
+        this.locationUrl = request.getLocationUrl();
         this.introduction = request.getIntroduction();
         this.mainImageUrl = request.getMainImageUrl();
         this.isSubscriptionPeriod = request.getIsSubscriptionPeriod();
