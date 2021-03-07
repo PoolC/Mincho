@@ -70,9 +70,18 @@ public class SessionService {
             throw new NotHostException("호스트가 아니면 출석체크를 할수 없습니다");
         }
         checkMembersExist(values.getMemberLoginIDs());
+        checkMembersExistInActivity(values.getMemberLoginIDs(), activity);
         session.clear();
         session.attend(values.getMemberLoginIDs());
 
+    }
+
+    private void checkMembersExistInActivity(List<String> memberLoginIDs, Activity activity) {
+        memberLoginIDs.forEach((s) -> {
+            if (activity.getMemberLoginIDs().indexOf(s) == -1) {
+                throw new NoSuchElementException("해당하는 회원이 이 활동에 수강신청하지 않았습니다");
+            }
+        });
     }
 
     private void checkMembersExist(List<String> memberLoginIDs) {

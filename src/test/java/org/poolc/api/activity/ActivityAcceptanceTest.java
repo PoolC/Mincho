@@ -698,6 +698,44 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
 
     }
 
+    @Test
+    public void 출석체크실패() {
+
+        String accessToken3 = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken3, 7l);
+
+        String accessToken2 = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response2 = applyActivityRequest(accessToken2, 7l);
+
+        ExtractableResponse<Response> response3 = getActivityMembersRequest(accessToken, 7l);
+        assertThat(response3.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response3.body().jsonPath().getList("data").size()).isEqualTo(2);
+
+        ExtractableResponse<Response> response4 = createSessionRequest(accessToken3, 7l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        assertThat(response4.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> response5 = getAttendanceRequest(accessToken3, 8l);
+        assertThat(response5.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response5.body().jsonPath().getList("data").size()).isEqualTo(2);
+
+        List<String> members = new ArrayList<>();
+        members.add("MEMBER_ID2");
+        ExtractableResponse<Response> response6 = attendRequest(accessToken3, 8l, members);
+
+        assertThat(response6.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
     public static ExtractableResponse<Response> getActivitiesRequest(String accessToken) {
         return RestAssured
                 .given().log().all()
