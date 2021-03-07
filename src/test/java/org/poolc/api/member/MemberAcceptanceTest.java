@@ -146,7 +146,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         String not_admin_loginID = "NOT_ADMIN_ID";
 
-        ExtractableResponse<Response> response = UpdateMemberIsAdmin(accessToken, not_admin_loginID, Collections.singletonMap("toAdmin", true));
+        ExtractableResponse<Response> response = UpdateMemberIsAdmin(accessToken, not_admin_loginID);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         ExtractableResponse<Response> certifiedResponse = AdminGetMemberRequestByLoginID(accessToken, not_admin_loginID);
@@ -162,7 +162,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         String willRevokeAdminID = "WILL_REVOKE_ADMIN_ID";
 
-        ExtractableResponse<Response> response = UpdateMemberIsAdmin(accessToken, willRevokeAdminID, Collections.singletonMap("toAdmin", false));
+        ExtractableResponse<Response> response = UpdateMemberIsAdmin(accessToken, willRevokeAdminID);
         ExtractableResponse<Response> certifiedResponse = AdminGetMemberRequestByLoginID(accessToken, willRevokeAdminID);
         MemberResponse responseBody = certifiedResponse.as(MemberResponse.class);
 
@@ -271,12 +271,11 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> UpdateMemberIsAdmin(String accessToken, String loginID, Map<String, Boolean> isAdmin) {
+    public static ExtractableResponse<Response> UpdateMemberIsAdmin(String accessToken, String loginID) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(isAdmin)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/member/admin/{loginID}", loginID)
                 .then().log().all()

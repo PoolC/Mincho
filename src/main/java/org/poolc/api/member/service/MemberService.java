@@ -56,38 +56,31 @@ public class MemberService {
                         .build());
     }
 
-    public void updateMember(String UUID, UpdateMemberRequest updateMemberRequest) {
-        Member findMember = memberRepository.findById(UUID).get();
+    public void updateMember(Member member, UpdateMemberRequest updateMemberRequest) {
         String encodePassword = passwordHashProvider.encodePassword(updateMemberRequest.getPassword());
-        findMember.updateMemberInfo(updateMemberRequest, encodePassword);
-        memberRepository.flush();
+        member.updateMemberInfo(updateMemberRequest, encodePassword);
+        memberRepository.saveAndFlush(member);
     }
 
     public void authorizeMember(String loginID) {
-        Member findMember = memberRepository.findByLoginID(loginID).get();
+        Member findMember = findMemberbyLoginID(loginID);
         findMember.acceptMember();
         memberRepository.flush();
     }
 
-    public void updateIsAdmin(String loginID, Boolean toAdmin) {
-        Member findMember = memberRepository.findByLoginID(loginID).get();
-        findMember.changeAdminPrivileges(toAdmin);
-        memberRepository.flush();
+    public void updateIsAdmin(Member member, String toggleMemberLoginID) {
+        Member targetMember = findMemberbyLoginID(toggleMemberLoginID);
+        member.toggleAdmin(targetMember);
+        memberRepository.saveAndFlush(targetMember);
     }
 
     public void deleteMember(String loginID) {
-        memberRepository.delete(memberRepository.findByLoginID(loginID)
-                .orElseThrow(() -> new NoSuchElementException("No user found with given loginID")));
-    }
-
-    public Member findMemberbyUUID(String UUID) {
-        return memberRepository.findById(UUID)
-                .orElseThrow(() -> new NoSuchElementException("No user found with given UUID"));
+        memberRepository.delete(findMemberbyLoginID(loginID));
     }
 
     public Member findMemberbyLoginID(String loginID) {
         return memberRepository.findByLoginID(loginID)
-                .orElseThrow(() -> new NoSuchElementException("No user found with given UUID"));
+                .orElseThrow(() -> new NoSuchElementException("No user found with given loginID"));
     }
 
     public List<Member> getAllMembers() {
