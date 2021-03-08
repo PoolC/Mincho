@@ -133,16 +133,7 @@ public class ActivityService {
         return activityRepository.findAll().stream().map(a -> YearSemester.of(a.getStartDate())).distinct().collect(Collectors.toList());
     }
 
-    private boolean checkWhetherAdminOrHost(Boolean isAdmin, String MemberID, String activityHostID) {
-
-        if ((MemberID.equals(activityHostID)) || (isAdmin)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private YearSemester getYearSemesterFromString(String val) {
+    public YearSemester getYearSemesterFromString(String val) {
         String[] splits = val.split("-");
         if (splits.length != 2) {
             throw new IllegalArgumentException("제대로된 형식의 시간이 아닙니다");
@@ -152,15 +143,7 @@ public class ActivityService {
         return new YearSemester(year, semester);
     }
 
-    private Integer tryParse(String text) {
-        try {
-            return Integer.parseInt(text);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("제대로된 형식의 시간이 아닙니다");
-        }
-    }
-
-    private LocalDate getFirstDateFromYearSemester(YearSemester yearSemester) {
+    public LocalDate getFirstDateFromYearSemester(YearSemester yearSemester) {
         if (yearSemester.getSemester() == 1) {
             return LocalDate.of(yearSemester.getYear(), 3, 1);
         } else {
@@ -168,7 +151,7 @@ public class ActivityService {
         }
     }
 
-    private LocalDate getLastDateFromYearSemester(YearSemester yearSemester) {
+    public LocalDate getLastDateFromYearSemester(YearSemester yearSemester) {
         if (yearSemester.getSemester() == 1) {
             return LocalDate.of(yearSemester.getYear(), 8, 1).with(lastDayOfMonth());
         } else {
@@ -188,4 +171,20 @@ public class ActivityService {
         }
     }
 
+    private Integer tryParse(String text) {
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("제대로된 형식의 시간이 아닙니다");
+        }
+    }
+
+    private boolean checkWhetherAdminOrHost(Boolean isAdmin, String MemberID, String activityHostID) {
+
+        if ((MemberID.equals(activityHostID)) || (isAdmin)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

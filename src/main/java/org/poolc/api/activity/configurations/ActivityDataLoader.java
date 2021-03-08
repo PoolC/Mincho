@@ -3,27 +3,36 @@ package org.poolc.api.activity.configurations;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.activity.domain.Activity;
 import org.poolc.api.activity.domain.ActivityTag;
+import org.poolc.api.activity.dto.AttendanceRequest;
+import org.poolc.api.activity.dto.SessionCreateRequest;
 import org.poolc.api.activity.repository.ActivityRepository;
+import org.poolc.api.activity.service.ActivityService;
+import org.poolc.api.activity.service.SessionService;
+import org.poolc.api.activity.vo.AttendanceValues;
+import org.poolc.api.activity.vo.SessionCreateValues;
 import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 @Component
-@Profile("activityTest")
+//@Profile("activityTest")
 @RequiredArgsConstructor
 public class ActivityDataLoader implements CommandLineRunner {
 
     private final MemberRepository memberRepository;
     private final ActivityRepository activityRepository;
     private final PasswordHashProvider passwordHashProvider;
+    private final ActivityService activityService;
+    private final SessionService sessionService;
 
     @Override
     public void run(String... args) {
@@ -87,7 +96,7 @@ public class ActivityDataLoader implements CommandLineRunner {
         memberRepository.save(member3);
         LocalDate date = LocalDate.now();
         LocalDate date2 = LocalDate.of(2020, 9, 11);
-        Activity activity = new Activity("정윤석의 c++ ", "dsds", member, date, "dsds", false, 1l, 3l, true);
+        Activity activity = new Activity("정윤석의 c++ ", "dsds", member, date, "dsds", false, 30l, 3l, true);
         activity.getTags().add(new ActivityTag(activity, "꿀잼보장"));
         activityRepository.save(activity);
         Activity activity2 = new Activity("정윤석의 c++ 2", "dsds", member, date2, "dsds", false, 1l, 2l, false);
@@ -99,6 +108,25 @@ public class ActivityDataLoader implements CommandLineRunner {
         activityRepository.save(activity2);
         activityRepository.save(activity3);
         activityRepository.save(activity4);
+
+        sessionService.createSession(memberRepository.findByLoginID("MEMBER_ID").get(), new SessionCreateValues(new SessionCreateRequest(1l, 1l, LocalDate.now(), "1")));
+        activityService.apply(1l, memberRepository.findByLoginID("MEMBER_ID2").get().getUUID());
+        activityService.apply(1l, memberRepository.findByLoginID("MEMBER_ID3").get().getUUID());
+        List<String> list = new ArrayList<>();
+        list.add("MEMBER_ID2");
+        list.add("MEMBER_ID3");
+        sessionService.createSession(memberRepository.findByLoginID("MEMBER_ID").get(), new SessionCreateValues(new SessionCreateRequest(1l, 2l, LocalDate.now(), "1")));
+        sessionService.attend(memberRepository.findByLoginID("MEMBER_ID").get().getUUID(), new AttendanceValues(new AttendanceRequest(8l, list)));
+        List<String> list2 = new ArrayList<>();
+        list2.add("MEMBER_ID3");
+        activityService.openActivity(3l);
+        activityService.apply(3l, memberRepository.findByLoginID("MEMBER_ID2").get().getUUID());
+        sessionService.attend(memberRepository.findByLoginID("MEMBER_ID").get().getUUID(), new AttendanceValues(new AttendanceRequest(9l, list2)));
+        sessionService.createSession(memberRepository.findByLoginID("MEMBER_ID").get(), new SessionCreateValues(new SessionCreateRequest(3l, 1l, LocalDate.now(), "1")));
+        List<String> list3 = new ArrayList<>();
+        list3.add("MEMBER_ID2");
+        sessionService.attend(memberRepository.findByLoginID("MEMBER_ID").get().getUUID(), new AttendanceValues(new AttendanceRequest(10l, list3)));
+
 
     }
 }

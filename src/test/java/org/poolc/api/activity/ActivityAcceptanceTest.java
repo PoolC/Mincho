@@ -736,6 +736,18 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
 
     }
 
+    @Test
+    public void 시간() {
+
+
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = getMembersWithHourRequest(accessToken);
+
+    }
+
     public static ExtractableResponse<Response> getActivitiesRequest(String accessToken) {
         return RestAssured
                 .given().log().all()
@@ -932,6 +944,17 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .when().put("/activity/close/{activityID}", activityID)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> getMembersWithHourRequest(String accessToken) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .param("when", "2020-2")
+                .when().get("/member/hour")
                 .then().log().all()
                 .extract();
     }

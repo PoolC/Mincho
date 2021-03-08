@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.poolc.api.activity.dto.ActivityResponse;
 import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.member.dto.MemberListResponse;
-import org.poolc.api.member.dto.MemberResponse;
-import org.poolc.api.member.dto.RegisterMemberRequest;
-import org.poolc.api.member.dto.UpdateMemberRequest;
+import org.poolc.api.member.dto.*;
 import org.poolc.api.member.service.MemberService;
 import org.poolc.api.member.vo.MemberCreateValues;
 import org.poolc.api.project.dto.ProjectResponse;
@@ -18,9 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -47,6 +42,19 @@ public class MemberController {
                 .collect(Collectors.toList());
         MemberListResponse MemberListResponses = new MemberListResponse(memberList);
         return ResponseEntity.ok().body(MemberListResponses);
+    }
+
+    @GetMapping(value = "/hour", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, List<MemberResponseWithHour>>> findMembersWithHoursInSpecificSemester(@RequestParam String when) {
+        List<MemberResponseWithHour> list = new ArrayList<>();
+        Map<Member, Long> map = new HashMap<>();
+        memberService.getAllMembers().forEach(m -> map.put(m, 0l));
+        memberService.getHoursWithMembers(when).forEach(m -> System.out.println(m.getRight()));
+        memberService.getHoursWithMembers(when).forEach(m -> map.replace(memberService.findMemberbyLoginID(m.getKey()), m.getValue()));
+        for (Member member : map.keySet()) {
+            list.add(MemberResponseWithHour.of(member, map.get(member)));
+        }
+        return ResponseEntity.ok().body(Collections.singletonMap("data", list));
     }
 
     @PostMapping
