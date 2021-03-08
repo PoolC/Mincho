@@ -22,3 +22,6 @@ security:
     token:
       secret-key: ${PROJECT_NAME_HERE_SECRET_KEY}
       expire-length: ${EXPIRE_LENGTH_IN_MILLISECONDS}
+file:
+  file-dir: ${FILE_DIR}
+  fetch-url: ${FETCH_URL}
