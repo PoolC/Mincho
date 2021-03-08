@@ -15,6 +15,7 @@ import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-//@Profile("activityTest")
+@Profile("activityTest")
 @RequiredArgsConstructor
 public class ActivityDataLoader implements CommandLineRunner {
 
