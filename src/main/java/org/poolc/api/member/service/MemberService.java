@@ -1,16 +1,21 @@
 package org.poolc.api.member.service;
 
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.poolc.api.activity.service.ActivityService;
+import org.poolc.api.activity.vo.YearSemester;
 import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.poolc.api.member.exception.DuplicateMemberException;
+import org.poolc.api.member.query.MemberQueryRepository;
 import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.member.vo.MemberCreateValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -20,11 +25,15 @@ import java.util.UUID;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordHashProvider passwordHashProvider;
+    private final MemberQueryRepository memberQueryRepository;
+    private final ActivityService activityService;
 
     @Autowired
-    public MemberService(MemberRepository memberRepository, PasswordHashProvider passwordHashProvider) {
+    public MemberService(MemberRepository memberRepository, PasswordHashProvider passwordHashProvider, MemberQueryRepository memberQueryRepository, ActivityService activityService) {
         this.memberRepository = memberRepository;
         this.passwordHashProvider = passwordHashProvider;
+        this.memberQueryRepository = memberQueryRepository;
+        this.activityService = activityService;
     }
 
     public void create(MemberCreateValues values) {
@@ -102,5 +111,12 @@ public class MemberService {
 
     public List<Member> getAllMembersByName(String name) {
         return memberRepository.findByName(name);
+    }
+
+    public List<MutablePair<String, Long>> getHoursWithMembers(String when) {
+        YearSemester yearSemester = activityService.getYearSemesterFromString(when);
+        LocalDate startDate = activityService.getFirstDateFromYearSemester(yearSemester);
+        LocalDate endDate = activityService.getLastDateFromYearSemester(yearSemester);
+        return memberQueryRepository.getHours(startDate, endDate);
     }
 }
