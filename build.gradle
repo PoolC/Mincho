@@ -37,13 +37,17 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.security:spring-security-crypto:5.4.2'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
-    runtimeOnly 'com.h2database:h2'
+
+    runtime("org.postgresql:postgresql:42.2.2")
 
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+    testRuntimeOnly 'com.h2database:h2'
 }
 
 test {
