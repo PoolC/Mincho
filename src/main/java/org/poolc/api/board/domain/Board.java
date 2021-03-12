@@ -18,19 +18,19 @@ public class Board extends TimestampEntity {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name", columnDefinition = "varchar(40)", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "URLPath", columnDefinition = "varchar(40)", nullable = false, unique = true)
+    @Column(name = "url_path", columnDefinition = "varchar(40)", nullable = false, unique = true)
     private String urlPath;
 
-    @Column(name = "readPermission", columnDefinition = "varchar(10)", nullable = false)
+    @Column(name = "read_permission", columnDefinition = "varchar(10)", nullable = false)
     private MemberRole readPermission;
 
-    @Column(name = "writePermission", columnDefinition = "varchar(10)", nullable = false)
+    @Column(name = "write_permission", columnDefinition = "varchar(10)", nullable = false)
     private MemberRole writePermission;
 
     public Board() {

@@ -25,19 +25,19 @@ public class Member extends TimestampEntity implements UserDetails {
     // TODO: db 컬럼명은 snake_case 가 컨벤션입니다. 이왕 name field를 선언한거 snake_case에 맞게 바꿔주세요
 
     @Id
-    @Column(name = "UUID", length = 40)
+    @Column(name = "uuid", length = 40)
     private String UUID;
 
-    @Column(name = "loginID", columnDefinition = "varchar(40)", unique = true, nullable = false)
+    @Column(name = "login_id", columnDefinition = "varchar(40)", unique = true, nullable = false)
     private String loginID;
 
-    @Column(name = "passwordHash", nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
     @Column(name = "email", columnDefinition = "varchar(255)", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "phoneNumber", columnDefinition = "varchar(20)", nullable = false)
+    @Column(name = "phone_number", columnDefinition = "varchar(20)", nullable = false)
     private String phoneNumber;
 
     @Column(name = "name", columnDefinition = "varchar(40)", nullable = false)
@@ -46,22 +46,22 @@ public class Member extends TimestampEntity implements UserDetails {
     @Column(name = "department", columnDefinition = "varchar(40)", nullable = false)
     private String department;
 
-    @Column(name = "studentID", columnDefinition = "varchar(40)", nullable = false, unique = true)
+    @Column(name = "student_id", columnDefinition = "varchar(40)", nullable = false, unique = true)
     private String studentID;
 
-    @Column(name = "passwordResetToken", columnDefinition = "varchar(255)")
+    @Column(name = "password_reset_token", columnDefinition = "varchar(255)")
     private String passwordResetToken;
 
-    @Column(name = "passwordResetTokenValidUntil")
+    @Column(name = "password_reset_token_valid_until")
     private LocalDateTime passwordResetTokenValidUntil;
 
-    @Column(name = "profileImageURL", columnDefinition = "varchar(255)")
+    @Column(name = "profile_image_url", columnDefinition = "varchar(255)")
     private String profileImageURL;
 
     @Column(name = "introduction", columnDefinition = "varchar(1024)")
     private String introduction;
 
-    @Column(name = "isExcepted", columnDefinition = "boolean default false")
+    @Column(name = "is_excepted", columnDefinition = "boolean default false")
     private Boolean isExcepted;
 
     @ElementCollection(fetch = FetchType.EAGER)

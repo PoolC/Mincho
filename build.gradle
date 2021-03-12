@@ -39,7 +39,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-crypto:5.4.2'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
-    runtimeOnly 'com.h2database:h2'
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+
+    runtime("org.postgresql:postgresql:42.2.2")
 
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

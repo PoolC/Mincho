@@ -15,7 +15,7 @@ public class Project extends TimestampEntity {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "id")
     private long id;
 
     @Column(name = "name", columnDefinition = "varchar(255)", nullable = false)
@@ -31,7 +31,7 @@ public class Project extends TimestampEntity {
     @Column(name = "duration", columnDefinition = "varchar(255)", nullable = false)
     private String duration;
 
-    @Column(name = "thumbnailURL", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "thumbnail_url", columnDefinition = "varchar(255)", nullable = false)
     private String thumbnailURL;
 
     @Lob

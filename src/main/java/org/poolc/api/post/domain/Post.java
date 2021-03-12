@@ -22,16 +22,16 @@ import static javax.persistence.FetchType.LAZY;
 public class Post extends TimestampEntity {
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "boardID", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "board_id", referencedColumnName = "ID", nullable = false)
     private Board board;
 
     @JsonIgnore
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "authorUUID", referencedColumnName = "UUID", nullable = false)
+    @JoinColumn(name = "author_uuid", referencedColumnName = "UUID", nullable = false)
     private Member member;
 
     @Column(name = "title", columnDefinition = "char(255)", nullable = false)
