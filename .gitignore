@@ -38,3 +38,6 @@ out/
 
 ## csv
 *.csv
+
+.envrc
+.env.list

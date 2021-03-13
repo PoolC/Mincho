@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,9 +25,6 @@ import java.nio.file.Paths;
 public class FileController {
     @Value("${file.file-dir}")
     private String fileDir;
-
-    @Value("${file.fetch-url}")
-    private String fetchUrl;
 
     @GetMapping(value = "/{fileName}")
     public ResponseEntity sendFile(@PathVariable(name = "fileName") String fileName) {
@@ -49,16 +47,13 @@ public class FileController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadFile(@ModelAttribute MultipartFile file) {
         try {
-            if (file.isEmpty()) {
-                return ResponseEntity.badRequest().body("파일을 찾을수 없습니다");
-            }
             String fileNameWithOutSpace = file.getOriginalFilename().replace(' ', '-');
             Path path = Paths.get(fileDir + fileNameWithOutSpace);
             if (Files.exists(path)) {
                 return ResponseEntity.badRequest().body("이미 존재하는 파일명입니다. 파일 명을 수정해주세요");
             }
             file.transferTo(path);
-            return ResponseEntity.ok().body(fetchUrl + "file/" + URLEncoder.encode(fileNameWithOutSpace, StandardCharsets.UTF_8));
+            return ResponseEntity.ok().body(URI.create("/files/" + URLEncoder.encode(fileNameWithOutSpace, StandardCharsets.UTF_8)).toString());
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
