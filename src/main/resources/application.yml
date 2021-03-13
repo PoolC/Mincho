@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:2520/poolc
-    username: postgres
-    password: 2520
+    url: jdbc:postgresql://${DB_HOST}/${DB_NAME}
+    username: ${DB_USER_NAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: create
@@ -22,4 +22,3 @@ security:
 file:
   file-dir: ${FILE_DIR}
   fetch-url: ${FETCH_URL}
-
