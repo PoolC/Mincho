@@ -8,17 +8,18 @@ spring:
     username: sa
     password:
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create
     properties:
       hibernate:
         show_sql: true
         format_sql: true
-  security:`
-jwt:
-  token:
-    secret-key: ${PROJECT_NAME_HERE_SECRET_KEY}
-    expire-length: ${EXPIRE_LENGTH_IN_MILLISECONDS}
+security:
+  jwt:
+    token:
+      secret-key: ${PROJECT_NAME_HERE_SECRET_KEY}
+      expire-length: ${EXPIRE_LENGTH_IN_MILLISECONDS}
 file:
   file-dir: ${FILE_DIR}
   fetch-url: ${FETCH_URL}
