@@ -44,6 +44,8 @@ public class MemberDoc extends ApiDoc {
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("회원 이메일"),
                                 fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대폰 번호"),
                                 fieldWithPath("department").type(JsonFieldType.STRING).description("학과/학부"),
-                                fieldWithPath("studentID").type(JsonFieldType.STRING).description("학번"))));
+                                fieldWithPath("studentID").type(JsonFieldType.STRING).description("학번"),
+                                fieldWithPath("introduction").type(JsonFieldType.STRING).description("자기소개")
+                        )));
     }
 }

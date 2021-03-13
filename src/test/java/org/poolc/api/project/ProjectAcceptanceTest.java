@@ -55,9 +55,6 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
         List<ProjectResponse> projects = response.body().jsonPath().getList("data", ProjectResponse.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(projects.size()).isEqualTo(2);
-        assertThat(projects.get(0).getName()).isEqualTo("첫 플젝");
-        assertThat(projects.get(1).getName()).isEqualTo("두번째 플젝");
     }
 
     @Test
@@ -70,7 +67,6 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
         ProjectResponse projects = response.as(ProjectResponse.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(projects.getName()).isEqualTo("첫 플젝");
     }
 
     @Test

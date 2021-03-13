@@ -41,12 +41,6 @@ public class BookAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getList("data")).hasSize(7);
     }
 
-    @Test
-    void findAllBooksAsPublicMember() {
-        ExtractableResponse<Response> response = getBooksRequest("");
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
-    }
 
     @Test
     void findOneBook() {
@@ -104,7 +98,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = borrowBookRequest(accessToken, 3L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -148,7 +142,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = returnBookRequest(accessToken, 5L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -158,7 +152,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = returnBookRequest(accessToken, 6L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

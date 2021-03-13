@@ -57,8 +57,8 @@ public class Activity {
     private List<Session> sessions = new ArrayList<>();
 
     @ElementCollection(fetch = LAZY)
-    @CollectionTable(name = "activity_members", joinColumns = @JoinColumn(name = "activity_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"activity_id", "member_loginid"})})
-    @Column(name = "member_loginid")
+    @CollectionTable(name = "activity_members", joinColumns = @JoinColumn(name = "activity_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"activity_id", "member_login_id"})})
+    @Column(name = "member_login_id")
     private List<String> memberLoginIDs = new ArrayList<>();
 
     public Activity() {
