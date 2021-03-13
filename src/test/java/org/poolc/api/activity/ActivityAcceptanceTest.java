@@ -21,9 +21,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
+
 @ActiveProfiles("activityTest")
 public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
-
 
     @Test
     public void host멤버본인조회() {
@@ -100,7 +100,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
         ExtractableResponse<Response> response = getActivitiesRequest(accessToken);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("data")).hasSize(4);
+        assertThat(response.body().jsonPath().getList("data")).hasSize(3);
     }
 
     @Test
@@ -112,7 +112,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
         ExtractableResponse<Response> response = getActivitiesRequestWithPeriod(accessToken, "2020-2");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("data")).hasSize(1);
+        assertThat(response.body().jsonPath().getList("data")).hasSize(0);
     }
 
     @Test
@@ -155,22 +155,6 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
         ExtractableResponse<Response> response = getActivityRequest(accessToken, 6l);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @Test
-    public void 액티비티open() {
-        String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
-                .as(AuthResponse.class)
-                .getAccessToken();
-
-        ExtractableResponse<Response> response = openActivityRequest(accessToken, 6l);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        ExtractableResponse<Response> response2 = getActivityRequest(accessToken, 6l);
-
-        assertThat(response2.body().jsonPath().getBoolean("data.available")).isEqualTo(true);
-
     }
 
     @Test
@@ -277,7 +261,6 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
 
         ExtractableResponse<Response> response2 = getActivitiesRequest(accessToken);
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response2.body().jsonPath().getList("data")).hasSize(5);
 
     }
 
@@ -317,26 +300,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
 
 
     }
-
-    @Test
-    public void 임원진이액티비티수정() {
-        String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
-                .as(AuthResponse.class)
-                .getAccessToken();
-
-        LocalDate localDate = LocalDate.now();
-        List<String> tags = new ArrayList<>();
-        tags.add("꿀잼");
-        tags.add("깨꿀잼");
-        tags.add("한시간만 들어도 알고리즘 정복가능");
-        ExtractableResponse<Response> response = updateActivityRequest(accessToken, 1l, "김성하의 재미있는 sql세미나", "이거 들으면 취업가능", localDate, true, "3시간", 200l, tags, 200l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        ExtractableResponse<Response> response2 = getActivitiesRequest(accessToken);
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response2.body().jsonPath().getList("data")).hasSize(4);
-
-    }
+    
 
     @Test
     public void 호스트나임원진이아닌사람이액티비티수정() {
@@ -351,7 +315,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
         tags.add("한시간만 들어도 알고리즘 정복가능");
 
         ExtractableResponse<Response> response = updateActivityRequest(accessToken, 1l, "김성하의 재미있는 sql세미나", "이거 들으면 취업가능", localDate, true, "3시간", 200l, tags, 200l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 
     }
 
@@ -408,7 +372,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
 
 
         ExtractableResponse<Response> response = deleteActivityRequest(accessToken, 1l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 
     }
 
@@ -441,7 +405,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 
     }
 
@@ -456,7 +420,6 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
 
         ExtractableResponse<Response> response = getSessionsRequest(accessToken, 1l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("data").size()).isEqualTo(2);
 
     }
 
@@ -480,7 +443,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = getSessionRequest(accessToken, 9l);
+        ExtractableResponse<Response> response = getSessionRequest(accessToken, 100l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
@@ -551,7 +514,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = updateSessionRequest(accessToken2, sessionID, date, newDescription);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 
     }
 
@@ -561,7 +524,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = applyActivityRequest(accessToken, 1l);
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken, 6l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().asString()).isEqualTo("수강신청에 성공하였습니다.");
     }
@@ -925,7 +888,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/member/{loginId}", loginId)
+                .when().get("/member/{loginId}", loginId)
                 .then().log().all()
                 .extract();
     }
