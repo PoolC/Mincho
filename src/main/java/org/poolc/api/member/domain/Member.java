@@ -67,6 +67,7 @@ public class Member extends TimestampEntity implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "member_uuid"))
     @Builder.Default
+    @Enumerated(EnumType.STRING)
     private Set<MemberRole> roles = new HashSet<>();
 
     protected Member() {
