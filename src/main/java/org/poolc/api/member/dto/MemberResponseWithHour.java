@@ -9,14 +9,16 @@ public class MemberResponseWithHour {
 
     private final MemberResponse member;
     private final Long hour;
-
+    private final Boolean isExcepted;
+    
     @JsonCreator
-    public MemberResponseWithHour(MemberResponse member, Long hour) {
+    public MemberResponseWithHour(MemberResponse member, Long hour, Boolean isExcepted) {
         this.member = member;
         this.hour = hour;
+        this.isExcepted = isExcepted;
     }
 
     public static MemberResponseWithHour of(Member member, Long hour) {
-        return new MemberResponseWithHour(MemberResponse.of(member), hour);
+        return new MemberResponseWithHour(MemberResponse.of(member), hour, member.getIsExcepted());
     }
 }
