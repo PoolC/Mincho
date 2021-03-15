@@ -35,7 +35,7 @@ public class ProjectService {
     }
 
     public List<Project> findProjects() {
-        return projectRepository.findAll();
+        return projectRepository.findAllByOrderByCreatedAtAsc();
     }
 
     public List<Project> findProjectsByProjectMembers(String loginId) {
