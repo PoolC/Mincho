@@ -6,10 +6,7 @@ import org.poolc.api.board.vo.BoardUpdateValue;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.MemberRole;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Set;
 
 @Entity(name = "Board")
@@ -27,9 +24,11 @@ public class Board extends TimestampEntity {
     @Column(name = "url_path", columnDefinition = "varchar(40)", nullable = false, unique = true)
     private String urlPath;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "read_permission", columnDefinition = "varchar(10)", nullable = false)
     private MemberRole readPermission;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "write_permission", columnDefinition = "varchar(10)", nullable = false)
     private MemberRole writePermission;
 

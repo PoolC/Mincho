@@ -21,8 +21,7 @@ public class Project extends TimestampEntity {
     @Column(name = "name", columnDefinition = "varchar(255)", nullable = false)
     private String name;
 
-    @Lob
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", columnDefinition = "text", nullable = false)
     private String description;
 
     @Column(name = "genre", columnDefinition = "varchar(255)", nullable = false)
@@ -34,8 +33,7 @@ public class Project extends TimestampEntity {
     @Column(name = "thumbnail_url", columnDefinition = "varchar(255)", nullable = false)
     private String thumbnailURL;
 
-    @Lob
-    @Column(name = "body", nullable = false)
+    @Column(name = "body", columnDefinition = "text", nullable = false)
     private String body;
 
     @ElementCollection(fetch = FetchType.EAGER)
