@@ -27,7 +27,7 @@ public class MemberController {
     private final ActivityService activityService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MemberListResponse> getAllMembers(@AuthenticationPrincipal Member member) {
+    public ResponseEntity<MemberListResponse> getAllMembers() {
         List<MemberResponse> memberList = memberService.getAllMembers()
                 .stream().map(MemberResponse::of)
                 .collect(Collectors.toList());
