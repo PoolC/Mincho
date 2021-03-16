@@ -10,11 +10,15 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity(name = "Board")
+@SequenceGenerator(
+        name = "BOARD_SEQ_GENERATOR",
+        sequenceName = "BOARD_SEQ"
+)
 @Getter
 public class Board extends TimestampEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOARD_SEQ_GENERATOR")
     @Column(name = "id")
     private Long id;
 

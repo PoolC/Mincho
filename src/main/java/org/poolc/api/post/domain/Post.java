@@ -17,11 +17,15 @@ import java.util.List;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "Post")
+@SequenceGenerator(
+        name = "POST_SEQ_GENERATOR",
+        sequenceName = "POST_SEQ"
+)
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Post extends TimestampEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "POST_SEQ_GENERATOR")
     @Column(name = "id")
     private Long id;
 

@@ -10,11 +10,15 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
+@SequenceGenerator(
+        name = "BOOK_SEQ_GENERATOR",
+        sequenceName = "BOOK_SEQ"
+)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Book extends TimestampEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOOK_SEQ_GENERATOR")
     @Column(name = "id")
     private Long id;
 

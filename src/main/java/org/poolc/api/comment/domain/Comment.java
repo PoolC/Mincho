@@ -12,11 +12,15 @@ import javax.persistence.*;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "Comment")
+@SequenceGenerator(
+        name = "COMMENT_SEQ_GENERATOR",
+        sequenceName = "COMMENT_SEQ"
+)
 @Builder
 @Getter
 public class Comment extends TimestampEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COMMENT_SEQ_GENERATOR")
     @Column(name = "id")
     private Long id;
 

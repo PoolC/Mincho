@@ -10,11 +10,15 @@ import java.util.List;
 
 @Entity
 @Getter
+@SequenceGenerator(
+        name = "PROJECT_SEQ_GENERATOR",
+        sequenceName = "PROJECT_SEQ"
+)
 @Table(name = "Project")
 public class Project extends TimestampEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PROJECT_SEQ_GENERATOR")
     @Column(name = "id")
     private long id;
 
