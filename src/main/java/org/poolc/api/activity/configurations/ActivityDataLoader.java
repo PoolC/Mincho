@@ -117,16 +117,16 @@ public class ActivityDataLoader implements CommandLineRunner {
         list.add("MEMBER_ID2");
         list.add("MEMBER_ID3");
         sessionService.createSession(memberRepository.findByLoginID("MEMBER_ID").get(), new SessionCreateValues(new SessionCreateRequest(1l, 2l, LocalDate.now(), "1")));
-        sessionService.attend(memberRepository.findByLoginID("MEMBER_ID").get().getUUID(), new AttendanceValues(new AttendanceRequest(8l, list)));
+        sessionService.attend(memberRepository.findByLoginID("MEMBER_ID").get().getUUID(), new AttendanceValues(new AttendanceRequest(1l, list)));
         List<String> list2 = new ArrayList<>();
         list2.add("MEMBER_ID3");
         activityService.openActivity(3l);
         activityService.apply(3l, memberRepository.findByLoginID("MEMBER_ID2").get().getUUID());
-        sessionService.attend(memberRepository.findByLoginID("MEMBER_ID").get().getUUID(), new AttendanceValues(new AttendanceRequest(9l, list2)));
+        sessionService.attend(memberRepository.findByLoginID("MEMBER_ID").get().getUUID(), new AttendanceValues(new AttendanceRequest(2l, list2)));
         sessionService.createSession(memberRepository.findByLoginID("MEMBER_ID").get(), new SessionCreateValues(new SessionCreateRequest(3l, 1l, LocalDate.now(), "1")));
         List<String> list3 = new ArrayList<>();
         list3.add("MEMBER_ID2");
-        sessionService.attend(memberRepository.findByLoginID("MEMBER_ID").get().getUUID(), new AttendanceValues(new AttendanceRequest(10l, list3)));
+        sessionService.attend(memberRepository.findByLoginID("MEMBER_ID").get().getUUID(), new AttendanceValues(new AttendanceRequest(3l, list3)));
 
 
     }

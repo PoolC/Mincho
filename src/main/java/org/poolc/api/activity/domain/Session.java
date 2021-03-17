@@ -13,10 +13,14 @@ import java.util.Objects;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "Session")
+@SequenceGenerator(
+        name = "SESSION_SEQ_GENERATOR",
+        sequenceName = "SESSION_SEQ"
+)
 @Getter
 public class Session {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SESSION_SEQ_GENERATOR")
     @Column(name = "id")
     private Long id;
 
