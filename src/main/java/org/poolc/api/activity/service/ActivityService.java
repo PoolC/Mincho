@@ -86,7 +86,7 @@ public class ActivityService {
             throw new IllegalStateException("정원을 초과하였습니다");
         } else {
             Member member = memberRepository.findById(uuid).orElseThrow(() -> new NoSuchElementException("해당하는 회원이 없습니다"));
-            activity.apply(member.getLoginID());
+            activity.toggleApply(member.getLoginID());
         }
     }
 

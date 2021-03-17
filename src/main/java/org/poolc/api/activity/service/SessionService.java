@@ -78,7 +78,7 @@ public class SessionService {
 
     private void checkMembersExistInActivity(List<String> memberLoginIDs, Activity activity) {
         memberLoginIDs.forEach((s) -> {
-            if (activity.getMemberLoginIDs().indexOf(s) == -1) {
+            if (!activity.getMemberLoginIDs().contains(s)) {
                 throw new NoSuchElementException("해당하는 회원이 이 활동에 수강신청하지 않았습니다");
             }
         });

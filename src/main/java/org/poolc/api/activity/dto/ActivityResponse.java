@@ -21,9 +21,10 @@ public class ActivityResponse {
     private final boolean isSeminar;
     private final Long hour;
     private final String description;
+    private final List<String> memberLoginIds;
 
     @JsonCreator
-    public ActivityResponse(Long id, String title, HostResponse host, String classHour, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour, String description) {
+    public ActivityResponse(Long id, String title, HostResponse host, String classHour, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour, String description, List<String> memberLoginIds) {
         this.id = id;
         this.title = title;
         this.host = host;
@@ -35,7 +36,24 @@ public class ActivityResponse {
         this.isSeminar = isSeminar;
         this.hour = hour;
         this.description = description;
+        this.memberLoginIds = memberLoginIds;
     }
+
+
+//    @JsonCreator
+//    public ActivityResponse(Long id, String title, HostResponse host, String classHour, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour, String description) {
+//        this.id = id;
+//        this.title = title;
+//        this.host = host;
+//        this.classHour = classHour;
+//        this.startDate = startDate;
+//        this.available = available;
+//        this.tags = tags;
+//        this.capacity = capacity;
+//        this.isSeminar = isSeminar;
+//        this.hour = hour;
+//        this.description = description;
+//    }
 
 
     public static ActivityResponse of(Activity activity) {
@@ -44,6 +62,6 @@ public class ActivityResponse {
                 .collect(Collectors.toList());
         HostResponse host = HostResponse.of(activity.getHost());
         return new ActivityResponse(activity.getId(), activity.getTitle(), host,
-                activity.getClassHour(), activity.getStartDate(), activity.getAvailable(), tags, activity.getCapacity(), activity.getIsSeminar(), activity.getHour(), activity.getDescription());
+                activity.getClassHour(), activity.getStartDate(), activity.getAvailable(), tags, activity.getCapacity(), activity.getIsSeminar(), activity.getHour(), activity.getDescription(), activity.getMemberLoginIDs());
     }
 }

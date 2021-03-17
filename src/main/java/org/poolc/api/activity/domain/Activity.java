@@ -1,5 +1,6 @@
 package org.poolc.api.activity.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.activity.vo.ActivityUpdateValues;
 import org.poolc.api.member.domain.Member;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "Activity")
@@ -20,6 +22,7 @@ import static javax.persistence.FetchType.LAZY;
         sequenceName = "ACTIVITY_SEQ"
 )
 @Getter
+@Builder
 public class Activity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ACTIVITY_SEQ_GENERATOR")
@@ -60,7 +63,7 @@ public class Activity {
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Session> sessions = new ArrayList<>();
 
-    @ElementCollection(fetch = LAZY)
+    @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "activity_members", joinColumns = @JoinColumn(name = "activity_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"activity_id", "member_login_id"})})
     @Column(name = "member_login_id")
     private List<String> memberLoginIDs = new ArrayList<>();
@@ -80,9 +83,29 @@ public class Activity {
         this.available = available;
     }
 
+    public Activity(Long id, String title, String description, Member host, LocalDate startDate, String classHour, Boolean isSeminar, Long capacity, Long hour, Boolean available, List<ActivityTag> tags, List<Session> sessions, List<String> memberLoginIDs) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.host = host;
+        this.startDate = startDate;
+        this.classHour = classHour;
+        this.isSeminar = isSeminar;
+        this.capacity = capacity;
+        this.hour = hour;
+        this.available = available;
+        this.tags = tags;
+        this.sessions = sessions;
+        this.memberLoginIDs = memberLoginIDs;
+    }
+
     @Transactional
-    public void apply(String memberUUID) {
-        this.memberLoginIDs.add(memberUUID);
+    public void toggleApply(String login_id) {
+        if (this.memberLoginIDs.contains(login_id)) {
+            this.memberLoginIDs.remove(login_id);
+            return;
+        }
+        this.memberLoginIDs.add(login_id);
     }
 
     @Override
