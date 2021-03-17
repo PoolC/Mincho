@@ -5,10 +5,8 @@ import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.board.domain.Board;
 import org.poolc.api.board.service.BoardService;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.member.service.MemberService;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.PostResponse;
-import org.poolc.api.post.dto.PostsResponse;
 import org.poolc.api.post.dto.RegisterPostRequest;
 import org.poolc.api.post.dto.UpdatePostRequest;
 import org.poolc.api.post.service.PostService;
@@ -28,28 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostController {
     private final BoardService boardService;
-    private final MemberService memberService;
     private final PostService postService;
-
-    private String PUBLIC = "PUBLIC";
-    private String MEMBER = "MEMBER";
-    private String ADMIN = "ADMIN";
-    private String UUID = "UUID";
-    private String TRUE = "true";
-    private String ISADMIN = "isAdmin";
-    private String NOPERMISSION = "No Permission";
-
-    // TODO: DB로 확인하지 못하므로 확인용으로 만든 api, test가 끝나면 반드시 지워야한다.
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PostsResponse> getAllPost() {
-        List<PostResponse> postResponses = postService.getAllposts()
-                .stream().map(PostResponse::of)
-                .collect(Collectors.toList());
-
-        PostsResponse postsResponse = new PostsResponse(postResponses);
-
-        return ResponseEntity.ok().body(postsResponse);
-    }
 
     @PostMapping
     public ResponseEntity<Map<String, Long>> createPost(@AuthenticationPrincipal Member writer,

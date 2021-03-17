@@ -51,7 +51,7 @@ public class Post extends TimestampEntity {
 
     @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "post_file_list", joinColumns = @JoinColumn(name = "post_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"post_id", "file_uri"})})
-    @Column(name = "file_uri")
+    @Column(name = "file_uri", columnDefinition = "varchar(1024)")
     private List<String> fileList = new ArrayList<>();
 
     protected Post() {
