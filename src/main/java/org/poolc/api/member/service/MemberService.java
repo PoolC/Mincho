@@ -56,7 +56,7 @@ public class MemberService {
                         .studentID(values.getStudentID())
                         .passwordResetToken(null)
                         .passwordResetTokenValidUntil(null)
-                        .profileImageURL(null)
+                        .profileImageURL(values.getProfileImageURL())
                         .introduction(values.getIntroduction())
                         .isExcepted(false)
                         .roles(new HashSet<>() {{

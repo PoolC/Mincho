@@ -28,7 +28,7 @@ public class MemberDoc extends ApiDoc {
         RegisterMemberRequest requestValues = new RegisterMemberRequest("exampleName", "exampleLoginID",
                 "examplePassword", "examplePassword",
                 "example@email.com", "examplePhoneNumber",
-                "exampleDepartment", "exampleStudentID", "introduction");
+                "exampleDepartment", "exampleStudentID", "introduction", "https://api.poolc.org/files/%E1%84%83%E1%85%A9%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A3%E1%86%A8%E1%84%83%E1%85%A9.png");
         MemberCreateValues createValues = new MemberCreateValues(requestValues);
 
         doNothing().when(memberService).create(createValues);

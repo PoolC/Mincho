@@ -14,9 +14,10 @@ public class RegisterMemberRequest {
     private final String department;
     private final String studentID;
     private final String introduction;
+    private final String profileImageURL;
 
     @JsonCreator
-    public RegisterMemberRequest(String name, String loginID, String password, String passwordCheck, String email, String phoneNumber, String department, String studentID, String introduction) {
+    public RegisterMemberRequest(String name, String loginID, String password, String passwordCheck, String email, String phoneNumber, String department, String studentID, String introduction, String profileImageURL) {
         this.name = name;
         this.loginID = loginID;
         this.password = password;
@@ -26,5 +27,6 @@ public class RegisterMemberRequest {
         this.department = department;
         this.studentID = studentID;
         this.introduction = introduction;
+        this.profileImageURL = profileImageURL;
     }
 }

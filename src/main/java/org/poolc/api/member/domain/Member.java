@@ -97,6 +97,7 @@ public class Member extends TimestampEntity implements UserDetails {
         this.email = updateMemberRequest.getEmail();
         this.phoneNumber = updateMemberRequest.getPhoneNumber();
         this.introduction = updateMemberRequest.getIntroduction();
+        this.profileImageURL = updateMemberRequest.getProfileImageURL();
     }
 
     public boolean isAcceptedMember() {
