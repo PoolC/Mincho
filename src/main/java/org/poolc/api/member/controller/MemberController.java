@@ -133,6 +133,18 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping(path = "/status")
+    public ResponseEntity updateStatus(@AuthenticationPrincipal Member member, @RequestBody UpdateMemberStatusRequest request) {
+        memberService.updateStatus(member, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(path = "/excepted/{loginId}")
+    public ResponseEntity updateStatus(@AuthenticationPrincipal Member member, @PathVariable String loginId) {
+        memberService.updateIsExcepted(member, loginId);
+        return ResponseEntity.ok().build();
+    }
+
     private void checkIsValidMemberCreateInput(RegisterMemberRequest request) {
         if (!request.getPassword().equals(request.getPasswordCheck())) {
             throw new IllegalArgumentException("passwords should match");

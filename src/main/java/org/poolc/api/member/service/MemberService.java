@@ -8,6 +8,7 @@ import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.dto.UpdateMemberRequest;
+import org.poolc.api.member.dto.UpdateMemberStatusRequest;
 import org.poolc.api.member.exception.DuplicateMemberException;
 import org.poolc.api.member.query.MemberQueryRepository;
 import org.poolc.api.member.repository.MemberRepository;
@@ -77,8 +78,8 @@ public class MemberService {
         memberRepository.flush();
     }
 
-    public void updateIsAdmin(Member member, String toggleMemberLoginID) {
-        Member targetMember = findMemberbyLoginID(toggleMemberLoginID);
+    public void updateIsAdmin(Member member, String toggleIsAdminMemberLoginID) {
+        Member targetMember = findMemberbyLoginID(toggleIsAdminMemberLoginID);
         member.toggleAdmin(targetMember);
         memberRepository.saveAndFlush(targetMember);
     }
@@ -111,5 +112,17 @@ public class MemberService {
         LocalDate startDate = activityService.getFirstDateFromYearSemester(yearSemester);
         LocalDate endDate = activityService.getLastDateFromYearSemester(yearSemester);
         return memberQueryRepository.getHours(startDate, endDate);
+    }
+
+    public void updateStatus(Member member, UpdateMemberStatusRequest request) {
+        Member targetMember = findMemberbyLoginID(request.getLoginId());
+        member.updateStatus(targetMember, request.getStatus());
+        memberRepository.saveAndFlush(targetMember);
+    }
+
+    public void updateIsExcepted(Member member, String toggleIsExceptedLoginId) {
+        Member targetMember = findMemberbyLoginID(toggleIsExceptedLoginId);
+        member.Except(targetMember);
+        memberRepository.saveAndFlush(targetMember);
     }
 }

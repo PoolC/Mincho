@@ -6,10 +6,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
-import org.poolc.api.member.dto.MemberListResponse;
-import org.poolc.api.member.dto.MemberResponse;
-import org.poolc.api.member.dto.RegisterMemberRequest;
-import org.poolc.api.member.dto.UpdateMemberRequest;
+import org.poolc.api.member.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -195,6 +192,27 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Test
+    void updateStatus() {
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+        UpdateMemberStatusRequest request = new UpdateMemberStatusRequest("NOT_ADMIN_ID", "EXPELLED");
+        ExtractableResponse<Response> response = updateMemberStatusRequest(accessToken, request);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void updateIsExcepted() {
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+        ExtractableResponse<Response> response = updateMemberIsExceptedRequest(accessToken, "MEMBER_ID");
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     public static ExtractableResponse<Response> createMemberRequest(RegisterMemberRequest request) {
         return RestAssured
                 .given().log().all()
@@ -278,6 +296,28 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .auth().oauth2(accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/member/{loginID}", loginID)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> updateMemberStatusRequest(String accessToken, UpdateMemberStatusRequest request) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/member/status")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> updateMemberIsExceptedRequest(String accessToken, String loginId) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/member/excepted/{loginId}", loginId)
                 .then().log().all()
                 .extract();
     }

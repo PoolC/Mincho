@@ -108,6 +108,7 @@ public class Member extends TimestampEntity implements UserDetails {
         return roles.contains(MemberRole.ADMIN);
     }
 
+
     public void acceptMember() {
         roles.remove(MemberRole.UNACCEPTED);
         roles.add(MemberRole.MEMBER);
@@ -128,6 +129,33 @@ public class Member extends TimestampEntity implements UserDetails {
         }
 
         targetMember.grantAdminPrivileges();
+    }
+
+    public String getStatus() {
+        List<MemberRole> specialRoles = Arrays.asList(MemberRole.PUBLIC, MemberRole.UNACCEPTED, MemberRole.EXPELLED, MemberRole.MEMBER, MemberRole.GRADUATED);
+
+        return roles.stream()
+                .filter(specialRoles::contains)
+                .collect(Collectors.toList())
+                .get(0).name();
+    }
+
+    public void updateStatus(Member targetMember, String status) {
+        if (!this.isAdmin()) {
+            throw new UnauthorizedException("Only admins can do this");
+        }
+
+        if (!targetMember.sameStatus(status)) {
+            targetMember.setStatus(status);
+        }
+    }
+
+    public void Except(Member targetMember) {
+        if (!this.isAdmin()) {
+            throw new UnauthorizedException("Only admins can do this");
+        }
+
+        targetMember.toggleIsExcepted();
     }
 
     @Override
@@ -209,5 +237,22 @@ public class Member extends TimestampEntity implements UserDetails {
                                         name, specialRole.name(), MemberRole.MEMBER));
                     }
                 });
+    }
+
+    private boolean sameStatus(String status) {
+        if (getStatus().equals(status)) {
+            return true;
+        }
+        return false;
+    }
+
+    private void setStatus(String status) {
+        roles.remove(MemberRole.ADMIN);
+        roles.remove(MemberRole.valueOf(getStatus()));
+        roles.add(MemberRole.valueOf(status));
+    }
+
+    private void toggleIsExcepted() {
+        isExcepted = !isExcepted;
     }
 }
