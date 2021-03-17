@@ -67,20 +67,27 @@ public class Post extends TimestampEntity {
     }
 
     public Post(PostCreateValues postCreateValues) {
-        checkDuplicateFileList(postCreateValues.getFileList());
         this.board = postCreateValues.getBoard();
         this.member = postCreateValues.getMember();
         this.title = postCreateValues.getTitle();
         this.body = postCreateValues.getBody();
-        this.fileList = postCreateValues.getFileList();
         this.commentList = null;
+
+        if (postCreateValues.getFileList() != null) {
+            checkDuplicateFileList(postCreateValues.getFileList());
+            this.fileList = postCreateValues.getFileList();
+        }
     }
 
 
     public void update(PostUpdateValues postUpdateValues) {
         this.title = postUpdateValues.getTitle();
         this.body = postUpdateValues.getBody();
-        this.fileList = postUpdateValues.getFileList();
+
+        if (postUpdateValues.getFileList() != null) {
+            checkDuplicateFileList(postUpdateValues.getFileList());
+            this.fileList = postUpdateValues.getFileList();
+        }
     }
 
     private void checkDuplicateFileList(List<String> fileList) {
