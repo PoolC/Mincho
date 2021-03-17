@@ -24,18 +24,6 @@ public class PostResponse {
     private final Long commentCount;
     private final List<String> fileList;
 
-//    @JsonCreator
-//    public PostResponse(Long postId, String writerLoginId, String writerName, String title, String body, LocalDateTime createdAt, List<CommentResponse> comments, Long commentCount) {
-//        this.postId = postId;
-//        this.writerLoginId = writerLoginId;
-//        this.writerName = writerName;
-//        this.title = title;
-//        this.body = body;
-//        this.createdAt = createdAt;
-//        this.comments = comments;
-//        this.commentCount = commentCount;
-//    }
-
     @JsonCreator
     public PostResponse(Long postId, String writerLoginId, String writerName, String title, String body, LocalDateTime createdAt, List<CommentResponse> comments, Long commentCount, List<String> fileList) {
         this.postId = postId;

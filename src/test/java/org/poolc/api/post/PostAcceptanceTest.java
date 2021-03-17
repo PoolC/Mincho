@@ -13,24 +13,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
 @ActiveProfiles({"boardTest", "postTest"})
 public class PostAcceptanceTest extends AcceptanceTest {
-    private Long noticePostId = 9L;
-    private Long freePostId = 10L;
-    private Long adminPostId = 11L;
-    private Long writerWillDeletePostId = 12L;
-    private Long noWriterWillDeletePostId = 13L;
-    private Long adminWillDeletePostId = 13L;
-    private Long willUpdatePostId = 14L;
+    private Long noticePostId = 1L;
+    private Long freePostId = 2L;
+    private Long adminPostId = 3L;
+    private Long writerWillDeletePostId = 4L;
+    private Long noWriterWillDeletePostId = 5L;
+    private Long adminWillDeletePostId = 6L;
+    private Long willUpdatePostId = 7L;
 
-
-    private Long noticeBoardId = 1L;
     private Long freeBoardId = 2L;
     private Long adminBoardId = 6L;
-    private Long notExistBoardId = 1000L;
 
     private String noticeUrlPath = "notice";
     private String freeUrlPath = "free";
@@ -219,7 +219,9 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 로그인x게시물생성() {
-        RegisterPostRequest request = new RegisterPostRequest(freeBoardId, "testtest", "testtest");
+        List<String> file_list = new ArrayList<>();
+        file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
+        RegisterPostRequest request = new RegisterPostRequest(freeBoardId, "testtest", "testtest", file_list);
         ExtractableResponse<Response> response = createPostRequestNoLogin(request);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
@@ -228,18 +230,37 @@ public class PostAcceptanceTest extends AcceptanceTest {
     @Test
     void 멤버MEMBER게시글생성() {
         String accessToken = 작성자비임원진로그인();
+        List<String> file_list = new ArrayList<>();
+        file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
+        file_list.add("https://s.pstatic.net/shopping.phinf/20210309_6/7865a9bf-017f-4d45-a945-006cd6903f8e.jpg");
 
-        RegisterPostRequest request = new RegisterPostRequest(freeBoardId, "testtest", "testtest");
+        RegisterPostRequest request = new RegisterPostRequest(freeBoardId, "testtest", "testtest", file_list);
         ExtractableResponse<Response> response = createPostRequest(accessToken, request);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
     }
 
     @Test
+    void 멤버MEMBER게시글생성중복된파일() {
+        String accessToken = 작성자비임원진로그인();
+        List<String> file_list = new ArrayList<>();
+        file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
+        file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
+
+        RegisterPostRequest request = new RegisterPostRequest(freeBoardId, "testtest", "testtest", file_list);
+        ExtractableResponse<Response> response = createPostRequest(accessToken, request);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     void 멤버ADMIN게시글생성() {
         String accessToken = 작성자비임원진로그인();
 
-        RegisterPostRequest request = new RegisterPostRequest(adminBoardId, "testtest", "testtest");
+        List<String> file_list = new ArrayList<>();
+        file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
+
+        RegisterPostRequest request = new RegisterPostRequest(adminBoardId, "testtest", "testtest", file_list);
         ExtractableResponse<Response> response = createPostRequest(accessToken, request);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
@@ -249,17 +270,21 @@ public class PostAcceptanceTest extends AcceptanceTest {
     void 임원MEMBER게시글생성() {
         String accessToken = 임원진로그인();
 
-        RegisterPostRequest request = new RegisterPostRequest(freeBoardId, "testtest", "testtest");
+        List<String> file_list = new ArrayList<>();
+        file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
+        RegisterPostRequest request = new RegisterPostRequest(freeBoardId, "testtest", "testtest", file_list);
         ExtractableResponse<Response> response = createPostRequest(accessToken, request);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
     }
 
+
     @Test
     void 임원ADMIN게시글생성() {
         String accessToken = 임원진로그인();
-
-        RegisterPostRequest request = new RegisterPostRequest(adminBoardId, "testtest", "testtest");
+        List<String> file_list = new ArrayList<>();
+        file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
+        RegisterPostRequest request = new RegisterPostRequest(adminBoardId, "testtest", "testtest", file_list);
         ExtractableResponse<Response> response = createPostRequest(accessToken, request);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
@@ -269,7 +294,9 @@ public class PostAcceptanceTest extends AcceptanceTest {
     void 작성자게시글수정() {
         String accessToken = 작성자비임원진로그인();
 
-        UpdatePostRequest request = new UpdatePostRequest("update", "update");
+        List<String> file_list = new ArrayList<>();
+        file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
+        UpdatePostRequest request = new UpdatePostRequest("update", "update", file_list);
         ExtractableResponse<Response> response = updatePost(accessToken, willUpdatePostId, request);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -284,7 +311,10 @@ public class PostAcceptanceTest extends AcceptanceTest {
     void 작성자x게시글수정() {
         String accessToken = 임원진로그인();
 
-        UpdatePostRequest request = new UpdatePostRequest("update", "update");
+        List<String> file_list = new ArrayList<>();
+        file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
+
+        UpdatePostRequest request = new UpdatePostRequest("update", "update", file_list);
         ExtractableResponse<Response> response = updatePost(accessToken, willUpdatePostId, request);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
