@@ -22,9 +22,22 @@ public class PostResponse {
 
     private final List<CommentResponse> comments;
     private final Long commentCount;
+    private final List<String> fileList;
+
+//    @JsonCreator
+//    public PostResponse(Long postId, String writerLoginId, String writerName, String title, String body, LocalDateTime createdAt, List<CommentResponse> comments, Long commentCount) {
+//        this.postId = postId;
+//        this.writerLoginId = writerLoginId;
+//        this.writerName = writerName;
+//        this.title = title;
+//        this.body = body;
+//        this.createdAt = createdAt;
+//        this.comments = comments;
+//        this.commentCount = commentCount;
+//    }
 
     @JsonCreator
-    public PostResponse(Long postId, String writerLoginId, String writerName, String title, String body, LocalDateTime createdAt, List<CommentResponse> comments, Long commentCount) {
+    public PostResponse(Long postId, String writerLoginId, String writerName, String title, String body, LocalDateTime createdAt, List<CommentResponse> comments, Long commentCount, List<String> fileList) {
         this.postId = postId;
         this.writerLoginId = writerLoginId;
         this.writerName = writerName;
@@ -33,6 +46,7 @@ public class PostResponse {
         this.createdAt = createdAt;
         this.comments = comments;
         this.commentCount = commentCount;
+        this.fileList = fileList;
     }
 
     public static PostResponse of(Post post) {
@@ -47,6 +61,7 @@ public class PostResponse {
                         .stream().map(CommentResponse::of)
                         .collect(Collectors.toList()))
                 .commentCount((long) post.getCommentList().size())
+                .fileList(post.getFileList())
                 .build();
     }
 
