@@ -38,13 +38,6 @@ public class PostAcceptanceTest extends AcceptanceTest {
     private String notExistUrlPath = "notExist";
 
     @Test
-    void 전체게시물조회() {
-        ExtractableResponse<Response> response = getAllPostRequest();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @Test
     void 로그인xPUBLIC게시물조회() {
         ExtractableResponse<Response> response = getPostRequestNoLogin(noticePostId);
         PostResponse responseBody = response.as(PostResponse.class);
