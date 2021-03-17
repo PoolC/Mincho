@@ -2,6 +2,7 @@ package org.poolc.api.activity.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.poolc.api.activity.vo.ActivityCreateValues;
 import org.poolc.api.activity.vo.ActivityUpdateValues;
 import org.poolc.api.member.domain.Member;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,10 +69,15 @@ public class Activity {
     @Column(name = "member_login_id")
     private List<String> memberLoginIDs = new ArrayList<>();
 
+    @ElementCollection(fetch = LAZY)
+    @CollectionTable(name = "activity_file_list", joinColumns = @JoinColumn(name = "activity_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"activity_id", "file_uri"})})
+    @Column(name = "file_uri", columnDefinition = "varchar(1024)")
+    private List<String> fileList = new ArrayList<>();
+
     public Activity() {
     }
 
-    public Activity(String title, String description, Member host, LocalDate startDate, String classHour, Boolean isSeminar, Long capacity, Long hour, Boolean available) {
+    public Activity(String title, String description, Member host, LocalDate startDate, String classHour, Boolean isSeminar, Long capacity, Long hour, Boolean available, List<String> fileList) {
         this.title = title;
         this.description = description;
         this.host = host;
@@ -81,9 +87,27 @@ public class Activity {
         this.capacity = capacity;
         this.hour = hour;
         this.available = available;
+        this.fileList = fileList;
     }
 
-    public Activity(Long id, String title, String description, Member host, LocalDate startDate, String classHour, Boolean isSeminar, Long capacity, Long hour, Boolean available, List<ActivityTag> tags, List<Session> sessions, List<String> memberLoginIDs) {
+    public Activity(Member member, ActivityCreateValues values) {
+        this.title = values.getTitle();
+        this.description = values.getDescription();
+        this.host = member;
+        this.startDate = values.getStartDate();
+        this.classHour = values.getClassHour();
+        this.isSeminar = values.getIsSeminar();
+        this.classHour = values.getClassHour();
+        this.capacity = values.getCapacity();
+        this.hour = values.getHour();
+        this.available = false;
+        if (values.getFileList() != null) {
+            checkDuplicateFileList(values.getFileList());
+            this.fileList = values.getFileList();
+        }
+    }
+
+    public Activity(Long id, String title, String description, Member host, LocalDate startDate, String classHour, Boolean isSeminar, Long capacity, Long hour, Boolean available, List<ActivityTag> tags, List<Session> sessions, List<String> memberLoginIDs, List<String> fileList) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -97,6 +121,7 @@ public class Activity {
         this.tags = tags;
         this.sessions = sessions;
         this.memberLoginIDs = memberLoginIDs;
+        this.fileList = fileList;
     }
 
     @Transactional
@@ -139,6 +164,10 @@ public class Activity {
         this.tags.clear();
         this.tags.addAll(values.getTags().stream()
                 .map(t -> new ActivityTag(this, t)).collect(Collectors.toList()));
+        if (values.getFileList() != null) {
+            checkDuplicateFileList(values.getFileList());
+            this.fileList = values.getFileList();
+        }
     }
 
     public void open() {
@@ -147,5 +176,12 @@ public class Activity {
 
     public void close() {
         this.available = false;
+    }
+
+    private void checkDuplicateFileList(List<String> fileList) {
+        boolean duplicated = fileList.stream().distinct().count() != fileList.size();
+        if (duplicated) {
+            throw new IllegalArgumentException("파일 URI가 중복되었습니다.");
+        }
     }
 }

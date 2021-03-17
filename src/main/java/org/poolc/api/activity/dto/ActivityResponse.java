@@ -1,6 +1,5 @@
 package org.poolc.api.activity.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import org.poolc.api.activity.domain.Activity;
 
@@ -22,9 +21,9 @@ public class ActivityResponse {
     private final Long hour;
     private final String description;
     private final List<String> memberLoginIds;
+    private final List<String> fileList;
 
-    @JsonCreator
-    public ActivityResponse(Long id, String title, HostResponse host, String classHour, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour, String description, List<String> memberLoginIds) {
+    public ActivityResponse(Long id, String title, HostResponse host, String classHour, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour, String description, List<String> memberLoginIds, List<String> fileList) {
         this.id = id;
         this.title = title;
         this.host = host;
@@ -37,24 +36,8 @@ public class ActivityResponse {
         this.hour = hour;
         this.description = description;
         this.memberLoginIds = memberLoginIds;
+        this.fileList = fileList;
     }
-
-
-//    @JsonCreator
-//    public ActivityResponse(Long id, String title, HostResponse host, String classHour, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour, String description) {
-//        this.id = id;
-//        this.title = title;
-//        this.host = host;
-//        this.classHour = classHour;
-//        this.startDate = startDate;
-//        this.available = available;
-//        this.tags = tags;
-//        this.capacity = capacity;
-//        this.isSeminar = isSeminar;
-//        this.hour = hour;
-//        this.description = description;
-//    }
-
 
     public static ActivityResponse of(Activity activity) {
         List<TagResponse> tags = activity.getTags().stream()
@@ -62,6 +45,8 @@ public class ActivityResponse {
                 .collect(Collectors.toList());
         HostResponse host = HostResponse.of(activity.getHost());
         return new ActivityResponse(activity.getId(), activity.getTitle(), host,
-                activity.getClassHour(), activity.getStartDate(), activity.getAvailable(), tags, activity.getCapacity(), activity.getIsSeminar(), activity.getHour(), activity.getDescription(), activity.getMemberLoginIDs());
+                activity.getClassHour(), activity.getStartDate(), activity.getAvailable(),
+                tags, activity.getCapacity(), activity.getIsSeminar(), activity.getHour(),
+                activity.getDescription(), activity.getMemberLoginIDs(), activity.getFileList());
     }
 }

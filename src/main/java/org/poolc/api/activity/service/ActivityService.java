@@ -38,9 +38,7 @@ public class ActivityService {
 
     @Transactional
     public void createActivity(ActivityCreateValues values, Member member) {
-        Activity activity = new Activity(values.getTitle(), values.getDescription(),
-                member,
-                values.getStartDate(), values.getClassHour(), values.getIsSeminar(), values.getCapacity(), values.getHour(), false);
+        Activity activity = new Activity(member, values);
         activity.getTags().addAll(values.getTags().stream().map(t -> new ActivityTag(activity, t)).collect(Collectors.toList()));
         activityRepository.save(activity);
     }

@@ -16,9 +16,10 @@ public class ActivityRequest {
     private final Long capacity;
     private final List<String> tags;
     private final Long hour;
+    private final List<String> fileList;
 
     @JsonCreator
-    public ActivityRequest(String title, String description, LocalDate startDate, Boolean seminar, String classHour, Long capacity, Long hour, List<String> tags) {
+    public ActivityRequest(String title, String description, LocalDate startDate, Boolean seminar, String classHour, Long capacity, Long hour, List<String> tags, List<String> fileList) {
         this.title = title;
         this.description = description;
         this.startDate = startDate;
@@ -27,5 +28,6 @@ public class ActivityRequest {
         this.capacity = capacity;
         this.hour = hour;
         this.tags = tags;
+        this.fileList = fileList;
     }
 }

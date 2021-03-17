@@ -17,6 +17,7 @@ public class ActivityCreateValues {
     private final Long capacity;
     private final List<String> tags;
     private final Long hour;
+    private final List<String> fileList;
 
     public ActivityCreateValues(ActivityRequest request) {
         this.title = request.getTitle();
@@ -27,5 +28,6 @@ public class ActivityCreateValues {
         this.capacity = request.getCapacity();
         this.tags = request.getTags();
         this.hour = request.getHour();
+        this.fileList = request.getFileList();
     }
 }
