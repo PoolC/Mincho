@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/file")
+@RequestMapping("/files")
 public class FileController {
     @Value("${file.file-dir}")
     private String fileDir;
