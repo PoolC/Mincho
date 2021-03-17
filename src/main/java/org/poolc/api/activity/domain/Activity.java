@@ -33,7 +33,7 @@ public class Activity {
     @Column(name = "title", columnDefinition = "varchar(1024)", nullable = false)
     private String title;
 
-    @Column(name = "description", columnDefinition = "varchar(1024)", nullable = false)
+    @Column(name = "description", columnDefinition = "text", nullable = false)
     private String description;
 
     @ManyToOne(fetch = LAZY)
