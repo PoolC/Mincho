@@ -13,9 +13,6 @@ import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Collections;
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
@@ -81,17 +78,6 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         MemberListResponse responseBody = response.body().as(MemberListResponse.class);
         assertThat(responseBody.getData()).hasSize(9);
-    }
-
-    @Test
-    void getAllMembersAsNonAdminIsUnauthorized() {
-        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
-
-        ExtractableResponse<Response> response = getMembersRequest(accessToken);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
