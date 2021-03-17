@@ -89,12 +89,12 @@ public class MemberController {
     public ResponseEntity updateMember(@AuthenticationPrincipal Member member, @RequestBody UpdateMemberRequest
             updateMemberRequest) {
         checkIsValidMemberUpdateInput(updateMemberRequest);
-        memberService.updateMember(member.getUUID(), updateMemberRequest);
+        memberService.updateMember(member, updateMemberRequest);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/{loginID}")
-    public ResponseEntity<MemberResponse> adminGetMemberInfoByloginID(@PathVariable("loginID") String loginID) {
+    public ResponseEntity<MemberResponse> adminGetMemberInfoByloginID(@PathVariable String loginID) {
         Member member = memberService.findMemberbyLoginID(loginID);
 
         List<Member> memberList = new ArrayList<>(); // TODO: 이부분 수정해야할 듯
@@ -113,22 +113,22 @@ public class MemberController {
     }
 
     @DeleteMapping(value = "/{loginID}")
-    public ResponseEntity deleteMember(@PathVariable("loginID") String loginID) {
+    public ResponseEntity deleteMember(@PathVariable String loginID) {
         memberService.deleteMember(loginID);
 
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/activate/{loginID}")
-    public ResponseEntity ActivateMember(@PathVariable("loginID") String loginID) {
+    public ResponseEntity ActivateMember(@PathVariable String loginID) {
         memberService.authorizeMember(loginID);
 
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/admin/{loginID}")
-    public ResponseEntity updateMemberAdmin(@PathVariable("loginID") String loginID, @RequestBody Map<String, Boolean> toAdmin) {
-        memberService.updateIsAdmin(loginID, toAdmin.get("toAdmin"));
+    public ResponseEntity toggleIsAdmin(@AuthenticationPrincipal Member member, @PathVariable String loginID) {
+        memberService.updateIsAdmin(member, loginID);
 
         return ResponseEntity.ok().build();
     }

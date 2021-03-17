@@ -3,6 +3,7 @@ package org.poolc.api.member.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Getter;
+import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,9 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity(name = "Member")
@@ -88,6 +87,8 @@ public class Member extends TimestampEntity implements UserDetails {
         this.introduction = introduction;
         this.isExcepted = isExcepted;
         this.roles = roles;
+
+        checkRolesAreCorrect();
     }
 
     public void updateMemberInfo(UpdateMemberRequest updateMemberRequest, String passwordHash) {
@@ -111,13 +112,21 @@ public class Member extends TimestampEntity implements UserDetails {
         roles.add(MemberRole.MEMBER);
     }
 
-    public void changeAdminPrivileges(boolean toAdmin) {
-        if (toAdmin) {
-            grantAdminPrivileges();
+    public void toggleAdmin(Member targetMember) {
+        if (!this.isAdmin()) {
+            throw new UnauthorizedException("Only admins can do this");
+        }
+
+        if (!targetMember.isAcceptedMember()) {
+            throw new IllegalStateException(String.format("Member %s is not a member yet", targetMember.getName()));
+        }
+
+        if (targetMember.isAdmin()) {
+            targetMember.revokeAdminPrivileges();
             return;
         }
 
-        revokeAdminPrivileges();
+        targetMember.grantAdminPrivileges();
     }
 
     @Override
@@ -164,5 +173,40 @@ public class Member extends TimestampEntity implements UserDetails {
 
     private void revokeAdminPrivileges() {
         roles.remove(MemberRole.ADMIN);
+    }
+
+    private void checkRolesAreCorrect() {
+        checkIsMemberButHasNonMemberRole();
+        checkIsSpecialRoleButDoesNotHaveMemberRole();
+    }
+
+    private void checkIsMemberButHasNonMemberRole() {
+        if (!roles.contains(MemberRole.MEMBER)) {
+            return;
+        }
+
+        List<MemberRole> nonMemberRoles = Arrays.asList(MemberRole.PUBLIC, MemberRole.UNACCEPTED, MemberRole.EXPELLED);
+        roles.stream()
+                .filter(nonMemberRoles::contains)
+                .findAny()
+                .ifPresent(role -> {
+                    throw new IllegalArgumentException("Member cannot have non-member role: " + role.name());
+                });
+    }
+
+    private void checkIsSpecialRoleButDoesNotHaveMemberRole() {
+        List<MemberRole> specialRoles = Arrays.asList(MemberRole.INACTIVE, MemberRole.COMPLETE, MemberRole.GRADUATED,
+                MemberRole.ADMIN);
+
+        roles.stream()
+                .filter(specialRoles::contains)
+                .findAny()
+                .ifPresent(specialRole -> {
+                    if (!roles.contains(MemberRole.MEMBER)) {
+                        throw new IllegalArgumentException(
+                                String.format("Member %s has special role %s, but role %s was not present",
+                                        name, specialRole.name(), MemberRole.MEMBER));
+                    }
+                });
     }
 }
