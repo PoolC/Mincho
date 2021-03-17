@@ -7,10 +7,14 @@ import javax.persistence.*;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "ActivityTag")
+@SequenceGenerator(
+        name = "ACTIVITY_TAG_SEQ_GENERATOR",
+        sequenceName = "ACTIVITY_TAG_SEQ"
+)
 @Getter
 public class ActivityTag {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ACTIVITY_TAG_SEQ_GENERATOR")
     @Column(name = "id")
     private Long id;
 
