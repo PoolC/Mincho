@@ -11,5 +11,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query(value = "select distinct p from Project p left join fetch p.memberLoginIDs m where m = :loginId")
     List<Project> findProjectsByProjectMembers(@Param("loginId") String loginId);
 
-    List<Project> findAllByOrderByCreatedAtAsc();
+    @Query(value = "select p from Project p order by created_at DESC")
+    List<Project> findAllByOrderByCreatedAtDesc();
 }

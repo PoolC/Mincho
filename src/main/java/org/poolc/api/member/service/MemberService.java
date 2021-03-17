@@ -93,7 +93,7 @@ public class MemberService {
     }
 
     public List<Member> getAllMembers() {
-        return memberRepository.findAll();
+        return memberRepository.findAllSortByLatestOrder();
     }
 
     public Member getMemberIfRegistered(String loginID, String password) {
