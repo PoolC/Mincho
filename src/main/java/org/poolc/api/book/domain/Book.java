@@ -35,7 +35,7 @@ public class Book extends TimestampEntity {
     @Column(name = "image_url", length = 1024)
     private String imageURL;
 
-    @Column(name = "info", length = 64)
+    @Column(name = "info", length = 1024)
     private String info;
 
     @Column(name = "borrow_date")
