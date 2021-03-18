@@ -13,3 +13,20 @@ include::{snippets}/member/create/request-fields.adoc[]
 include::{snippets}/member/create/http-request.adoc[]
 ===== Response
 include::{snippets}/member/create/http-response.adoc[]
+=== 내 정보 조회
+==== 요청 설명
+....
+GET /member/me
+Content-Type: application/json; charset=UTF-8
+....
+내 정보 조회를 한다
+
+===== Request headers
+include::{snippets}/member/me/request-headers.adoc[]
+===== Response body
+include::{snippets}/member/me/response-fields.adoc[]
+==== 예시
+===== Request
+include::{snippets}/member/me/http-request.adoc[]
+===== Response
+include::{snippets}/member/me/http-response.adoc[]
