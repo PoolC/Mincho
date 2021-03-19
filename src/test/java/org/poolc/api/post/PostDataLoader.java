@@ -1,4 +1,4 @@
-package org.poolc.api.post.configurations;
+package org.poolc.api.post;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.board.domain.Board;

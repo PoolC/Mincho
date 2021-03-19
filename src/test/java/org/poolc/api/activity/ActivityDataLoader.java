@@ -1,4 +1,4 @@
-package org.poolc.api.activity.configurations;
+package org.poolc.api.activity;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.activity.domain.Activity;

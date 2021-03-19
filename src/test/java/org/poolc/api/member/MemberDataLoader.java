@@ -1,4 +1,4 @@
-package org.poolc.api.member.configurations;
+package org.poolc.api.member;
 
 
 import lombok.RequiredArgsConstructor;

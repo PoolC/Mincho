@@ -12,7 +12,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Entity(name = "Member")
@@ -101,7 +104,7 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     public boolean isAcceptedMember() {
-        return !roles.contains(MemberRole.INACTIVE);
+        return isEnabled();
     }
 
     public boolean isMember() {
@@ -109,11 +112,16 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     public boolean isAdmin() {
-        return roles.contains(MemberRole.ADMIN);
+        return roles.stream()
+                .anyMatch(MemberRole::isAdmin);
     }
 
     public String getStatus() {
-        return MemberRole.getHighestStatus(roles).name();
+        return getHighestStatusRole().name();
+    }
+
+    public boolean shouldHide() {
+        return getHighestStatusRole().isHideInfo();
     }
 
     public void adminUpdatesStatusOf(Member targetMember, MemberRole newRole) {
@@ -122,13 +130,12 @@ public class Member extends TimestampEntity implements UserDetails {
         targetMember.updateStatus(newRole);
     }
 
-    public void updateStatus(MemberRole newRole) {
-        roles = MemberRole.getRolesOf(newRole);
+    public void acceptMember() {
+        updateStatus(MemberRole.MEMBER);
     }
 
-    public void acceptMember() {
-        roles.remove(MemberRole.UNACCEPTED);
-        roles.add(MemberRole.MEMBER);
+    public void updateStatus(MemberRole newRole) {
+        roles = MemberRole.getRolesOf(newRole);
     }
 
     public void toggleAdmin(Member targetMember) {
@@ -195,7 +202,13 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     private void revokeAdminPrivileges() {
-        roles.remove(MemberRole.ADMIN);
+        roles = roles.stream()
+                .filter(Predicate.not(MemberRole.ADMIN::equals))
+                .collect(Collectors.toSet());
+    }
+
+    private MemberRole getHighestStatusRole() {
+        return MemberRole.getHighestStatus(roles);
     }
 
     private void onlyAdmin() {
@@ -218,9 +231,8 @@ public class Member extends TimestampEntity implements UserDetails {
             return;
         }
 
-        List<MemberRole> nonMemberRoles = Arrays.asList(MemberRole.PUBLIC, MemberRole.UNACCEPTED, MemberRole.EXPELLED);
         roles.stream()
-                .filter(nonMemberRoles::contains)
+                .filter(Predicate.not(MemberRole::isMember))
                 .findAny()
                 .ifPresent(role -> {
                     throw new IllegalArgumentException("Member cannot have non-member role: " + role.name());
@@ -228,18 +240,18 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     private void checkIsSpecialRoleButDoesNotHaveMemberRole() {
-        List<MemberRole> specialRoles = Arrays.asList(MemberRole.INACTIVE, MemberRole.COMPLETE, MemberRole.GRADUATED,
-                MemberRole.ADMIN);
+        if (roles.contains(MemberRole.MEMBER)) {
+            return;
+        }
 
         roles.stream()
-                .filter(specialRoles::contains)
+                .filter(MemberRole::isMember)
+                .filter(Predicate.not(MemberRole.MEMBER::equals))
                 .findAny()
                 .ifPresent(specialRole -> {
-                    if (!roles.contains(MemberRole.MEMBER)) {
-                        throw new IllegalArgumentException(
-                                String.format("Member %s has special role %s, but role %s was not present",
-                                        name, specialRole.name(), MemberRole.MEMBER));
-                    }
+                    throw new IllegalArgumentException(
+                            String.format("Member %s has special role %s, but role %s was not present",
+                                    name, specialRole.name(), MemberRole.MEMBER));
                 });
     }
 }

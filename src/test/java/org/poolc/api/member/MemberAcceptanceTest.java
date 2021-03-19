@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
+import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,21 +20,13 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void testCreate() {
-        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
         RegisterMemberRequest request = new RegisterMemberRequest("testName", "testId",
                 "testPassword", "testPassword",
                 "test@email.com", "010-1234-4321",
                 "컴퓨터과학과", "2021147500", "자기소개", "https://api.poolc.org/files/%E1%84%83%E1%85%A9%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A3%E1%86%A8%E1%84%83%E1%85%A9.png");
         ExtractableResponse<Response> response = createMemberRequest(request);
 
-
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
-
-        ExtractableResponse<Response> check = getMembersRequest(accessToken);
-
-
     }
 
     @Test
@@ -53,7 +46,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 "DuplicateTestPassword", "DuplicateTestPassword",
                 "fffff@email.com", "010-1234-9999",
                 "컴퓨터과학과", "2000146500", "자기소개", "https://api.poolc.org/files/%E1%84%83%E1%85%A9%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A3%E1%86%A8%E1%84%83%E1%85%A9.png");
-        ExtractableResponse<Response> response = createMemberRequest(request);
+        createMemberRequest(request);
 
         ExtractableResponse<Response> notPass = createMemberRequest(request);
 
@@ -85,6 +78,27 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         MemberListResponse responseBody = response.body().as(MemberListResponse.class);
         assertThat(responseBody.getData()).hasSize(10);
+    }
+
+    @Test
+    void getAllMembersAsMember() {
+        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+
+        ExtractableResponse<Response> response = getMembersRequest(accessToken);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        MemberListResponse responseBody = response.body().as(MemberListResponse.class);
+        Long memberStatuses = responseBody.getData().stream()
+                .map(MemberResponse::getStatus)
+                .map(MemberRole::valueOf)
+                .map(MemberRole::isHideInfo)
+                .filter(value -> value.equals(true))
+                .count();
+
+        assertThat(memberStatuses).isEqualTo(0);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package org.poolc.api.book.configurations;
+package org.poolc.api.book;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.book.domain.Book;

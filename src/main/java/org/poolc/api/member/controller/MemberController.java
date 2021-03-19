@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,18 +26,21 @@ public class MemberController {
     private final ActivityService activityService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MemberListResponse> getAllMembers() {
+    public ResponseEntity<MemberListResponse> getAllMembers(@AuthenticationPrincipal Member member) {
         List<MemberResponse> memberList = memberService.getAllMembers()
-                .stream().map(MemberResponse::of)
+                .stream()
+                .filter(responseMember -> member.isAdmin() || !responseMember.shouldHide())
+                .map(MemberResponse::of)
                 .collect(Collectors.toList());
         MemberListResponse MemberListResponses = new MemberListResponse(memberList);
         return ResponseEntity.ok().body(MemberListResponses);
     }
 
     @GetMapping(value = "/name", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MemberListResponse> findMembersForProject(HttpServletRequest request) {
-        List<MemberResponse> memberList = memberService.getAllMembersByName(request.getParameter("name"))
-                .stream().map(MemberResponse::of)
+    public ResponseEntity<MemberListResponse> findMembersForProject(@RequestParam String name) {
+        List<MemberResponse> memberList = memberService.getAllMembersByName(name)
+                .stream()
+                .map(MemberResponse::of)
                 .collect(Collectors.toList());
         MemberListResponse MemberListResponses = new MemberListResponse(memberList);
         return ResponseEntity.ok().body(MemberListResponses);
