@@ -16,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
-@ActiveProfiles("bookTest")
+@ActiveProfiles({"bookTest", "memberTest"})
 public class BookAcceptanceTest extends AcceptanceTest {
 
     @Test

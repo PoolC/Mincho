@@ -9,10 +9,12 @@ import org.poolc.api.auth.dto.AuthResponse;
 import org.poolc.api.member.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
+@ActiveProfiles("memberTest")
 public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test

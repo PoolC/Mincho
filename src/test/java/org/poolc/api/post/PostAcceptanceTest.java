@@ -19,7 +19,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
-@ActiveProfiles({"boardTest", "postTest"})
+@ActiveProfiles({"boardTest", "postTest", "memberTest"})
 public class PostAcceptanceTest extends AcceptanceTest {
     private Long noticePostId = 1L;
     private Long freePostId = 2L;

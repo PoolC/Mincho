@@ -101,7 +101,7 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     public boolean isAcceptedMember() {
-        return roles.contains(MemberRole.INACTIVE);
+        return !roles.contains(MemberRole.INACTIVE);
     }
 
     public boolean isMember() {

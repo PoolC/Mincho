@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 @Component
-@Profile("amemberTest")
+@Profile("memberTest")
 @RequiredArgsConstructor
 public class MemberDataLoader implements CommandLineRunner {
 

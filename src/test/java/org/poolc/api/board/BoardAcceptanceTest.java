@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
-@ActiveProfiles("boardTest")
+@ActiveProfiles({"boardTest", "memberTest"})
 public class BoardAcceptanceTest extends AcceptanceTest {
     private final Long notExistBoardId = 1000L;
     private final Long noticeBoardId = 1L;

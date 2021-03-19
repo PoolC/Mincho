@@ -16,9 +16,11 @@ import org.poolc.api.poolc.vo.PoolcCreateValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
+@ActiveProfiles("memberTest")
 public class PoolcAcceptanceTest extends AcceptanceTest {
     @Autowired
     private PoolcRespository poolcRespository;

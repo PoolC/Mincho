@@ -32,15 +32,9 @@ public class PostDataLoader implements CommandLineRunner {
     private final Long freeBoardId = 2L;
     private final Long adminBoardId = 6L;
 
-    private Long noticePostId = 9L;
-    private Long freePostId = 10L;
-
-    private final String COMMENTER = "COMMENT_WRITER_ID";
-
     @Override
     public void run(String... args) {
         Member notAdmin = memberRepository.findByLoginID(비임원).get();
-
         Member admin = memberRepository.findByLoginID(임원).get();
 
         Board noticeBoard = boardRepository.findById(noticeBoardId).get();

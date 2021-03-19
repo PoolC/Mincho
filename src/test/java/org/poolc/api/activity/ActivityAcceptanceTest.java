@@ -4,7 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
-import org.poolc.api.AcceptanceTestWithActiveProfile;
+import org.poolc.api.AcceptanceTest;
 import org.poolc.api.activity.dto.ActivityRequest;
 import org.poolc.api.activity.dto.AttendanceRequest;
 import org.poolc.api.activity.dto.SessionCreateRequest;
@@ -21,9 +21,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
-
 @ActiveProfiles("activityTest")
-public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
+public class ActivityAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void host멤버본인조회() {

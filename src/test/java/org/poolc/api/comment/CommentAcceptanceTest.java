@@ -7,6 +7,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
+import org.poolc.api.comment.dto.CommentResponse;
 import org.poolc.api.comment.dto.RegisterCommentRequest;
 import org.poolc.api.comment.dto.UpdateCommentRequest;
 import org.springframework.http.HttpStatus;
@@ -16,19 +17,15 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
-@ActiveProfiles({"postTest", "boardTest"})
+@ActiveProfiles({"postTest", "boardTest", "memberTest"})
 public class CommentAcceptanceTest extends AcceptanceTest {
-    private Long noticePostId = 9L;
-
-    private Long updateCommentId = 17L;
-    private Long writerWillDeleteCommentId = 19L;
-    private Long willNotDeleteCommentId = 21L;
+    private final Long NOTICE_POST_ID = 7L;
+    private final Long WILL_NOT_DELETE_COMMENT_ID = 21L;
 
     @Test
     void 댓글생성() {
         String accessToken = 임원진로그인();
-        RegisterCommentRequest registerCommentRequest = new RegisterCommentRequest(noticePostId, "test");
-        ExtractableResponse<Response> response = createCommentRequest(accessToken, registerCommentRequest);
+        ExtractableResponse<Response> response = createCommentRequest(accessToken, new RegisterCommentRequest(NOTICE_POST_ID, "test"));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
     }
@@ -36,17 +33,24 @@ public class CommentAcceptanceTest extends AcceptanceTest {
     @Test
     void 작성자댓글수정() {
         String accessToken = 작성자비임원진로그인();
+        ExtractableResponse<Response> commentResponse = createCommentRequest(accessToken, new RegisterCommentRequest(NOTICE_POST_ID, "test"));
+        CommentResponse comment = commentResponse.as(CommentResponse.class);
+
         UpdateCommentRequest updateCommentRequest = new UpdateCommentRequest("update");
-        ExtractableResponse<Response> response = updateCommentRequest(accessToken, updateCommentId, updateCommentRequest);
+        ExtractableResponse<Response> response = updateCommentRequest(accessToken, comment.getCommentId(), updateCommentRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     void 작성자x댓글수정() {
+        String memberAccessToken = 작성자비임원진로그인();
         String accessToken = 임원진로그인();
+        ExtractableResponse<Response> commentResponse = createCommentRequest(memberAccessToken, new RegisterCommentRequest(NOTICE_POST_ID, "test"));
+        CommentResponse comment = commentResponse.as(CommentResponse.class);
+
         UpdateCommentRequest updateCommentRequest = new UpdateCommentRequest("update");
-        ExtractableResponse<Response> response = updateCommentRequest(accessToken, updateCommentId, updateCommentRequest);
+        ExtractableResponse<Response> response = updateCommentRequest(accessToken, comment.getCommentId(), updateCommentRequest);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
@@ -54,16 +58,18 @@ public class CommentAcceptanceTest extends AcceptanceTest {
     @Test
     void 작성자댓글삭제() {
         String accessToken = 작성자비임원진로그인();
-        ExtractableResponse<Response> response = deleteComment(accessToken, writerWillDeleteCommentId);
+        ExtractableResponse<Response> commentResponse = createCommentRequest(accessToken, new RegisterCommentRequest(NOTICE_POST_ID, "test"));
+        CommentResponse comment = commentResponse.as(CommentResponse.class);
+
+        ExtractableResponse<Response> response = deleteComment(accessToken, comment.getCommentId());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
     }
 
     @Test
     void 작성자x댓글삭제() {
         String accessToken = 작성자x로그인();
-        ExtractableResponse<Response> response = deleteComment(accessToken, willNotDeleteCommentId);
+        ExtractableResponse<Response> response = deleteComment(accessToken, WILL_NOT_DELETE_COMMENT_ID);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -71,7 +77,11 @@ public class CommentAcceptanceTest extends AcceptanceTest {
     @Test
     void 임원댓글삭제() {
         String accessToken = 임원진로그인();
-        ExtractableResponse<Response> response = deleteComment(accessToken, willNotDeleteCommentId);
+        String memberAccessToken = 작성자비임원진로그인();
+        ExtractableResponse<Response> commentResponse = createCommentRequest(memberAccessToken, new RegisterCommentRequest(NOTICE_POST_ID, "test"));
+        CommentResponse comment = commentResponse.as(CommentResponse.class);
+
+        ExtractableResponse<Response> response = deleteComment(accessToken, comment.getCommentId());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
