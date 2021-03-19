@@ -44,13 +44,13 @@ public class MemberResponse {
     }
 
     public static MemberResponse of(Member member) {
-        return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), member.getProfileImageURL(), member.getIntroduction(), member.isAcceptedMember(), member.isAdmin(), null, null, null, member.getStatus());
+        return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), member.getProfileImageURL(), member.getIntroduction(), member.isMember(), member.isAdmin(), null, null, null, member.getStatus());
     }
 
     public static MemberResponse of(Member member,
                                     List<ActivityResponse> hostActivities,
                                     List<ActivityResponse> participantActivities,
                                     List<ProjectResponse> projects) {
-        return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), member.getProfileImageURL(), member.getIntroduction(), member.isAcceptedMember(), member.isAdmin(), hostActivities, participantActivities, projects, member.getStatus());
+        return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), member.getProfileImageURL(), member.getIntroduction(), member.isMember(), member.isAdmin(), hostActivities, participantActivities, projects, member.getStatus());
     }
 }

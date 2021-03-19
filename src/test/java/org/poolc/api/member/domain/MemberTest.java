@@ -98,31 +98,9 @@ class MemberTest {
     }
 
     @Test
-    void 멤버퇴출() {
-        admin.updateStatus(member, "EXPELLED");
-        assertThat(member.getStatus()).isEqualTo("EXPELLED");
-    }
-
-    @Test
-    void 관리자멤버퇴출() {
-        admin.toggleAdmin(member);
-        admin.updateStatus(member, "EXPELLED");
-        assertThat(member.getStatus()).isEqualTo("EXPELLED");
-        assertThat(member.isAdmin()).isEqualTo(false);
-    }
-
-    @Test
-    void 졸업회원() {
-        admin.toggleAdmin(member);
-        admin.updateStatus(member, MemberRole.GRADUATED.name());
-        assertThat(member.getStatus()).isEqualTo("GRADUATED");
-        assertThat(member.isAdmin()).isEqualTo(false);
-    }
-
-    @Test
     void Excepted시키기() {
-        assertThat(member.getIsExcepted()).isEqualTo(false);
-        admin.Except(member);
+        admin.except(member);
+
         assertThat(member.getIsExcepted()).isEqualTo(true);
     }
 
@@ -151,7 +129,6 @@ class MemberTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(MemberRole.UNACCEPTED.name());
     }
-
 
     @Test
     void 회장인데_비회원일_수_없음() {

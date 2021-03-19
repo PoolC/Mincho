@@ -25,28 +25,30 @@ ext {
 
 dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.projectlombok:lombok:1.18.16'
 
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
     compile 'org.projectlombok:lombok:1.18.16'
+    implementation 'org.projectlombok:lombok:1.18.16'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'io.rest-assured:rest-assured:4.2.0'
     implementation 'io.rest-assured:json-path:4.2.0'
     implementation 'io.rest-assured:xml-path:4.2.0'
-    implementation 'org.projectlombok:lombok:1.18.16'
+
+    implementation 'org.postgresql:postgresql:42.2.2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.security:spring-security-crypto:5.4.2'
-    implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
 
-    runtime("org.postgresql:postgresql:42.2.2")
-
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
     testImplementation 'org.springframework.batch:spring-batch-test'
     testRuntimeOnly 'com.h2database:h2'
 }

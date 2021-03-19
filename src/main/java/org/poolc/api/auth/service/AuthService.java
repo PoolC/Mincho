@@ -1,6 +1,7 @@
 package org.poolc.api.auth.service;
 
 import org.poolc.api.auth.exception.UnactivatedException;
+import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.auth.infra.JwtTokenProvider;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.service.MemberService;
@@ -22,6 +23,10 @@ public class AuthService {
         Member member = memberService.getMemberIfRegistered(loginID, password);
         if (!member.isAcceptedMember()) {
             throw new UnactivatedException("No activated user");
+        }
+
+        if (!member.isMember()) {
+            throw new UnauthorizedException("Unauthorized user");
         }
         return jwtTokenProvider.createToken(member);
     }

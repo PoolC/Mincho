@@ -82,7 +82,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         MemberListResponse responseBody = response.body().as(MemberListResponse.class);
-        assertThat(responseBody.getData()).hasSize(9);
+        assertThat(responseBody.getData()).hasSize(10);
     }
 
     @Test
@@ -197,7 +197,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
-        UpdateMemberStatusRequest request = new UpdateMemberStatusRequest("NOT_ADMIN_ID", "EXPELLED");
+        UpdateMemberStatusRequest request = new UpdateMemberStatusRequest("TO_BE_EXPELLED_ID", "EXPELLED");
         ExtractableResponse<Response> response = updateMemberStatusRequest(accessToken, request);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

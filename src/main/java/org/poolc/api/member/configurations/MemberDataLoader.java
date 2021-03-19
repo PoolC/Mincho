@@ -196,5 +196,24 @@ public class MemberDataLoader implements CommandLineRunner {
                             add(MemberRole.MEMBER);
                         }})
                         .build());
+        memberRepository.save(
+                Member.builder()
+                        .UUID(UUID.randomUUID().toString())
+                        .loginID("TO_BE_EXPELLED_ID")
+                        .passwordHash(passwordHashProvider.encodePassword("TO_BE_EXPELLED_PASSWORD"))
+                        .email("example1234@email.com")
+                        .phoneNumber("010-9999-9999")
+                        .name("TO_BE_EXPELLED_NAME7")
+                        .department("exampleDepartment")
+                        .studentID("2021147600")
+                        .passwordResetToken(null)
+                        .passwordResetTokenValidUntil(null)
+                        .profileImageURL(null)
+                        .introduction("")
+                        .isExcepted(false)
+                        .roles(new HashSet<>() {{
+                            add(MemberRole.MEMBER);
+                        }})
+                        .build());
     }
 }

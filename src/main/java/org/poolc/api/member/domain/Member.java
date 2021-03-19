@@ -101,13 +101,30 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     public boolean isAcceptedMember() {
-        return !roles.contains(MemberRole.UNACCEPTED);
+        return roles.contains(MemberRole.INACTIVE);
+    }
+
+    public boolean isMember() {
+        return roles.contains(MemberRole.MEMBER);
     }
 
     public boolean isAdmin() {
         return roles.contains(MemberRole.ADMIN);
     }
 
+    public String getStatus() {
+        return MemberRole.getHighestStatus(roles).name();
+    }
+
+    public void adminUpdatesStatusOf(Member targetMember, MemberRole newRole) {
+        onlyAdmin();
+
+        targetMember.updateStatus(newRole);
+    }
+
+    public void updateStatus(MemberRole newRole) {
+        roles = MemberRole.getRolesOf(newRole);
+    }
 
     public void acceptMember() {
         roles.remove(MemberRole.UNACCEPTED);
@@ -115,11 +132,9 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     public void toggleAdmin(Member targetMember) {
-        if (!this.isAdmin()) {
-            throw new UnauthorizedException("Only admins can do this");
-        }
+        onlyAdmin();
 
-        if (!targetMember.isAcceptedMember()) {
+        if (!targetMember.isMember()) {
             throw new IllegalStateException(String.format("Member %s is not a member yet", targetMember.getName()));
         }
 
@@ -131,29 +146,8 @@ public class Member extends TimestampEntity implements UserDetails {
         targetMember.grantAdminPrivileges();
     }
 
-    public String getStatus() {
-        List<MemberRole> specialRoles = Arrays.asList(MemberRole.PUBLIC, MemberRole.UNACCEPTED, MemberRole.EXPELLED, MemberRole.MEMBER, MemberRole.GRADUATED);
-
-        return roles.stream()
-                .filter(specialRoles::contains)
-                .collect(Collectors.toList())
-                .get(0).name();
-    }
-
-    public void updateStatus(Member targetMember, String status) {
-        if (!this.isAdmin()) {
-            throw new UnauthorizedException("Only admins can do this");
-        }
-
-        if (!targetMember.sameStatus(status)) {
-            targetMember.setStatus(status);
-        }
-    }
-
-    public void Except(Member targetMember) {
-        if (!this.isAdmin()) {
-            throw new UnauthorizedException("Only admins can do this");
-        }
+    public void except(Member targetMember) {
+        onlyAdmin();
 
         targetMember.toggleIsExcepted();
     }
@@ -204,6 +198,16 @@ public class Member extends TimestampEntity implements UserDetails {
         roles.remove(MemberRole.ADMIN);
     }
 
+    private void onlyAdmin() {
+        if (!this.isAdmin()) {
+            throw new UnauthorizedException("Only admins can do this");
+        }
+    }
+
+    private void toggleIsExcepted() {
+        isExcepted = !isExcepted;
+    }
+
     private void checkRolesAreCorrect() {
         checkIsMemberButHasNonMemberRole();
         checkIsSpecialRoleButDoesNotHaveMemberRole();
@@ -237,22 +241,5 @@ public class Member extends TimestampEntity implements UserDetails {
                                         name, specialRole.name(), MemberRole.MEMBER));
                     }
                 });
-    }
-
-    private boolean sameStatus(String status) {
-        if (getStatus().equals(status)) {
-            return true;
-        }
-        return false;
-    }
-
-    private void setStatus(String status) {
-        roles.remove(MemberRole.ADMIN);
-        roles.remove(MemberRole.valueOf(getStatus()));
-        roles.add(MemberRole.valueOf(status));
-    }
-
-    private void toggleIsExcepted() {
-        isExcepted = !isExcepted;
     }
 }

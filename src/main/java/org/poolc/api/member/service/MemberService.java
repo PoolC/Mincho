@@ -10,7 +10,7 @@ import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.poolc.api.member.dto.UpdateMemberStatusRequest;
 import org.poolc.api.member.exception.DuplicateMemberException;
-import org.poolc.api.member.query.MemberQueryRepository;
+import org.poolc.api.member.repository.MemberQueryRepository;
 import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.member.vo.MemberCreateValues;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,13 +116,13 @@ public class MemberService {
 
     public void updateStatus(Member member, UpdateMemberStatusRequest request) {
         Member targetMember = findMemberbyLoginID(request.getLoginId());
-        member.updateStatus(targetMember, request.getStatus());
+        member.adminUpdatesStatusOf(targetMember, MemberRole.valueOf(request.getStatus()));
         memberRepository.saveAndFlush(targetMember);
     }
 
     public void updateIsExcepted(Member member, String toggleIsExceptedLoginId) {
         Member targetMember = findMemberbyLoginID(toggleIsExceptedLoginId);
-        member.Except(targetMember);
+        member.except(targetMember);
         memberRepository.saveAndFlush(targetMember);
     }
 }
