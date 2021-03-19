@@ -1,6 +1,7 @@
 package org.poolc.api.activity.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.poolc.api.activity.domain.Activity;
 import org.poolc.api.activity.dto.*;
 import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.activity.service.SessionService;
@@ -95,9 +96,11 @@ public class ActivityController {
     }
 
     @PostMapping(value = "/apply/{activityID}")
-    public ResponseEntity<String> applyToActivity(@AuthenticationPrincipal Member member, @PathVariable("activityID") Long id) {
-        activityService.apply(id, member.getUUID());
-        return ResponseEntity.ok().body("수강신청에 성공하였습니다.");
+    public ResponseEntity<Map<String, List<String>>> applyToActivity(@AuthenticationPrincipal Member member, @PathVariable("activityID") Long id) {
+        Activity activity = activityService.apply(id, member);
+        Map<String, List<String>> responseBody = new HashMap<>();
+        responseBody.put("memberLoginIds", activity.getMemberLoginIDs());
+        return ResponseEntity.ok().body(responseBody);
     }
 
     @PostMapping(value = "/check")

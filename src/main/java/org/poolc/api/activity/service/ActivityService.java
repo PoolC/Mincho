@@ -76,16 +76,16 @@ public class ActivityService {
     }
 
     @Transactional
-    public void apply(Long id, String uuid) {
+    public Activity apply(Long id, Member user) {
         Activity activity = activityRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 없습니다"));
         if (!activity.getAvailable()) {
             throw new IllegalStateException("아직 신청할수 없습니다.");
-        } else if (activity.getCapacity() <= activity.getMemberLoginIDs().size()) {
+        } else if (!activity.checkMemberContain(user.getLoginID()) && activity.getCapacity() <= activity.getMemberLoginIDs().size()) {
             throw new IllegalStateException("정원을 초과하였습니다");
         } else {
-            Member member = memberRepository.findById(uuid).orElseThrow(() -> new NoSuchElementException("해당하는 회원이 없습니다"));
-            activity.toggleApply(member.getLoginID());
+            activity.toggleApply(user.getLoginID());
         }
+        return activity;
     }
 
     public List<Activity> findActivities() {

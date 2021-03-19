@@ -106,16 +106,25 @@ public class ActivityDataLoader implements CommandLineRunner {
         Activity activity2 = new Activity("정윤석의 c++ 2", "dsds", member, date2, "dsds", false, 1l, 2l, false, new ArrayList<>());
         Activity activity3 = new Activity("정윤석의 c++ 3", "dsds", member, date, "dsds", false, 1l, 2l, false, new ArrayList<>());
         Activity activity4 = new Activity("정윤석의 c++ 4", "dsds", member, date, "dsds", false, 40l, 2l, true, new ArrayList<>());
+        Activity activity5 = new Activity("정윤석의 c++ 5", "dsds", member, date, "dsds", false, 1l, 2l, true, new ArrayList<>());
+        Activity activity6 = new Activity("정윤석의 c++ 6", "dsds", member, date, "dsds", false, 100l, 2l, true, new ArrayList<>());
+
 
         activity2.getTags().add(new ActivityTag(activity2, "꿀잼보장"));
         activity2.getTags().add(new ActivityTag(activity2, "ㄹㅇ로"));
         activityRepository.save(activity2);
         activityRepository.save(activity3);
         activityRepository.save(activity4);
+        activityRepository.save(activity5);
+        activityRepository.save(activity6);
+
+
+        activityService.apply(5l, memberRepository.findByLoginID("MEMBER_ID2").get());
+        activityService.apply(6l, memberRepository.findByLoginID("MEMBER_ID2").get());
 
         sessionService.createSession(memberRepository.findByLoginID("MEMBER_ID").get(), new SessionCreateValues(new SessionCreateRequest(1l, 1l, LocalDate.now(), "1")));
-        activityService.apply(1l, memberRepository.findByLoginID("MEMBER_ID2").get().getUUID());
-        activityService.apply(1l, memberRepository.findByLoginID("MEMBER_ID3").get().getUUID());
+        activityService.apply(1l, memberRepository.findByLoginID("MEMBER_ID2").get());
+        activityService.apply(1l, memberRepository.findByLoginID("MEMBER_ID3").get());
         List<String> list = new ArrayList<>();
         list.add("MEMBER_ID2");
         list.add("MEMBER_ID3");
@@ -124,7 +133,7 @@ public class ActivityDataLoader implements CommandLineRunner {
         List<String> list2 = new ArrayList<>();
         list2.add("MEMBER_ID3");
         activityService.openActivity(3l);
-        activityService.apply(3l, memberRepository.findByLoginID("MEMBER_ID2").get().getUUID());
+        activityService.apply(3l, memberRepository.findByLoginID("MEMBER_ID2").get());
         sessionService.attend(memberRepository.findByLoginID("MEMBER_ID").get().getUUID(), new AttendanceValues(new AttendanceRequest(2l, list2)));
         sessionService.createSession(memberRepository.findByLoginID("MEMBER_ID").get(), new SessionCreateValues(new SessionCreateRequest(3l, 1l, LocalDate.now(), "1")));
         List<String> list3 = new ArrayList<>();

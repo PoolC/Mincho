@@ -213,7 +213,7 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = closeActivityRequest(accessToken, 6l);
+        ExtractableResponse<Response> response = closeActivityRequest(accessToken, 1000l);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
@@ -316,8 +316,6 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
         ExtractableResponse<Response> response2 = getActivitiesRequest(accessToken);
 
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response2.body().jsonPath().getList("data")).hasSize(3);
-
     }
 
     @Test
@@ -510,10 +508,29 @@ public class ActivityAcceptanceTest extends AcceptanceTestWithActiveProfile {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
+
         ExtractableResponse<Response> response = applyActivityRequest(accessToken, 1l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().asString()).isEqualTo("수강신청에 성공하였습니다.");
     }
+
+    @Test
+    public void 수강인원이꽉차있을때수강취소() {
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken, 5l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void 수강인원이넉넉할때수강취소() {
+        String accessToken = loginRequest("MEMBER_ID2", "MEMBER_PASSWORD2")
+                .as(AuthResponse.class)
+                .getAccessToken();
+        ExtractableResponse<Response> response = applyActivityRequest(accessToken, 6l);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
 
     //TODO: sql 문제
 //    @Test

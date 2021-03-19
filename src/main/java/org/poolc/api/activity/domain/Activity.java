@@ -178,6 +178,10 @@ public class Activity {
         this.available = false;
     }
 
+    public boolean checkMemberContain(String loginId) {
+        return memberLoginIDs.contains(loginId);
+    }
+
     private void checkDuplicateFileList(List<String> fileList) {
         boolean duplicated = fileList.stream().distinct().count() != fileList.size();
         if (duplicated) {
