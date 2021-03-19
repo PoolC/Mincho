@@ -26,24 +26,22 @@ public class MemberController {
     private final ActivityService activityService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MemberListResponse> getAllMembers(@AuthenticationPrincipal Member member) {
-        List<MemberResponse> memberList = memberService.getAllMembers()
+    public ResponseEntity<Map<String, List<MemberResponse>>> getAllMembers(@AuthenticationPrincipal Member member) {
+        List<MemberResponse> memberResponses = memberService.getAllMembers()
                 .stream()
                 .filter(responseMember -> member.isAdmin() || !responseMember.shouldHide())
                 .map(MemberResponse::of)
                 .collect(Collectors.toList());
-        MemberListResponse MemberListResponses = new MemberListResponse(memberList);
-        return ResponseEntity.ok().body(MemberListResponses);
+        return ResponseEntity.ok().body(Collections.singletonMap("data", memberResponses));
     }
 
     @GetMapping(value = "/name", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MemberListResponse> findMembersForProject(@RequestParam String name) {
-        List<MemberResponse> memberList = memberService.getAllMembersByName(name)
+    public ResponseEntity<Map<String, List<MemberResponse>>> findMembersForProject(@RequestParam String name) {
+        List<MemberResponse> memberResponses = memberService.getAllMembersByName(name)
                 .stream()
                 .map(MemberResponse::of)
                 .collect(Collectors.toList());
-        MemberListResponse MemberListResponses = new MemberListResponse(memberList);
-        return ResponseEntity.ok().body(MemberListResponses);
+        return ResponseEntity.ok().body(Collections.singletonMap("data", memberResponses));
     }
 
     @GetMapping(value = "/hour", produces = MediaType.APPLICATION_JSON_VALUE)
