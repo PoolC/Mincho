@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class MemberService {
@@ -94,7 +91,10 @@ public class MemberService {
     }
 
     public List<Member> getAllMembers() {
-        return memberRepository.findAllSortByLatestOrder();
+        List<Member> members = memberRepository.findAll();
+        members.sort(Comparator.comparing(Member::getName));
+
+        return members;
     }
 
     public Member getMemberIfRegistered(String loginID, String password) {
