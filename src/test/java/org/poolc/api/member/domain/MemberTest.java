@@ -123,10 +123,10 @@ class MemberTest {
 
     @Test
     void testGetStatus() {
-        assertThat(unacceptedMember.getStatus()).isEqualTo("UNACCEPTED");
-        assertThat(member.getStatus()).isEqualTo("MEMBER");
-        assertThat(admin.getStatus()).isEqualTo("ADMIN");
-        assertThat(superAdmin.getStatus()).isEqualTo("SUPER_ADMIN");
+        assertThat(unacceptedMember.getRole()).isEqualTo("UNACCEPTED");
+        assertThat(member.getRole()).isEqualTo("MEMBER");
+        assertThat(admin.getRole()).isEqualTo("ADMIN");
+        assertThat(superAdmin.getRole()).isEqualTo("SUPER_ADMIN");
     }
 
     @Test
@@ -174,10 +174,10 @@ class MemberTest {
     @ValueSource(strings = {"INACTIVE", "COMPLETE", "GRADUATED"})
     void testSelfToggleRole(String roleName) {
         member.selfAddRole(MemberRole.valueOf(roleName));
-        assertThat(member.getStatus()).isEqualTo(roleName);
+        assertThat(member.getRole()).isEqualTo(roleName);
 
         member.selfDeleteRole(MemberRole.valueOf(roleName));
-        assertThat(member.getStatus()).isEqualTo("MEMBER");
+        assertThat(member.getRole()).isEqualTo("MEMBER");
     }
 
     @ParameterizedTest

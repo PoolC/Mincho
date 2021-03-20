@@ -1,7 +1,7 @@
 package org.poolc.api.post.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.auth.exception.UnauthenticatedException;
+import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.board.domain.Board;
 import org.poolc.api.board.service.BoardService;
 import org.poolc.api.member.domain.Member;
@@ -12,13 +12,15 @@ import org.poolc.api.post.dto.UpdatePostRequest;
 import org.poolc.api.post.service.PostService;
 import org.poolc.api.post.vo.PostCreateValues;
 import org.poolc.api.post.vo.PostUpdateValues;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -89,7 +91,6 @@ public class PostController {
         }
     }
 
-
     @DeleteMapping(value = "/{postId}")
     public ResponseEntity<Void> deletePost(@AuthenticationPrincipal Member user, @PathVariable Long postId) {
         Post updatePost = postService.getPost(postId);
@@ -100,19 +101,9 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler({UnauthenticatedException.class, org.poolc.api.auth.exception.UnauthorizedException.class})
-    public ResponseEntity<String> unauthenticatedHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-    }
-
-    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class})
-    public ResponseEntity<String> noSuchElementHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-
     private void checkWritePermissions(Member user, Board board) {
         if (!board.memberHasWritePermissions(user.getRoles())) {
-            throw new org.poolc.api.auth.exception.UnauthorizedException("접근할 수 없습니다.");
+            throw new UnauthorizedException("접근할 수 없습니다.");
         }
     }
 
@@ -123,19 +114,19 @@ public class PostController {
 
     private void checkReadPermissionIfNoLogin(Member user, Board correspondingBoard) {
         if (user == null && !correspondingBoard.isPublicReadPermission()) {
-            throw new org.poolc.api.auth.exception.UnauthorizedException("접근할 수 없습니다.");
+            throw new UnauthorizedException("접근할 수 없습니다.");
         }
     }
 
     private void checkReadPermissionIfLogin(Member user, Board board) {
         if (user != null && !board.memberHasReadPermissions(user.getRoles())) {
-            throw new org.poolc.api.auth.exception.UnauthorizedException("접근할 수 없습니다.");
+            throw new UnauthorizedException("접근할 수 없습니다.");
         }
     }
 
     private void checkWriterOrAdmin(Member user, Post updatePost) {
         if (!updatePost.getMember().getUUID().equals(user.getUUID()) && !user.isAdmin()) {
-            throw new org.poolc.api.auth.exception.UnauthorizedException("접근할 수 없습니다.");
+            throw new UnauthorizedException("접근할 수 없습니다.");
         }
     }
 }

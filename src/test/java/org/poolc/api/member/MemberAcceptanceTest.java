@@ -94,7 +94,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         MemberListResponse responseBody = response.body().as(MemberListResponse.class);
         Long memberStatuses = responseBody.getData().stream()
-                .map(MemberResponse::getStatus)
+                .map(MemberResponse::getRole)
                 .map(MemberRole::valueOf)
                 .map(MemberRole::isHideInfo)
                 .filter(value -> value.equals(true))
@@ -235,7 +235,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         response = getMemberRequest(accessToken);
         MemberResponse memberResponse = response.as(MemberResponse.class);
 
-        assertThat(memberResponse.getStatus()).isEqualTo(MemberRole.GRADUATED.name());
+        assertThat(memberResponse.getRole()).isEqualTo(MemberRole.GRADUATED.name());
     }
 
     @Test
@@ -243,13 +243,13 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
                 .as(AuthResponse.class)
                 .getAccessToken();
-        ExtractableResponse<Response> response = updateMemberStatusRequest(accessToken, new ToggleStatusRequest(MemberRole.COMPLETE.name()));
+        ExtractableResponse<Response> response = updateMemberStatusRequest(accessToken, new ToggleRoleRequest(MemberRole.COMPLETE.name()));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         response = getMemberRequest(accessToken);
         MemberResponse memberResponse = response.as(MemberResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(memberResponse.getStatus()).isEqualTo(MemberRole.COMPLETE.name());
+        assertThat(memberResponse.getRole()).isEqualTo(MemberRole.COMPLETE.name());
     }
 
     @Test
@@ -349,26 +349,26 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> adminUpdateMemberStatusRequest(String accessToken, String targetMemberLoginID, String status) {
+    public static ExtractableResponse<Response> adminUpdateMemberStatusRequest(String accessToken, String targetMemberLoginID, String role) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
-                .body(Collections.singletonMap("status", status))
+                .body(Collections.singletonMap("role", role))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/member/status/{loginID}", targetMemberLoginID)
+                .when().put("/member/role/{loginID}", targetMemberLoginID)
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> updateMemberStatusRequest(String accessToken, ToggleStatusRequest request) {
+    public static ExtractableResponse<Response> updateMemberStatusRequest(String accessToken, ToggleRoleRequest request) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/member/status")
+                .when().put("/member/role")
                 .then().log().all()
                 .extract();
     }

@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.function.Predicate.not;
 
 @RequiredArgsConstructor
 @RestController
@@ -96,6 +99,14 @@ public class MemberController {
         return ResponseEntity.ok().body(MemberResponse.of(member, activitiesByHost, activitiesByActivityMembers, projects));
     }
 
+    @GetMapping(value = "/role")
+    public ResponseEntity<Map<String, List<MemberRolesResponse>>> getRoles() {
+        return ResponseEntity.ok(Collections.singletonMap("data", Stream.of(MemberRole.values())
+                .filter(not(MemberRole.SUPER_ADMIN::equals))
+                .map(MemberRolesResponse::of)
+                .collect(Collectors.toList())));
+    }
+
     @PostMapping
     public ResponseEntity<Void> createMember(@RequestBody RegisterMemberRequest request) {
         checkIsValidMemberCreateInput(request);
@@ -131,15 +142,15 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(path = "/status/{loginID}")
-    public ResponseEntity<Void> toggleRole(@AuthenticationPrincipal Member admin, @PathVariable String loginID, @RequestBody ToggleStatusRequest status) {
-        memberService.toggleRole(admin, loginID, MemberRole.valueOf(status.getStatus()));
+    @PutMapping(path = "/role/{loginID}")
+    public ResponseEntity<Void> toggleRole(@AuthenticationPrincipal Member admin, @PathVariable String loginID, @RequestBody ToggleRoleRequest role) {
+        memberService.toggleRole(admin, loginID, MemberRole.valueOf(role.getRole()));
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(path = "/status")
-    public ResponseEntity<Void> selfToggleRole(@AuthenticationPrincipal Member member, @RequestBody ToggleStatusRequest status) {
-        memberService.selfToggleRole(member, MemberRole.valueOf(status.getStatus()));
+    @PutMapping(path = "/role")
+    public ResponseEntity<Void> selfToggleRole(@AuthenticationPrincipal Member member, @RequestBody ToggleRoleRequest role) {
+        memberService.selfToggleRole(member, MemberRole.valueOf(role.getRole()));
         return ResponseEntity.ok().build();
     }
 

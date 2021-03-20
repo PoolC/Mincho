@@ -107,12 +107,12 @@ public class Member extends TimestampEntity implements UserDetails {
         return roles.isAdmin();
     }
 
-    public String getStatus() {
-        return roles.getHighestStatus().name();
+    public String getRole() {
+        return roles.getHighestRole().name();
     }
 
     public boolean shouldHide() {
-        return roles.getHighestStatus().isHideInfo();
+        return roles.getHighestRole().isHideInfo();
     }
 
     public void acceptMember() {
@@ -182,10 +182,6 @@ public class Member extends TimestampEntity implements UserDetails {
     private void checkHasCorrectPermissions(MemberRole role) {
         if (!role.isSelfToggleable()) {
             throw new UnauthorizedException(String.format("Role %s cannot be self toggled", role.name()));
-        }
-
-        if (role.isOnlyAdminToggleable() && !isAdmin()) {
-            throw new UnauthorizedException(String.format("Role %s can only be toggled by admin", role.name()));
         }
     }
 

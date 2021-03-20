@@ -32,7 +32,7 @@ class MemberRolesTest {
     @Test
     void testAdd() {
         memberRoles.add(MemberRole.ADMIN);
-        assertThat(memberRoles.getHighestStatus()).isEqualTo(MemberRole.ADMIN);
+        assertThat(memberRoles.getHighestRole()).isEqualTo(MemberRole.ADMIN);
     }
 
     @ParameterizedTest
@@ -41,7 +41,7 @@ class MemberRolesTest {
         MemberRole role = MemberRole.valueOf(roleNames);
 
         memberRoles.add(role);
-        assertThat(memberRoles.getHighestStatus()).isEqualTo(role);
+        assertThat(memberRoles.getHighestRole()).isEqualTo(role);
     }
 
     @DisplayName("특수 role을 갖고 있으면 특수 role 먼저 삭제한 후에 non member role 삽입해야됨")
@@ -55,7 +55,7 @@ class MemberRolesTest {
 
         variousSpecialRoles.delete(MemberRole.GRADUATED);
         variousSpecialRoles.add(MemberRole.QUIT);
-        assertThat(variousSpecialRoles.getHighestStatus()).isEqualTo(MemberRole.QUIT);
+        assertThat(variousSpecialRoles.getHighestRole()).isEqualTo(MemberRole.QUIT);
     }
 
     @Test
@@ -67,7 +67,7 @@ class MemberRolesTest {
     @Test
     void addMemberOnNonMemberRolesOnly() {
         variousNonMemberRoles.add(MemberRole.MEMBER);
-        assertThat(variousNonMemberRoles.getHighestStatus()).isEqualTo(MemberRole.MEMBER);
+        assertThat(variousNonMemberRoles.getHighestRole()).isEqualTo(MemberRole.MEMBER);
         assertThat(variousNonMemberRoles.getAuthorities()).hasSize(1);
     }
 
@@ -76,10 +76,10 @@ class MemberRolesTest {
         memberRoles.add(MemberRole.ADMIN);
         memberRoles.add(MemberRole.ADMIN);
         memberRoles.add(MemberRole.ADMIN);
-        assertThat(memberRoles.getHighestStatus()).isEqualTo(MemberRole.ADMIN);
+        assertThat(memberRoles.getHighestRole()).isEqualTo(MemberRole.ADMIN);
 
         memberRoles.delete(MemberRole.ADMIN);
-        assertThat(memberRoles.getHighestStatus()).isEqualTo(MemberRole.MEMBER);
+        assertThat(memberRoles.getHighestRole()).isEqualTo(MemberRole.MEMBER);
     }
 
     @Test
@@ -92,13 +92,13 @@ class MemberRolesTest {
     @Test
     void testDelete() {
         memberRoles.delete(MemberRole.MEMBER);
-        assertThat(memberRoles.getHighestStatus()).isEqualTo(MemberRole.PUBLIC);
+        assertThat(memberRoles.getHighestRole()).isEqualTo(MemberRole.PUBLIC);
 
         adminRoles.delete(MemberRole.ADMIN);
-        assertThat(adminRoles.getHighestStatus()).isEqualTo(MemberRole.MEMBER);
+        assertThat(adminRoles.getHighestRole()).isEqualTo(MemberRole.MEMBER);
 
         variousSpecialRoles.delete(MemberRole.GRADUATED);
-        assertThat(variousSpecialRoles.getHighestStatus()).isEqualTo(MemberRole.ADMIN);
+        assertThat(variousSpecialRoles.getHighestRole()).isEqualTo(MemberRole.ADMIN);
         assertThat(variousSpecialRoles.getAuthorities()).hasSize(2);
     }
 
@@ -116,8 +116,8 @@ class MemberRolesTest {
 
     @Test
     void testHighestRole() {
-        assertThat(variousSpecialRoles.getHighestStatus()).isEqualTo(MemberRole.ADMIN);
-        assertThat(graduatedRoles.getHighestStatus()).isEqualTo(MemberRole.GRADUATED);
+        assertThat(variousSpecialRoles.getHighestRole()).isEqualTo(MemberRole.ADMIN);
+        assertThat(graduatedRoles.getHighestRole()).isEqualTo(MemberRole.GRADUATED);
     }
 
     @Test

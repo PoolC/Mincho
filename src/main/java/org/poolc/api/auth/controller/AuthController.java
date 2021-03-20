@@ -2,14 +2,14 @@ package org.poolc.api.auth.controller;
 
 import org.poolc.api.auth.dto.AuthRequest;
 import org.poolc.api.auth.dto.AuthResponse;
-import org.poolc.api.auth.exception.UnactivatedException;
-import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/login")
@@ -25,15 +25,5 @@ public class AuthController {
     public ResponseEntity<AuthResponse> createAccessToken(@RequestBody AuthRequest request) {
         String token = authService.createAccessToken(request.getLoginID(), request.getPassword());
         return ResponseEntity.ok(new AuthResponse(token));
-    }
-
-    @ExceptionHandler(UnauthenticatedException.class)
-    public ResponseEntity<String> unauthenticatedHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-    }
-
-    @ExceptionHandler(UnactivatedException.class)
-    public ResponseEntity<String> unactivatedHandler(Exception e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 }

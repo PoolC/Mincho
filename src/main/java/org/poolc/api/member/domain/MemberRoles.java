@@ -45,10 +45,10 @@ public class MemberRoles {
         return roles.contains(role);
     }
 
-    public MemberRole getHighestStatus() {
+    public MemberRole getHighestRole() {
         return Stream.of(MemberRole.values())
                 .filter(roles::contains)
-                .reduce((f, s) -> s)
+                .findFirst()
                 .orElse(MemberRole.PUBLIC);
     }
 
