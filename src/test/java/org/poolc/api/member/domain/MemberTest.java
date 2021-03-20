@@ -2,20 +2,16 @@ package org.poolc.api.member.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.poolc.api.auth.exception.UnauthorizedException;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class MemberTest {
     private Member unacceptedMember;
     private Member member;
-    private Member member2;
     private Member admin;
     private Member superAdmin;
 
@@ -47,23 +43,6 @@ class MemberTest {
                 .name("MEMBER_NAME")
                 .department("exampleDepartment")
                 .studentID("2021147598")
-                .passwordResetToken(null)
-                .passwordResetTokenValidUntil(null)
-                .profileImageURL(null)
-                .introduction("자기소개")
-                .isExcepted(false)
-                .roles(MemberRoles.getDefaultFor(MemberRole.MEMBER))
-                .build();
-
-        member2 = Member.builder()
-                .UUID(UUID.randomUUID().toString())
-                .loginID("MEMBER_ID2")
-                .passwordHash("MEMBER_PASSWORD2")
-                .email("example2@email.com")
-                .phoneNumber("010-1234-1234")
-                .name("MEMBER_NAME2")
-                .department("풀씨학과")
-                .studentID("2021147591")
                 .passwordResetToken(null)
                 .passwordResetTokenValidUntil(null)
                 .profileImageURL(null)
@@ -136,57 +115,26 @@ class MemberTest {
     }
 
     @Test
-    void toggleAdmin() {
-        admin.adminAddsRoleFor(member, MemberRole.ADMIN);
-
-        assertThat(member.isAdmin()).isTrue();
+    void adminChangeRole() {
+        admin.changeRole(member, MemberRole.GRADUATED);
+        assertThat(member.getRole()).isEqualTo(MemberRole.GRADUATED.name());
     }
 
     @Test
-    void superAdminCannotBeRevoked() {
-        assertThatThrownBy(() -> admin.adminDeletesRoleFor(superAdmin, MemberRole.SUPER_ADMIN))
-                .isInstanceOf(UnauthorizedException.class);
-        assertThatThrownBy(() -> superAdmin.adminDeletesRoleFor(superAdmin, MemberRole.SUPER_ADMIN))
+    void selfChangeRole() {
+        member.selfChangeRole(MemberRole.GRADUATED);
+        assertThat(member.getRole()).isEqualTo(MemberRole.GRADUATED.name());
+    }
+
+    @Test
+    void selfChangeToAdminIsUnauthorized() {
+        assertThatThrownBy(() -> member.selfChangeRole(MemberRole.ADMIN))
                 .isInstanceOf(UnauthorizedException.class);
     }
 
     @Test
-    void cannotGrantSuperAdminRole() {
-        assertThatThrownBy(() -> admin.adminAddsRoleFor(member, MemberRole.SUPER_ADMIN))
-                .isInstanceOf(UnauthorizedException.class);
-        assertThatThrownBy(() -> superAdmin.adminAddsRoleFor(admin, MemberRole.SUPER_ADMIN))
-                .isInstanceOf(UnauthorizedException.class);
-    }
-
-    @ParameterizedTest
-    @EnumSource(MemberRole.class)
-    void nonAdminCannotToggleRoles(MemberRole role) {
-        assertThatThrownBy(() -> member.adminAddsRoleFor(member2, role))
-                .isInstanceOf(UnauthorizedException.class)
-                .hasMessageContaining("Only admins");
-
-        assertThatThrownBy(() -> member.adminDeletesRoleFor(member2, role))
-                .isInstanceOf(UnauthorizedException.class)
-                .hasMessageContaining("Only admins");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"INACTIVE", "COMPLETE", "GRADUATED"})
-    void testSelfToggleRole(String roleName) {
-        member.selfAddRole(MemberRole.valueOf(roleName));
-        assertThat(member.getRole()).isEqualTo(roleName);
-
-        member.selfDeleteRole(MemberRole.valueOf(roleName));
-        assertThat(member.getRole()).isEqualTo("MEMBER");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"PUBLIC", "EXPELLED", "UNACCEPTED", "MEMBER", "SUPER_ADMIN"})
-    void testCannotSelfDeleteNonToggleableRole(String roleName) {
-        assertThatThrownBy(() -> member.selfAddRole(MemberRole.valueOf(roleName)))
-                .isInstanceOf(UnauthorizedException.class);
-
-        assertThatThrownBy(() -> member.selfDeleteRole(MemberRole.valueOf(roleName)))
+    void cannotChangeToSuperAdmin() {
+        assertThatThrownBy(() -> admin.changeRole(superAdmin, MemberRole.MEMBER))
                 .isInstanceOf(UnauthorizedException.class);
     }
 
@@ -194,24 +142,6 @@ class MemberTest {
     void memberCanQuit() {
         member.quit();
         assertThat(member.isMember()).isFalse();
-    }
-
-    @Test
-    void adminCanSelfAddAdminRole() {
-        admin.selfAddRole(MemberRole.ADMIN);
-        assertThat(admin.isAdmin()).isTrue();
-    }
-
-    @Test
-    void adminCanSelfDeleteAdminRole() {
-        admin.selfDeleteRole(MemberRole.ADMIN);
-        assertThat(admin.isAdmin()).isFalse();
-    }
-
-    @Test
-    void cannotGrantAdminToUnacceptedMember() {
-        assertThatThrownBy(() -> admin.adminAddsRoleFor(unacceptedMember, MemberRole.ADMIN))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

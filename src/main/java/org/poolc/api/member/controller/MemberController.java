@@ -138,20 +138,20 @@ public class MemberController {
     }
 
     @PutMapping(path = "/admin/{loginID}")
-    public ResponseEntity<Void> grantAdminRole(@AuthenticationPrincipal Member admin, @PathVariable String loginID) {
-        memberService.toggleRole(admin, loginID, MemberRole.ADMIN);
+    public ResponseEntity<Void> toggleAdmin(@AuthenticationPrincipal Member admin, @PathVariable String loginID) {
+        memberService.toggleAdmin(admin, loginID);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/role/{loginID}")
-    public ResponseEntity<Void> toggleRole(@AuthenticationPrincipal Member admin, @PathVariable String loginID, @RequestBody ToggleRoleRequest role) {
-        memberService.toggleRole(admin, loginID, MemberRole.valueOf(role.getRole()));
+    public ResponseEntity<Void> changeRole(@AuthenticationPrincipal Member admin, @PathVariable String loginID, @RequestBody ToggleRoleRequest role) {
+        memberService.changeToRole(admin, loginID, MemberRole.valueOf(role.getRole()));
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/role")
-    public ResponseEntity<Void> selfToggleRole(@AuthenticationPrincipal Member member, @RequestBody ToggleRoleRequest role) {
-        memberService.selfToggleRole(member, MemberRole.valueOf(role.getRole()));
+    public ResponseEntity<Void> selfChangeRole(@AuthenticationPrincipal Member member, @RequestBody ToggleRoleRequest role) {
+        memberService.selfChangeToRole(member, MemberRole.valueOf(role.getRole()));
         return ResponseEntity.ok().build();
     }
 

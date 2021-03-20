@@ -123,53 +123,24 @@ public class Member extends TimestampEntity implements UserDetails {
         roles = MemberRoles.getDefaultFor(MemberRole.QUIT);
     }
 
-    public void adminAddsRoleFor(Member targetMember, MemberRole role) {
+    public void changeRole(Member targetMember, MemberRole role) {
         onlyAdmin();
 
-        targetMember.getRoles().add(role);
-    }
-
-    public void adminDeletesRoleFor(Member targetMember, MemberRole role) {
-        onlyAdmin();
-
-        targetMember.getRoles().delete(role);
-    }
-
-    public void toggleRole(Member targetMember, MemberRole role) {
-        onlyAdmin();
-
-        if (targetMember.getRoles().hasRole(role)) {
-            adminDeletesRoleFor(targetMember, role);
-            return;
+        if (targetMember.getRole().equals(MemberRole.SUPER_ADMIN.name())) {
+            throw new UnauthorizedException("Usage of super admin is prohibited");
         }
 
-        adminAddsRoleFor(targetMember, role);
+        targetMember.roles.changeRole(role);
     }
 
-    public void selfToggleRole(MemberRole role) {
-        if (roles.hasRole(role)) {
-            selfDeleteRole(role);
-            return;
-        }
-
-        selfAddRole(role);
-    }
-
-    public void selfAddRole(MemberRole role) {
+    public void selfChangeRole(MemberRole role) {
         checkHasCorrectPermissions(role);
 
-        roles.add(role);
-    }
-
-    public void selfDeleteRole(MemberRole role) {
-        checkHasCorrectPermissions(role);
-
-        roles.delete(role);
+        roles.changeRole(role);
     }
 
     public void toggleExcept(Member targetMember) {
         onlyAdmin();
-
         targetMember.toggleIsExcepted();
     }
 

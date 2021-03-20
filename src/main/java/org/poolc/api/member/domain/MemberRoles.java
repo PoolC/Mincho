@@ -7,7 +7,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,8 +15,6 @@ import static java.util.function.Predicate.not;
 
 @Embeddable
 public class MemberRoles {
-    private final int ONLY_ONE_ELEMENT = 1;
-
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "member_uuid"))
     @Enumerated(EnumType.STRING)
@@ -69,25 +66,14 @@ public class MemberRoles {
                 .anyMatch(MemberRole::isAdmin);
     }
 
-    public void add(MemberRole newRole) {
-        checkRoleIsSuperAdmin(newRole);
-        deleteIfNewRoleIsNonMemberAndRolesHasOnlyOneMemberRole(newRole);
-        deleteAllIfNewRoleIsMemberAndRolesHasNonMemberRolesOnly(newRole);
-        checkRolesCanCoexist(newRole);
-
-        roles.add(newRole);
-        roles.addAll(newRole.getRequiredRoles());
-    }
-
-    public void delete(MemberRole deleteRole) {
-        checkRoleIsSuperAdmin(deleteRole);
-        checkHasConflictIfRoleIsDeleted(deleteRole);
-
-        roles.remove(deleteRole);
-
-        if (roles.isEmpty()) {
-            roles.add(MemberRole.PUBLIC);
+    public void changeRole(MemberRole role) {
+        if (role.equals(MemberRole.SUPER_ADMIN)) {
+            throw new UnauthorizedException("Usage of super admin is prohibited");
         }
+
+        roles.clear();
+        roles.add(role);
+        roles.addAll(role.getRequiredRoles());
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -95,64 +81,6 @@ public class MemberRoles {
                 .map(MemberRole::name)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
-    }
-
-    private void deleteIfNewRoleIsNonMemberAndRolesHasOnlyOneMemberRole(MemberRole newRole) {
-        if (containsOnlyMemberRole()) {
-            if (!newRole.isMember()) {
-                roles.remove(MemberRole.MEMBER);
-            }
-        }
-    }
-
-    private void deleteAllIfNewRoleIsMemberAndRolesHasNonMemberRolesOnly(MemberRole newRole) {
-        if (newRole.equals(MemberRole.MEMBER)) {
-            if (roles.stream().noneMatch(MemberRole::isMember)) {
-                roles.clear();
-            }
-        }
-    }
-
-    private boolean containsOnlyMemberRole() {
-        return roles.size() == ONLY_ONE_ELEMENT && roles.contains(MemberRole.MEMBER);
-    }
-
-    private void checkRoleIsSuperAdmin(MemberRole role) {
-        if (role.equals(MemberRole.SUPER_ADMIN)) {
-            throw new UnauthorizedException("Super admin role cannot be added");
-        }
-    }
-
-    private void checkHasConflictIfRoleIsDeleted(MemberRole deleteRole) {
-        List<MemberRole> rolesWithoutDeleteRole = roles.stream()
-                .filter(not(deleteRole::equals))
-                .collect(Collectors.toList());
-
-        List<String> rolesNeededToDelete = rolesWithoutDeleteRole.stream()
-                .filter(role -> !rolesArePresentIn(role.getRequiredRoles(), rolesWithoutDeleteRole))
-                .map(MemberRole::name)
-                .collect(Collectors.toList());
-
-        if (!rolesNeededToDelete.isEmpty()) {
-            throw new IllegalArgumentException(
-                    String.format("Role %s could not be deleted. The following roles should be deleted first: %s",
-                            deleteRole.name(), String.join(", ", rolesNeededToDelete)));
-        }
-    }
-
-    private boolean rolesArePresentIn(List<MemberRole> requiredRoles, List<MemberRole> rolesWithoutDeleteRole) {
-        return rolesWithoutDeleteRole.containsAll(requiredRoles);
-    }
-
-    private void checkRolesCanCoexist(MemberRole newRole) {
-        roles.stream()
-                .filter(role -> role.isMember() != newRole.isMember())
-                .findFirst()
-                .ifPresent(role -> {
-                    throw new IllegalArgumentException(
-                            String.format("Please delete role %s before adding new role %s",
-                                    role.name(), newRole.name()));
-                });
     }
 
     private void checkRolesAreCorrect() {

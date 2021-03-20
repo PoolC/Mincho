@@ -99,14 +99,22 @@ public class MemberService {
         memberRepository.flush();
     }
 
-    public void selfToggleRole(Member member, MemberRole role) {
-        member.selfToggleRole(role);
+    public void toggleAdmin(Member admin, String loginID) {
+        Member targetMember = getMemberByLoginID(loginID);
+        admin.changeRole(targetMember, targetMember.getRoles().hasRole(MemberRole.ADMIN) ?
+                MemberRole.MEMBER :
+                MemberRole.ADMIN);
+        memberRepository.saveAndFlush(targetMember);
+    }
+
+    public void selfChangeToRole(Member member, MemberRole role) {
+        member.selfChangeRole(role);
         memberRepository.saveAndFlush(member);
     }
 
-    public void toggleRole(Member admin, String targetMemberLoginID, MemberRole role) {
+    public void changeToRole(Member admin, String targetMemberLoginID, MemberRole role) {
         Member targetMember = getMemberByLoginID(targetMemberLoginID);
-        admin.toggleRole(targetMember, role);
+        admin.changeRole(targetMember, role);
         memberRepository.saveAndFlush(targetMember);
     }
 
