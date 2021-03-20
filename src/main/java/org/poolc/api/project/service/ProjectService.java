@@ -55,6 +55,6 @@ public class ProjectService {
     }
 
     private void checkMembersExist(List<String> memberLoginIDs) {
-        memberLoginIDs.forEach(memberService::findMemberbyLoginID);
+        memberLoginIDs.forEach(memberService::getMemberByLoginID);
     }
 }

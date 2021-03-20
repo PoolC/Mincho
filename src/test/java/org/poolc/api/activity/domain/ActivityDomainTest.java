@@ -4,10 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
+import org.poolc.api.member.domain.MemberRoles;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,11 +15,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ActivityDomainTest {
     private Activity activity;
     private Member admin;
-    private Member user;
+    private Member member;
 
     @BeforeEach
     void setUp() {
-        user = Member.builder()
+        member = Member.builder()
                 .UUID(UUID.randomUUID().toString())
                 .loginID("MEMBER_ID")
                 .passwordHash("MEMBER_PASSWORD")
@@ -33,9 +33,7 @@ public class ActivityDomainTest {
                 .profileImageURL(null)
                 .introduction("자기소개")
                 .isExcepted(false)
-                .roles(new HashSet<>() {{
-                    add(MemberRole.MEMBER);
-                }})
+                .roles(MemberRoles.getDefaultFor(MemberRole.MEMBER))
                 .build();
 
         admin = Member.builder()
@@ -52,10 +50,7 @@ public class ActivityDomainTest {
                 .profileImageURL(null)
                 .introduction("난 차기회장 이소정")
                 .isExcepted(false)
-                .roles(new HashSet<>() {{
-                    add(MemberRole.MEMBER);
-                    add(MemberRole.ADMIN);
-                }})
+                .roles(MemberRoles.getDefaultFor(MemberRole.ADMIN))
                 .build();
         activity = Activity.builder()
                 .id(1L)

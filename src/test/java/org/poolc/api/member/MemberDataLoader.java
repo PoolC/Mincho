@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
+import org.poolc.api.member.domain.MemberRoles;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.UUID;
 
 @Component
@@ -38,9 +38,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("자기소개")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{
-                            add(MemberRole.MEMBER);
-                        }})
+                        .roles(MemberRoles.getDefaultFor(MemberRole.MEMBER))
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -57,9 +55,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("자기소개")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{
-                            add(MemberRole.MEMBER);
-                        }})
+                        .roles(MemberRoles.getDefaultFor(MemberRole.MEMBER))
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -76,9 +72,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("자기소개")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{
-                            add(MemberRole.MEMBER);
-                        }})
+                        .roles(MemberRoles.getDefaultFor(MemberRole.MEMBER))
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -95,9 +89,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("자기소개")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{
-                            add(MemberRole.UNACCEPTED);
-                        }})
+                        .roles(MemberRoles.getDefaultFor(MemberRole.UNACCEPTED))
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -114,10 +106,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("자기소개")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{
-                            add(MemberRole.ADMIN);
-                            add(MemberRole.MEMBER);
-                        }})
+                        .roles(MemberRoles.getDefaultFor(MemberRole.ADMIN))
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -134,10 +123,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("자기소개")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{
-                            add(MemberRole.ADMIN);
-                            add(MemberRole.MEMBER);
-                        }})
+                        .roles(MemberRoles.getDefaultFor(MemberRole.ADMIN))
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -154,9 +140,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{
-                            add(MemberRole.MEMBER);
-                        }})
+                        .roles(MemberRoles.getDefaultFor(MemberRole.MEMBER))
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -173,9 +157,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{
-                            add(MemberRole.MEMBER);
-                        }})
+                        .roles(MemberRoles.getDefaultFor(MemberRole.MEMBER))
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -192,9 +174,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{
-                            add(MemberRole.MEMBER);
-                        }})
+                        .roles(MemberRoles.getDefaultFor(MemberRole.MEMBER))
                         .build());
         memberRepository.save(
                 Member.builder()
@@ -211,9 +191,7 @@ public class MemberDataLoader implements CommandLineRunner {
                         .profileImageURL(null)
                         .introduction("")
                         .isExcepted(false)
-                        .roles(new HashSet<>() {{
-                            add(MemberRole.MEMBER);
-                        }})
+                        .roles(MemberRoles.getDefaultFor(MemberRole.MEMBER))
                         .build());
     }
 }

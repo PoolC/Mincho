@@ -13,6 +13,7 @@ import org.poolc.api.activity.vo.SessionCreateValues;
 import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
+import org.poolc.api.member.domain.MemberRoles;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,9 +51,7 @@ public class ActivityDataLoader implements CommandLineRunner {
                 .profileImageURL(null)
                 .introduction("")
                 .isExcepted(false)
-                .roles(new HashSet<>() {{
-                    add(MemberRole.MEMBER);
-                }})
+                .roles(MemberRoles.getDefaultFor(MemberRole.MEMBER))
                 .build();
         Member member2 = Member.builder()
                 .UUID(UUID.randomUUID().toString())
@@ -69,9 +67,7 @@ public class ActivityDataLoader implements CommandLineRunner {
                 .profileImageURL(null)
                 .introduction("")
                 .isExcepted(false)
-                .roles(new HashSet<>() {{
-                    add(MemberRole.MEMBER);
-                }})
+                .roles(MemberRoles.getDefaultFor(MemberRole.MEMBER))
                 .build();
         Member member3 = Member.builder()
                 .UUID(UUID.randomUUID().toString())
@@ -87,10 +83,7 @@ public class ActivityDataLoader implements CommandLineRunner {
                 .profileImageURL(null)
                 .introduction("")
                 .isExcepted(false)
-                .roles(new HashSet<>() {{
-                    add(MemberRole.MEMBER);
-                    add(MemberRole.ADMIN);
-                }})
+                .roles(MemberRoles.getDefaultFor(MemberRole.ADMIN))
                 .build();
         memberRepository.save(member);
         memberRepository.save(member2);
@@ -118,7 +111,6 @@ public class ActivityDataLoader implements CommandLineRunner {
         activityRepository.save(activity5);
         activityRepository.save(activity6);
 
-
         activityService.apply(5l, memberRepository.findByLoginID("MEMBER_ID2").get());
         activityService.apply(6l, memberRepository.findByLoginID("MEMBER_ID2").get());
 
@@ -139,7 +131,5 @@ public class ActivityDataLoader implements CommandLineRunner {
         List<String> list3 = new ArrayList<>();
         list3.add("MEMBER_ID2");
         sessionService.attend(memberRepository.findByLoginID("MEMBER_ID").get().getUUID(), new AttendanceValues(new AttendanceRequest(3l, list3)));
-
-
     }
 }

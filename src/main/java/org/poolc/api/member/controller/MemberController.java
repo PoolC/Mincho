@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.poolc.api.activity.dto.ActivityResponse;
 import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.dto.*;
 import org.poolc.api.member.service.MemberService;
 import org.poolc.api.member.vo.MemberCreateValues;
@@ -17,15 +18,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/member")
 @RequiredArgsConstructor
+@RestController
+@RequestMapping(value = "/member", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberController {
     private final MemberService memberService;
     private final ProjectService projectService;
     private final ActivityService activityService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<Map<String, List<MemberResponse>>> getAllMembers(@AuthenticationPrincipal Member member) {
         List<MemberResponse> memberResponses = memberService.getAllMembers()
                 .stream()
@@ -35,7 +36,7 @@ public class MemberController {
         return ResponseEntity.ok().body(Collections.singletonMap("data", memberResponses));
     }
 
-    @GetMapping(value = "/name", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/name")
     public ResponseEntity<Map<String, List<MemberResponse>>> findMembersForProject(@RequestParam String name) {
         List<MemberResponse> memberResponses = memberService.getAllMembersByName(name)
                 .stream()
@@ -44,29 +45,20 @@ public class MemberController {
         return ResponseEntity.ok().body(Collections.singletonMap("data", memberResponses));
     }
 
-    @GetMapping(value = "/hour", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/hour")
     public ResponseEntity<Map<String, List<MemberResponseWithHour>>> findMembersWithHoursInSpecificSemester(@RequestParam String when) {
         List<MemberResponseWithHour> list = new ArrayList<>();
         Map<Member, Long> map = new HashMap<>();
-        memberService.getAllMembers().forEach(m -> map.put(m, 0l));
+        memberService.getAllMembers().forEach(m -> map.put(m, 0L));
         memberService.getHoursWithMembers(when).forEach(m -> System.out.println(m.getRight()));
-        memberService.getHoursWithMembers(when).forEach(m -> map.replace(memberService.findMemberbyLoginID(m.getKey()), m.getValue()));
+        memberService.getHoursWithMembers(when).forEach(m -> map.replace(memberService.getMemberByLoginID(m.getKey()), m.getValue()));
         for (Member member : map.keySet()) {
             list.add(MemberResponseWithHour.of(member, map.get(member)));
         }
         return ResponseEntity.ok().body(Collections.singletonMap("data", list));
     }
 
-    @PostMapping
-    public ResponseEntity<Void> createMember(@RequestBody RegisterMemberRequest request) {
-        checkIsValidMemberCreateInput(request);
-
-        memberService.create(new MemberCreateValues(request));
-
-        return ResponseEntity.accepted().build();
-    }
-
-    @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/me")
     public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal Member member) {
         String loginID = member.getLoginID();
 
@@ -85,17 +77,9 @@ public class MemberController {
         return ResponseEntity.ok().body(MemberResponse.of(member, activitiesByHost, activitiesByActivityMembers, projects));
     }
 
-    @PutMapping(path = "/me")
-    public ResponseEntity updateMember(@AuthenticationPrincipal Member member, @RequestBody UpdateMemberRequest
-            updateMemberRequest) {
-        checkIsValidMemberUpdateInput(updateMemberRequest);
-        memberService.updateMember(member, updateMemberRequest);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping(value = "/{loginID}")
     public ResponseEntity<MemberResponse> adminGetMemberInfoByloginID(@PathVariable String loginID) {
-        Member member = memberService.findMemberbyLoginID(loginID);
+        Member member = memberService.getMemberByLoginID(loginID);
 
         List<Member> memberList = new ArrayList<>(); // TODO: 이부분 수정해야할 듯
 
@@ -112,36 +96,56 @@ public class MemberController {
         return ResponseEntity.ok().body(MemberResponse.of(member, activitiesByHost, activitiesByActivityMembers, projects));
     }
 
-    @DeleteMapping(value = "/{loginID}")
-    public ResponseEntity deleteMember(@PathVariable String loginID) {
-        memberService.deleteMember(loginID);
+    @PostMapping
+    public ResponseEntity<Void> createMember(@RequestBody RegisterMemberRequest request) {
+        checkIsValidMemberCreateInput(request);
 
+        memberService.create(new MemberCreateValues(request));
+        return ResponseEntity.accepted().build();
+    }
+
+    @PutMapping(path = "/me")
+    public ResponseEntity<Void> updateMember(@AuthenticationPrincipal Member member,
+                                             @RequestBody UpdateMemberRequest updateMemberRequest) {
+        checkIsValidMemberUpdateInput(updateMemberRequest);
+
+        memberService.updateMember(member, updateMemberRequest);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/activate/{loginID}")
-    public ResponseEntity ActivateMember(@PathVariable String loginID) {
+    public ResponseEntity<Void> ActivateMember(@PathVariable String loginID) {
         memberService.authorizeMember(loginID);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping(path = "/admin/{loginID}")
-    public ResponseEntity toggleIsAdmin(@AuthenticationPrincipal Member member, @PathVariable String loginID) {
-        memberService.updateIsAdmin(member, loginID);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping(path = "/status")
-    public ResponseEntity updateStatus(@AuthenticationPrincipal Member member, @RequestBody UpdateMemberStatusRequest request) {
-        memberService.updateStatus(member, request);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/excepted/{loginId}")
-    public ResponseEntity updateStatus(@AuthenticationPrincipal Member member, @PathVariable String loginId) {
-        memberService.updateIsExcepted(member, loginId);
+    public ResponseEntity<Void> exceptMember(@AuthenticationPrincipal Member admin, @PathVariable String loginId) {
+        memberService.toggleIsExcepted(admin, loginId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(path = "/admin/{loginID}")
+    public ResponseEntity<Void> grantAdminRole(@AuthenticationPrincipal Member admin, @PathVariable String loginID) {
+        memberService.toggleRole(admin, loginID, MemberRole.ADMIN);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(path = "/status/{loginID}")
+    public ResponseEntity<Void> toggleRole(@AuthenticationPrincipal Member admin, @PathVariable String loginID, @RequestBody ToggleStatusRequest status) {
+        memberService.toggleRole(admin, loginID, MemberRole.valueOf(status.getStatus()));
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(path = "/status")
+    public ResponseEntity<Void> selfToggleRole(@AuthenticationPrincipal Member member, @RequestBody ToggleStatusRequest status) {
+        memberService.selfToggleRole(member, MemberRole.valueOf(status.getStatus()));
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/{loginID}")
+    public ResponseEntity<Void> deleteMember(@PathVariable String loginID) {
+        memberService.deleteMember(loginID);
         return ResponseEntity.ok().build();
     }
 
@@ -175,5 +179,4 @@ public class MemberController {
     private boolean correctEmailFormat(String email) {
         return email.matches("^[_a-z0A-Z-9-]+(.[_a-zA-Z0-9-]+)*@(?:\\w+\\.)+\\w+$");
     }
-
 }

@@ -8,6 +8,7 @@ import org.poolc.api.asciidocs.ApiDoc;
 import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
+import org.poolc.api.member.domain.MemberRoles;
 import org.poolc.api.member.dto.RegisterMemberRequest;
 import org.poolc.api.member.service.MemberService;
 import org.poolc.api.member.vo.MemberCreateValues;
@@ -17,7 +18,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.HashSet;
 import java.util.UUID;
 
 import static org.mockito.Mockito.doNothing;
@@ -79,10 +79,7 @@ public class MemberDoc extends ApiDoc {
                 .profileImageURL("/files/profile_placeholder_02.png")
                 .introduction("나는 이소정. 차기 풀씨 회장")
                 .isExcepted(false)
-                .roles(new HashSet<>() {{
-                    add(MemberRole.ADMIN);
-                    add(MemberRole.MEMBER);
-                }})
+                .roles(MemberRoles.getDefaultFor(MemberRole.ADMIN))
                 .build();
 
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(adminMember, "", adminMember.getAuthorities()));

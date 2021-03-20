@@ -11,13 +11,13 @@ import org.poolc.api.board.vo.BoardCreateValues;
 import org.poolc.api.board.vo.BoardUpdateValue;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
+import org.poolc.api.member.domain.MemberRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,16 +65,11 @@ public class BoardController {
 
         //TODO: MEMBER DEFAULT 값이 PUBLIC으로 만들시 삭제
         if (member == null) {
-            Set<MemberRole> roles = new HashSet<>();
-            roles.add(MemberRole.PUBLIC);
-
-            checkMemberPermissions(board, roles);
-
+            checkMemberPermissions(board, new MemberRoles(Set.of(MemberRole.PUBLIC)));
             return ResponseEntity.ok().body(new BoardResponse(board));
         }
 
         checkMemberPermissions(board, member.getRoles());
-
         return ResponseEntity.ok().body(new BoardResponse(board));
     }
 
@@ -93,7 +88,7 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
-    private void checkMemberPermissions(Board board, Set<MemberRole> roles) {
+    private void checkMemberPermissions(Board board, MemberRoles roles) {
         if (!board.memberHasReadPermissions(roles)) {
             throw new UnauthorizedException("접근할 수 없습니다");
         }

@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 @Getter
-public class UpdateMemberStatusRequest {
-    private final String loginId;
+public class ToggleStatusRequest {
     private final String status;
 
     @JsonCreator
-    public UpdateMemberStatusRequest(String loginId, String status) {
-        this.loginId = loginId;
+    public ToggleStatusRequest(String status) {
         this.status = status;
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
@@ -209,14 +211,45 @@ public class MemberAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void updateStatus() {
+    void adminUpdatesMemberStatusAsExpelled() {
         String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
-        UpdateMemberStatusRequest request = new UpdateMemberStatusRequest("TO_BE_EXPELLED_ID", "EXPELLED");
-        ExtractableResponse<Response> response = updateMemberStatusRequest(accessToken, request);
+        ExtractableResponse<Response> response = adminUpdateMemberStatusRequest(accessToken, "TO_BE_EXPELLED_ID", "EXPELLED");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void adminUpdatesMemberStatus() {
+        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+        ExtractableResponse<Response> response = adminUpdateMemberStatusRequest(accessToken, "MEMBER_ID", MemberRole.GRADUATED.name());
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+        response = getMemberRequest(accessToken);
+        MemberResponse memberResponse = response.as(MemberResponse.class);
+
+        assertThat(memberResponse.getStatus()).isEqualTo(MemberRole.GRADUATED.name());
+    }
+
+    @Test
+    void selfUpdateStatus() {
+        String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
+                .as(AuthResponse.class)
+                .getAccessToken();
+        ExtractableResponse<Response> response = updateMemberStatusRequest(accessToken, new ToggleStatusRequest(MemberRole.COMPLETE.name()));
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        response = getMemberRequest(accessToken);
+        MemberResponse memberResponse = response.as(MemberResponse.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(memberResponse.getStatus()).isEqualTo(MemberRole.COMPLETE.name());
     }
 
     @Test
@@ -316,7 +349,19 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> updateMemberStatusRequest(String accessToken, UpdateMemberStatusRequest request) {
+    public static ExtractableResponse<Response> adminUpdateMemberStatusRequest(String accessToken, String targetMemberLoginID, String status) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .body(Collections.singletonMap("status", status))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/member/status/{loginID}", targetMemberLoginID)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> updateMemberStatusRequest(String accessToken, ToggleStatusRequest request) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)

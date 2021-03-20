@@ -2,50 +2,38 @@ package org.poolc.api.member.domain;
 
 import lombok.Getter;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.List;
 
 @Getter
 public enum MemberRole {
-    SUPER_ADMIN("슈퍼 계정", true, true, true),
-    ADMIN("임원진", true, false, true),
-    GRADUATED("졸업 회원", true, false, false),
-    COMPLETE("수료 회원", true, false, false),
-    INACTIVE("한 학기 비활동", true, false, false),
-    MEMBER("일반 회원", true, false, false),
-    UNACCEPTED("관리자 승인 전", false, true, false),
-    EXPELLED("자격 상실", false, true, false),
-    PUBLIC("외부인", false, true, false);
+    // enum 순서 중요함. 밑으로 갈수록 높은 권한으로 가정
+    PUBLIC(false, true, false, false, false, "외부인", Collections.emptyList()),
+    QUIT(false, true, false, true, false, "자진탈퇴", Collections.emptyList()),
+    EXPELLED(false, true, false, false, false, "자격상실", Collections.emptyList()),
+    UNACCEPTED(false, true, false, false, false, "승인 전", Collections.emptyList()),
+    MEMBER(false, false, true, false, false, "일반회원", Collections.emptyList()),
+    INACTIVE(false, false, true, true, false, "한 학기 비활동", Collections.singletonList(MemberRole.MEMBER)),
+    COMPLETE(false, false, true, true, false, "수료회원", Collections.singletonList(MemberRole.MEMBER)),
+    GRADUATED(false, false, true, true, false, "졸업회원", Collections.singletonList(MemberRole.MEMBER)),
+    ADMIN(true, false, true, true, false, "임원진", Collections.singletonList(MemberRole.MEMBER)),
+    SUPER_ADMIN(true, true, true, false, false, "슈퍼 관리자", Collections.singletonList(MemberRole.MEMBER));
 
-    private final String description;
-    private final boolean member;
-    private final boolean hideInfo;
     private final boolean admin;
+    private final boolean hideInfo;
+    private final boolean member;
+    private final boolean selfToggleable;
+    private final boolean onlyAdminToggleable;
+    private final String description;
+    private final List<MemberRole> requiredRoles;
 
-    MemberRole(String description, boolean member, boolean hideInfo, boolean admin) {
-        this.description = description;
-        this.member = member;
-        this.hideInfo = hideInfo;
+    MemberRole(boolean admin, boolean hideInfo, boolean member, boolean selfToggleable, boolean onlyAdminToggleable, String description, List<MemberRole> requiredRoles) {
         this.admin = admin;
-    }
-
-    public static MemberRole getHighestStatus(Collection<MemberRole> roles) {
-        return Stream.of(values())
-                .filter(roles::contains)
-                .findFirst()
-                .orElse(PUBLIC);
-    }
-
-    public static Set<MemberRole> getRolesOf(MemberRole newRole) {
-        Set<MemberRole> result = new HashSet<>();
-
-        result.add(newRole);
-        if (newRole.isMember() && !newRole.equals(MEMBER)) {
-            result.add(MEMBER);
-        }
-
-        return result;
+        this.hideInfo = hideInfo;
+        this.member = member;
+        this.selfToggleable = selfToggleable;
+        this.onlyAdminToggleable = onlyAdminToggleable;
+        this.description = description;
+        this.requiredRoles = requiredRoles;
     }
 }

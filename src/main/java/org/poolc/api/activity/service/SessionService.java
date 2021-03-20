@@ -85,7 +85,7 @@ public class SessionService {
     }
 
     private void checkMembersExist(List<String> memberLoginIDs) {
-        memberLoginIDs.forEach(memberService::findMemberbyLoginID);
+        memberLoginIDs.forEach(memberService::getMemberByLoginID);
     }
 
     private boolean checkUserIsHost(String uuid, String userID) {

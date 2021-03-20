@@ -7,16 +7,14 @@ import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Entity(name = "Member")
 @Getter
@@ -24,7 +22,6 @@ import java.util.stream.Collectors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends TimestampEntity implements UserDetails {
     // TODO: 시그니처 통일해주세요(unique, nullable 순서)
-    // TODO: db 컬럼명은 snake_case 가 컨벤션입니다. 이왕 name field를 선언한거 snake_case에 맞게 바꿔주세요
 
     @Id
     @Column(name = "uuid", length = 40)
@@ -66,16 +63,13 @@ public class Member extends TimestampEntity implements UserDetails {
     @Column(name = "is_excepted", columnDefinition = "boolean default false")
     private Boolean isExcepted;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "member_uuid"))
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    private Set<MemberRole> roles = new HashSet<>();
+    @Embedded
+    private MemberRoles roles;
 
     protected Member() {
     }
 
-    public Member(String UUID, String loginID, String passwordHash, String email, String phoneNumber, String name, String department, String studentID, String passwordResetToken, LocalDateTime passwordResetTokenValidUntil, String profileImageURL, String introduction, Boolean isExcepted, Set<MemberRole> roles) {
+    public Member(String UUID, String loginID, String passwordHash, String email, String phoneNumber, String name, String department, String studentID, String passwordResetToken, LocalDateTime passwordResetTokenValidUntil, String profileImageURL, String introduction, Boolean isExcepted, MemberRoles roles) {
         this.UUID = UUID;
         this.loginID = loginID;
         this.passwordHash = passwordHash;
@@ -90,8 +84,6 @@ public class Member extends TimestampEntity implements UserDetails {
         this.introduction = introduction;
         this.isExcepted = isExcepted;
         this.roles = roles;
-
-        checkRolesAreCorrect();
     }
 
     public void updateMemberInfo(UpdateMemberRequest updateMemberRequest, String passwordHash) {
@@ -108,63 +100,102 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     public boolean isMember() {
-        return roles.contains(MemberRole.MEMBER);
+        return roles.isMember();
     }
 
     public boolean isAdmin() {
-        return roles.stream()
-                .anyMatch(MemberRole::isAdmin);
+        return roles.isAdmin();
     }
 
     public String getStatus() {
-        return getHighestStatusRole().name();
+        return roles.getHighestStatus().name();
     }
 
     public boolean shouldHide() {
-        return getHighestStatusRole().isHideInfo();
-    }
-
-    public void adminUpdatesStatusOf(Member targetMember, MemberRole newRole) {
-        onlyAdmin();
-
-        targetMember.updateStatus(newRole);
+        return roles.getHighestStatus().isHideInfo();
     }
 
     public void acceptMember() {
-        updateStatus(MemberRole.MEMBER);
+        roles = MemberRoles.getDefaultFor(MemberRole.MEMBER);
     }
 
-    public void updateStatus(MemberRole newRole) {
-        roles = MemberRole.getRolesOf(newRole);
+    public void quit() {
+        roles = MemberRoles.getDefaultFor(MemberRole.QUIT);
     }
 
-    public void toggleAdmin(Member targetMember) {
+    public void adminAddsRoleFor(Member targetMember, MemberRole role) {
         onlyAdmin();
 
-        if (!targetMember.isMember()) {
-            throw new IllegalStateException(String.format("Member %s is not a member yet", targetMember.getName()));
-        }
+        targetMember.getRoles().add(role);
+    }
 
-        if (targetMember.isAdmin()) {
-            targetMember.revokeAdminPrivileges();
+    public void adminDeletesRoleFor(Member targetMember, MemberRole role) {
+        onlyAdmin();
+
+        targetMember.getRoles().delete(role);
+    }
+
+    public void toggleRole(Member targetMember, MemberRole role) {
+        onlyAdmin();
+
+        if (targetMember.getRoles().hasRole(role)) {
+            adminDeletesRoleFor(targetMember, role);
             return;
         }
 
-        targetMember.grantAdminPrivileges();
+        adminAddsRoleFor(targetMember, role);
     }
 
-    public void except(Member targetMember) {
+    public void selfToggleRole(MemberRole role) {
+        if (roles.hasRole(role)) {
+            selfDeleteRole(role);
+            return;
+        }
+
+        selfAddRole(role);
+    }
+
+    public void selfAddRole(MemberRole role) {
+        checkHasCorrectPermissions(role);
+
+        roles.add(role);
+    }
+
+    public void selfDeleteRole(MemberRole role) {
+        checkHasCorrectPermissions(role);
+
+        roles.delete(role);
+    }
+
+    public void toggleExcept(Member targetMember) {
         onlyAdmin();
 
         targetMember.toggleIsExcepted();
     }
 
+    private void onlyAdmin() {
+        if (!isAdmin()) {
+            throw new UnauthorizedException("Only admins can do this");
+        }
+    }
+
+    private void checkHasCorrectPermissions(MemberRole role) {
+        if (!role.isSelfToggleable()) {
+            throw new UnauthorizedException(String.format("Role %s cannot be self toggled", role.name()));
+        }
+
+        if (role.isOnlyAdminToggleable() && !isAdmin()) {
+            throw new UnauthorizedException(String.format("Role %s can only be toggled by admin", role.name()));
+        }
+    }
+
+    private void toggleIsExcepted() {
+        isExcepted = !isExcepted;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(MemberRole::name)
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toSet());
+        return roles.getAuthorities();
     }
 
     @Override
@@ -179,12 +210,12 @@ public class Member extends TimestampEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !roles.contains(MemberRole.UNACCEPTED);
+        return roles.isAcceptedMember();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return !roles.contains(MemberRole.EXPELLED);
+        return roles.isExpelled();
     }
 
     @Override
@@ -195,63 +226,5 @@ public class Member extends TimestampEntity implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
-    }
-
-    private void grantAdminPrivileges() {
-        roles.add(MemberRole.ADMIN);
-    }
-
-    private void revokeAdminPrivileges() {
-        roles = roles.stream()
-                .filter(Predicate.not(MemberRole.ADMIN::equals))
-                .collect(Collectors.toSet());
-    }
-
-    private MemberRole getHighestStatusRole() {
-        return MemberRole.getHighestStatus(roles);
-    }
-
-    private void onlyAdmin() {
-        if (!this.isAdmin()) {
-            throw new UnauthorizedException("Only admins can do this");
-        }
-    }
-
-    private void toggleIsExcepted() {
-        isExcepted = !isExcepted;
-    }
-
-    private void checkRolesAreCorrect() {
-        checkIsMemberButHasNonMemberRole();
-        checkIsSpecialRoleButDoesNotHaveMemberRole();
-    }
-
-    private void checkIsMemberButHasNonMemberRole() {
-        if (!roles.contains(MemberRole.MEMBER)) {
-            return;
-        }
-
-        roles.stream()
-                .filter(Predicate.not(MemberRole::isMember))
-                .findAny()
-                .ifPresent(role -> {
-                    throw new IllegalArgumentException("Member cannot have non-member role: " + role.name());
-                });
-    }
-
-    private void checkIsSpecialRoleButDoesNotHaveMemberRole() {
-        if (roles.contains(MemberRole.MEMBER)) {
-            return;
-        }
-
-        roles.stream()
-                .filter(MemberRole::isMember)
-                .filter(Predicate.not(MemberRole.MEMBER::equals))
-                .findAny()
-                .ifPresent(specialRole -> {
-                    throw new IllegalArgumentException(
-                            String.format("Member %s has special role %s, but role %s was not present",
-                                    name, specialRole.name(), MemberRole.MEMBER));
-                });
     }
 }

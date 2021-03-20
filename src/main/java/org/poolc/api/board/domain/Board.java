@@ -5,9 +5,9 @@ import org.poolc.api.board.vo.BoardCreateValues;
 import org.poolc.api.board.vo.BoardUpdateValue;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.MemberRole;
+import org.poolc.api.member.domain.MemberRoles;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity(name = "Board")
 @SequenceGenerator(
@@ -72,7 +72,7 @@ public class Board extends TimestampEntity {
         return this.readPermission.equals(MemberRole.PUBLIC);
     }
 
-    public boolean memberHasWritePermissions(Set<MemberRole> roles) {
+    public boolean memberHasWritePermissions(MemberRoles roles) {
         if (onlyAdminAllowed(writePermission, roles)) {
             return false;
         }
@@ -80,7 +80,7 @@ public class Board extends TimestampEntity {
         return !onlyMemberAllowed(writePermission, roles);
     }
 
-    public boolean memberHasReadPermissions(Set<MemberRole> roles) {
+    public boolean memberHasReadPermissions(MemberRoles roles) {
         if (onlyAdminAllowed(readPermission, roles)) {
             return false;
         }
@@ -88,11 +88,11 @@ public class Board extends TimestampEntity {
         return !onlyMemberAllowed(readPermission, roles);
     }
 
-    private boolean onlyAdminAllowed(MemberRole permission, Set<MemberRole> roles) {
-        return permission.equals(MemberRole.ADMIN) && !roles.contains(MemberRole.ADMIN);
+    private boolean onlyAdminAllowed(MemberRole permission, MemberRoles roles) {
+        return permission.equals(MemberRole.ADMIN) && !roles.isAdmin();
     }
 
-    private boolean onlyMemberAllowed(MemberRole permission, Set<MemberRole> roles) {
-        return permission.equals(MemberRole.MEMBER) && !roles.contains(MemberRole.MEMBER);
+    private boolean onlyMemberAllowed(MemberRole permission, MemberRoles roles) {
+        return permission.equals(MemberRole.MEMBER) && !roles.isMember();
     }
 }
