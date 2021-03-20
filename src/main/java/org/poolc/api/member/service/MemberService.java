@@ -96,7 +96,7 @@ public class MemberService {
     public void authorizeMember(String loginID) {
         Member findMember = getMemberByLoginID(loginID);
         findMember.acceptMember();
-        memberRepository.flush();
+        memberRepository.saveAndFlush(findMember);
     }
 
     public void toggleAdmin(Member admin, String loginID) {
