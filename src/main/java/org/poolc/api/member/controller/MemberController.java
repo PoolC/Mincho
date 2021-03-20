@@ -33,7 +33,7 @@ public class MemberController {
     public ResponseEntity<Map<String, List<MemberResponse>>> getAllMembers(@AuthenticationPrincipal Member member) {
         List<MemberResponse> memberResponses = memberService.getAllMembers()
                 .stream()
-                .filter(responseMember -> member.isAdmin() || !responseMember.shouldHide())
+                .filter(responseMember -> (member != null && member.isAdmin()) || !responseMember.shouldHide())  // TODO: public member 만들면 null 체크 지우기
                 .map(MemberResponse::of)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(Collections.singletonMap("data", memberResponses));
@@ -100,9 +100,10 @@ public class MemberController {
     }
 
     @GetMapping(value = "/role")
-    public ResponseEntity<Map<String, List<MemberRolesResponse>>> getRoles() {
+    public ResponseEntity<Map<String, List<MemberRolesResponse>>> getRoles(@AuthenticationPrincipal Member member) {
         return ResponseEntity.ok(Collections.singletonMap("data", Stream.of(MemberRole.values())
                 .filter(not(MemberRole.SUPER_ADMIN::equals))
+                .filter(role -> (member != null && member.isAdmin()) || role.isSelfToggleable())  // TODO: public member 만들면 null 체크 지우기
                 .map(MemberRolesResponse::of)
                 .collect(Collectors.toList())));
     }
