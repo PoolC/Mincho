@@ -136,6 +136,10 @@ public class Member extends TimestampEntity implements UserDetails {
     public void selfChangeRole(MemberRole role) {
         checkHasCorrectPermissions(role);
 
+        if (getRole().equals(MemberRole.SUPER_ADMIN.name())) {
+            throw new UnauthorizedException("Usage of super admin is prohibited");
+        }
+
         roles.changeRole(role);
     }
 

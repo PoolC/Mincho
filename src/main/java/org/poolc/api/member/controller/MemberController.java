@@ -104,6 +104,7 @@ public class MemberController {
         return ResponseEntity.ok(Collections.singletonMap("data", Stream.of(MemberRole.values())
                 .filter(not(MemberRole.SUPER_ADMIN::equals))
                 .filter(role -> (member != null && member.isAdmin()) || role.isSelfToggleable())  // TODO: public member 만들면 null 체크 지우기
+                .filter(role -> (member != null && member.isAdmin()) || !MemberRole.QUIT.equals(role))
                 .map(MemberRolesResponse::of)
                 .collect(Collectors.toList())));
     }
