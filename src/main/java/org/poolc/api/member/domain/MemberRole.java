@@ -146,6 +146,11 @@ public enum MemberRole implements Role {
         }
 
         @Override
+        public boolean isSelfToggleable() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "일반회원";
         }
