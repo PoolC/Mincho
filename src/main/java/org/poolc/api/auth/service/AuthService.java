@@ -22,7 +22,7 @@ public class AuthService {
     public String createAccessToken(String loginID, String password) {
         Member member = memberService.getMemberIfRegistered(loginID, password);
         if (!member.isAcceptedMember()) {
-            throw new UnactivatedException("No activated user");
+            throw new UnactivatedException("관리자 승인 전에는 로그인이 불가능합니다.");
         }
 
         if (!member.isMember()) {

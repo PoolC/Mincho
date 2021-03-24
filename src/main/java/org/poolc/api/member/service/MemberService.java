@@ -3,13 +3,13 @@ package org.poolc.api.member.service;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.activity.vo.YearSemester;
-import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.domain.MemberRoles;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.poolc.api.member.exception.DuplicateMemberException;
+import org.poolc.api.member.exception.WrongPasswordException;
 import org.poolc.api.member.repository.MemberQueryRepository;
 import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.member.vo.MemberCreateValues;
@@ -83,7 +83,7 @@ public class MemberService {
     public Member getMemberIfRegistered(String loginID, String password) {
         return memberRepository.findByLoginID(loginID)
                 .filter(member -> passwordHashProvider.matches(password, member.getPasswordHash()))
-                .orElseThrow(() -> new UnauthenticatedException("No user found with given loginID and password"));
+                .orElseThrow(() -> new WrongPasswordException("아이디와 비밀번호를 확인해주세요."));
     }
 
     public List<MutablePair<String, Long>> getHoursWithMembers(String when) {

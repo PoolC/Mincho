@@ -15,6 +15,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -37,10 +38,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                     .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
 
             chain.doFilter(request, response);
-
         } catch (UnauthenticatedException e) {
             HttpServletResponse res = (HttpServletResponse) response;
-            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, Collections.singletonMap("message", "토큰이 만료됐거나 잘못됐습니다. 다시 로그인해주세요.").toString());
         }
     }
 }
