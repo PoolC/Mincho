@@ -148,6 +148,17 @@ public class Member extends TimestampEntity implements UserDetails {
         targetMember.toggleIsExcepted();
     }
 
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+        this.passwordResetTokenValidUntil = LocalDateTime.now().plusDays(1l);
+    }
+
+    public void updatePassword(String newPasswordHash) {
+        this.passwordResetTokenValidUntil = null;
+        this.passwordResetToken = null;
+        this.passwordHash = newPasswordHash;
+    }
+
     private void onlyAdmin() {
         if (!isAdmin()) {
             throw new UnauthorizedException("Only admins can do this");
