@@ -21,31 +21,29 @@ import java.util.Collection;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends TimestampEntity implements UserDetails {
-    // TODO: 시그니처 통일해주세요(unique, nullable 순서)
-
     @Id
     @Column(name = "uuid", length = 40)
     private String UUID;
 
-    @Column(name = "login_id", columnDefinition = "varchar(40)", unique = true, nullable = false)
+    @Column(name = "login_id", unique = true, columnDefinition = "varchar(40)", nullable = false)
     private String loginID;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(name = "email", columnDefinition = "varchar(255)", nullable = false, unique = true)
+    @Column(name = "email", unique = true, nullable = false, columnDefinition = "varchar(255)")
     private String email;
 
-    @Column(name = "phone_number", columnDefinition = "varchar(20)", nullable = false)
+    @Column(name = "phone_number", nullable = false, columnDefinition = "varchar(20)")
     private String phoneNumber;
 
-    @Column(name = "name", columnDefinition = "varchar(40)", nullable = false)
+    @Column(name = "name", nullable = false, columnDefinition = "varchar(40)")
     private String name;
 
-    @Column(name = "department", columnDefinition = "varchar(40)", nullable = false)
+    @Column(name = "department", nullable = false, columnDefinition = "varchar(40)")
     private String department;
 
-    @Column(name = "student_id", columnDefinition = "varchar(40)", nullable = false, unique = true)
+    @Column(name = "student_id", unique = true, nullable = false, columnDefinition = "varchar(40)")
     private String studentID;
 
     @Column(name = "password_reset_token", columnDefinition = "varchar(255)")
@@ -154,6 +152,10 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     public void updatePassword(String newPasswordHash) {
+        if (!this.passwordResetTokenValidUntil.isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("토큰이 만료되었습니다.");
+        }
+
         this.passwordResetTokenValidUntil = null;
         this.passwordResetToken = null;
         this.passwordHash = newPasswordHash;
