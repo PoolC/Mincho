@@ -17,6 +17,10 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 
     Optional<Member> findByLoginID(String loginID);
 
+    Optional<Member> findByEmail(String email);
+    
+    Optional<Member> findByPasswordResetToken(String passwordResetToken);
+
     List<Member> findByName(String name);
 
     @Query("select m from Member m where m.loginID in (:loginIDs)")

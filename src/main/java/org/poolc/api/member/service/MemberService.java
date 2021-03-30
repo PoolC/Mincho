@@ -1,5 +1,6 @@
 package org.poolc.api.member.service;
 
+import net.bytebuddy.utility.RandomString;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.activity.vo.YearSemester;
@@ -78,6 +79,23 @@ public class MemberService {
     public Member getMemberByLoginID(String loginID) {
         return memberRepository.findByLoginID(loginID)
                 .orElseThrow(() -> new NoSuchElementException("No user found with given loginID"));
+    }
+
+    public String resetMemberPasswordToken(String email) {
+        Member resetMember = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("No user found with given email"));
+        String resetPasswordToken = RandomString.make(40);
+        resetMember.setPasswordResetToken(resetPasswordToken);
+        memberRepository.saveAndFlush(resetMember);
+        return resetPasswordToken;
+    }
+
+    public void updateMemberPassword(String passwordResetToken, String newPassword) {
+        Member resetMember = memberRepository.findByPasswordResetToken(passwordResetToken)
+                .orElseThrow(() -> new NoSuchElementException("No user found with given passwordResetToken"));
+        String newPasswordHash = passwordHashProvider.encodePassword(newPassword);
+        resetMember.updatePassword(newPasswordHash);
+        memberRepository.saveAndFlush(resetMember);
     }
 
     public Member getMemberIfRegistered(String loginID, String password) {

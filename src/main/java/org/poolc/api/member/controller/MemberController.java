@@ -12,9 +12,13 @@ import org.poolc.api.project.dto.ProjectResponse;
 import org.poolc.api.project.service.ProjectService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,6 +32,7 @@ public class MemberController {
     private final MemberService memberService;
     private final ProjectService projectService;
     private final ActivityService activityService;
+    private final JavaMailSender javaMailSender;
 
     @GetMapping
     public ResponseEntity<Map<String, List<MemberResponse>>> getAllMembers(@AuthenticationPrincipal Member member) {
@@ -156,6 +161,41 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping(path = "/reset-password-token")
+    public ResponseEntity<String> sendResetPasswordTokenMail(@RequestBody MemberResetRequest memberResetRequest) throws MessagingException {
+        String email = memberResetRequest.getEmail();
+        String resetPasswordToken = memberService.resetMemberPasswordToken(email);
+
+        sendEmailPasswordResetToken(email, resetPasswordToken);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(path = "/reset-password")
+    public ResponseEntity<Void> updateMemberPassword(@RequestBody MemberResetRequest memberResetRequest) {
+        checkIsValidMemberResetRequest(memberResetRequest);
+
+        String passwordResetToken = memberResetRequest.getPasswordResetToken();
+        String newPassword = memberResetRequest.getNewPassword();
+
+        memberService.updateMemberPassword(passwordResetToken, newPassword);
+
+        return ResponseEntity.ok().build();
+    }
+
+    private void sendEmailPasswordResetToken(String email, String resetPasswordToken) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+        helper.setSubject("풀씨 홈페이지 비밀번호 초기 안내메일입니다");
+        helper.setText("안녕하세요.\n Poolc 홈페이지 비밀번호 초기화 안내 메일입니다. \n\n" +
+                "아래 링크를 눌러 비밀번호 초기화를 진행해주세요.\n" +
+                "<https://poolc.org/member/reset-password?token=" + resetPasswordToken + ">\n" +
+                "이 링크는 24시간 동안 유효합니다.\n" +
+                "감사합니다.", false);
+        helper.setTo(email);
+        javaMailSender.send(mimeMessage);
+    }
+
     private void checkIsValidMemberCreateInput(RegisterMemberRequest request) {
         if (!request.getPassword().equals(request.getPasswordCheck())) {
             throw new IllegalArgumentException("passwords should match");
@@ -168,6 +208,12 @@ public class MemberController {
         // TODO: 학번 10자리 숫자 확인
 
         // TODO: 전화 번호 11자리 숫자 확인
+    }
+
+    private void checkIsValidMemberResetRequest(MemberResetRequest request) {
+        if (!request.getNewPassword().equals(request.getNewPasswordCheck())) {
+            throw new IllegalArgumentException("passwords should match");
+        }
     }
 
     private void checkIsValidMemberUpdateInput(UpdateMemberRequest request) {
