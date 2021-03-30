@@ -14,7 +14,7 @@ spring:
     default-encoding: UTF-8
     host: smtp.gmail.com
     port: 587
-    username: ${EMAIL_ID}
+    username: ${EMAIL_ADDRESS}
     password: ${EMAIL_PASSWORD}
     protocol: smtp
     tls: true
