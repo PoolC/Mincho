@@ -67,21 +67,18 @@ public class ActivityController {
     }
 
     @GetMapping(value = "/member/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, List<MemberResponse>>> getActivityMembers(@PathVariable("activityID") Long id) {
-        return ResponseEntity.ok().body(Collections.singletonMap("data", activityService.findActivityMembers(id).stream()
+    public ResponseEntity<Map<String, List<MemberResponse>>> getActivityMembers(@PathVariable("activityID") Long activityId) {
+        return ResponseEntity.ok().body(Collections.singletonMap("data", activityService.findActivityMembersByActivityId(activityId).stream()
                 .map(MemberResponse::of)
                 .collect(toList())));
     }
 
     @GetMapping(value = "/check/{sessionID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HashMap<String, List<AttendanceResponse>>> getAttendanceCheck(@PathVariable("sessionID") Long id) {
-        HashMap<String, List<AttendanceResponse>> responseBody = new HashMap<>();
-        List<AttendanceResponse> list = new ArrayList<>();
-        Map<Member, Boolean> c = activityService.findActivityMembersWithAttendance(id);
-        list.addAll(c.entrySet().stream()
-                .map(e -> new AttendanceResponse(e.getKey(), e.getValue())).collect(toList()));
-        responseBody.put("data", list);
-        return ResponseEntity.ok().body(responseBody);
+    public ResponseEntity<Map<String, List<AttendanceResponse>>> getAttendanceCheck(@PathVariable("sessionID") Long sessionId) {
+        List<Map.Entry<Member, Boolean>> activityMembersWithAttendance = sessionService.findActivityMembersWithAttendanceBySessionId(sessionId);
+        List<AttendanceResponse> responseList = activityMembersWithAttendance.stream()
+                .map(entry -> new AttendanceResponse(entry.getKey(), entry.getValue())).collect(toList());
+        return ResponseEntity.ok().body(Collections.singletonMap("data", responseList));
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)

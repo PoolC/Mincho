@@ -17,10 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
@@ -104,15 +101,17 @@ public class ActivityService {
         return activityRepository.findOneActivityWithHostAndTags(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다"));
     }
 
-    public List<Member> findActivityMembers(Long id) {
-        return memberRepository.findAllMembersByLoginIDList(activityRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다")).getMemberLoginIDs());
+    public List<Member> findActivityMembersByActivityId(Long activityId) {
+        List<Member> activityMembers = memberRepository.findAllMembersByLoginIDList(activityRepository.findById(activityId).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 존재하지 않습니다")).getMemberLoginIDs());
+        activityMembers.sort(Comparator.comparing(Member::getName));
+        return activityMembers;
     }
 
     public List<Activity> findActivitiesByHost(Member host) {
         return activityRepository.findActivitiesByHost(host);
     }
 
-    public List<Activity> findActivitiesByActivityMembers(String loginId) {
+    public List<Activity> findActivitiesByMemberLoginId(String loginId) {
         return activityRepository.findActivitiesByActivityMembers(loginId);
     }
 

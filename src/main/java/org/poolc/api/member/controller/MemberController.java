@@ -72,7 +72,7 @@ public class MemberController {
 
         List<Member> memberList = new ArrayList<>(); // TODO: 이부분 수정해야할 듯
 
-        List<ActivityResponse> activitiesByActivityMembers = activityService.findActivitiesByActivityMembers(loginID)
+        List<ActivityResponse> activitiesByActivityMembers = activityService.findActivitiesByMemberLoginId(loginID)
                 .stream().map(ActivityResponse::of)
                 .collect(Collectors.toList());
         List<ActivityResponse> activitiesByHost = activityService.findActivitiesByHost(member)
@@ -91,7 +91,7 @@ public class MemberController {
 
         List<Member> memberList = new ArrayList<>(); // TODO: 이부분 수정해야할 듯
 
-        List<ActivityResponse> activitiesByActivityMembers = activityService.findActivitiesByActivityMembers(loginID)
+        List<ActivityResponse> activitiesByActivityMembers = activityService.findActivitiesByMemberLoginId(loginID)
                 .stream().map(ActivityResponse::of)
                 .collect(Collectors.toList());
         List<ActivityResponse> activitiesByHost = activityService.findActivitiesByHost(member)
