@@ -86,14 +86,18 @@ public class ActivityService {
     }
 
     public List<Activity> findActivities() {
-        return activityRepository.findActivitiesWithHostAndTags();
+        List<Activity> activities = activityRepository.findActivitiesWithHostAndTags();
+        activities.sort(Comparator.comparing(Activity::getStartDate).reversed());
+        return activities;
     }
 
     public List<Activity> findActivitiesInSemester(String val) {
         YearSemester yearSemester = getYearSemesterFromString(val);
         LocalDate startDate = getFirstDateFromYearSemester(yearSemester);
         LocalDate endDate = getLastDateFromYearSemester(yearSemester);
-        return activityRepository.findActivitiesWithHostAndTagsInSemester(startDate, endDate);
+        List<Activity> activities = activityRepository.findActivitiesWithHostAndTagsInSemester(startDate, endDate);
+        activities.sort(Comparator.comparing(Activity::getTitle));
+        return activities;
     }
 
 
