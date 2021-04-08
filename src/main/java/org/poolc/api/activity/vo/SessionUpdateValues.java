@@ -11,12 +11,14 @@ public class SessionUpdateValues {
     private final String uuid;
     private final LocalDate date;
     private final String description;
+    private final Long hour;
     private final List<String> fileList;
 
     public SessionUpdateValues(SessionUpdateRequest request, String uuid) {
         this.date = request.getDate();
         this.description = request.getDescription();
         this.uuid = uuid;
+        this.hour = request.getHour();
         this.fileList = request.getFileList();
     }
 }

@@ -13,14 +13,16 @@ public class SessionCreateRequest {
     private final Long sessionNumber;
     private final LocalDate date;
     private final String description;
+    private final Long hour;
     private final List<String> fileList;
 
     @JsonCreator
-    public SessionCreateRequest(Long activityID, Long sessionNumber, LocalDate date, String description, List<String> fileList) {
+    public SessionCreateRequest(Long activityID, Long sessionNumber, LocalDate date, String description, Long hour, List<String> fileList) {
         this.activityID = activityID;
         this.sessionNumber = sessionNumber;
         this.date = date;
         this.description = description;
+        this.hour = hour;
         this.fileList = fileList;
     }
 }

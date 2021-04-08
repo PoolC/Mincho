@@ -13,6 +13,7 @@ public class SessionCreateValues {
     private final Long sessionNumber;
     private final LocalDate date;
     private final String description;
+    private final Long hour;
     private final List<String> fileList;
 
     public SessionCreateValues(SessionCreateRequest request) {
@@ -20,6 +21,7 @@ public class SessionCreateValues {
         this.sessionNumber = request.getSessionNumber();
         this.date = request.getDate();
         this.description = request.getDescription();
+        this.hour = request.getHour();
         this.fileList = request.getFileList();
     }
 }

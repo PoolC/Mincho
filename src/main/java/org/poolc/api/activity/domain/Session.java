@@ -39,6 +39,9 @@ public class Session {
     @Column(name = "session_number", nullable = false)
     private Long sessionNumber;
 
+    @Column(name = "hour", columnDefinition = "bigint default 1", nullable = false)
+    private Long hour;
+
     @ElementCollection(fetch = LAZY)
     @CollectionTable(name = "attendance", joinColumns = @JoinColumn(name = "session_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"session_id", "member_loginid"})})
     @Column(name = "member_loginid")
@@ -57,12 +60,14 @@ public class Session {
         this.description = values.getDescription();
         this.date = values.getDate();
         this.sessionNumber = values.getSessionNumber();
+        this.hour = values.getHour();
         this.fileList = values.getFileList();
     }
 
     public void update(SessionUpdateValues values) {
         this.date = values.getDate();
         this.description = values.getDescription();
+        this.hour = values.getHour();
         this.fileList = values.getFileList();
     }
 

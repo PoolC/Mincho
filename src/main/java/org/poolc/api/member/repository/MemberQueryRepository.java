@@ -16,7 +16,7 @@ public class MemberQueryRepository {
     private final EntityManager em;
 
     public List<MutablePair<String, Long>> getHours(LocalDate startDate, LocalDate endDate) {
-        List<Object[]> list = em.createNativeQuery("select attendance.member_loginid, sum(activity.hour) from attendance join session on attendance.session_id=session.id join activity on session.activity_id=activity.id where activity.start_date between :startDate and :endDate group by attendance.member_loginid")
+        List<Object[]> list = em.createNativeQuery("select attendance.member_loginid, sum(session.hour) from attendance join session on attendance.session_id=session.id join activity on session.activity_id=activity.id where activity.start_date between :startDate and :endDate group by attendance.member_loginid")
                 .setParameter("startDate", startDate)
                 .setParameter("endDate", endDate)
                 .getResultList();

@@ -14,18 +14,20 @@ public class SessionResponse {
     private final Long sessionNumber;
     private final LocalDate date;
     private final String description;
+    private final Long hour;
     private final List<String> fileList;
 
     @JsonCreator
-    public SessionResponse(Long id, Long sessionNumber, LocalDate date, String description, List<String> fileList) {
+    public SessionResponse(Long id, Long sessionNumber, LocalDate date, String description, Long hour, List<String> fileList) {
         this.id = id;
         this.sessionNumber = sessionNumber;
         this.date = date;
         this.description = description;
+        this.hour = hour;
         this.fileList = fileList;
     }
 
     public static SessionResponse of(Session session) {
-        return new SessionResponse(session.getId(), session.getSessionNumber(), session.getDate(), session.getDescription(), session.getFileList());
+        return new SessionResponse(session.getId(), session.getSessionNumber(), session.getDate(), session.getDescription(), session.getHour(), session.getFileList());
     }
 }
