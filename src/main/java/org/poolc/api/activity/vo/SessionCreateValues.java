@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.poolc.api.activity.dto.SessionCreateRequest;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 public class SessionCreateValues {
@@ -12,11 +13,13 @@ public class SessionCreateValues {
     private final Long sessionNumber;
     private final LocalDate date;
     private final String description;
+    private final List<String> fileList;
 
     public SessionCreateValues(SessionCreateRequest request) {
         this.activityID = request.getActivityID();
         this.sessionNumber = request.getSessionNumber();
         this.date = request.getDate();
         this.description = request.getDescription();
+        this.fileList = request.getFileList();
     }
 }

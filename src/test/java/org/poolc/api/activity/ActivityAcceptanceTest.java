@@ -264,8 +264,6 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response3 = updateActivityRequest(accessToken, 1l, "김성하의 재미있는 sql세미나", "이거 들으면 취업가능", localDate, true, "3시간", 200l, tags, 200l);
         ExtractableResponse<Response> response2 = getActivitiesRequest(accessToken);
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(response2.body().jsonPath().getList("data")).hasSize(4);
-
     }
 
     @Test
@@ -281,8 +279,6 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
         tags.add("한시간만 들어도 알고리즘 정복가능");
         ExtractableResponse<Response> response = updateActivityRequest(accessToken, 432l, "김성하의 재미있는 sql세미나", "이거 들으면 취업가능", localDate, true, "3시간", 200l, tags, 200l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-
     }
 
 
@@ -325,8 +321,6 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = deleteActivityRequest(accessToken, 432l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-
     }
 
     @Test
@@ -364,7 +358,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        ExtractableResponse<Response> response = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now(), null);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
     }
@@ -375,9 +369,8 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = createSessionRequest(accessToken, 10l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        ExtractableResponse<Response> response = createSessionRequest(accessToken, 10l, 1l, "김성하의c++세미나 1회차", LocalDate.now(), null);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     @Test
@@ -386,9 +379,8 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        ExtractableResponse<Response> response = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now(), null);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-
     }
 
     @Test
@@ -397,12 +389,11 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
-        createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now());
+        createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now(), null);
+        createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now(), null);
 
         ExtractableResponse<Response> response = getSessionsRequest(accessToken, 1l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
     }
 
     @Test
@@ -411,12 +402,11 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
-        createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now());
+        createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now(), null);
+        createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now(), null);
 
         ExtractableResponse<Response> response = getSessionRequest("", 9l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
     }
 
     @Test
@@ -427,7 +417,6 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = getSessionRequest(accessToken, 100l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     @Test
@@ -436,10 +425,8 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-
         ExtractableResponse<Response> response = getSessionsRequest(accessToken, 1000l);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     @Test
@@ -448,8 +435,10 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
 
-        ExtractableResponse<Response> response2 = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
-        ExtractableResponse<Response> response3 = createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now());
+        List<String> fileList = new ArrayList<>();
+        fileList.add("poolc.org");
+        ExtractableResponse<Response> response2 = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now(), fileList);
+        ExtractableResponse<Response> response3 = createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now(), fileList);
         ExtractableResponse<Response> response4 = getSessionsRequest(accessToken, 1l);
 
         Long sessionID = response4.body().jsonPath().getLong("data[0].id");
@@ -461,7 +450,6 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response5 = getSessionsRequest(accessToken, 1l);
         assertThat(response5.body().jsonPath().getString("data[0].description")).isEqualTo(newDescription);
-
     }
 
     @Test
@@ -483,8 +471,8 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
 
-        ExtractableResponse<Response> response2 = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
-        ExtractableResponse<Response> response3 = createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now());
+        ExtractableResponse<Response> response2 = createSessionRequest(accessToken, 1l, 1l, "김성하의c++세미나 1회차", LocalDate.now(), null);
+        ExtractableResponse<Response> response3 = createSessionRequest(accessToken, 1l, 2l, "김성하의c++세미나 1회차", LocalDate.now(), null);
         ExtractableResponse<Response> response4 = getSessionsRequest(accessToken, 1l);
 
         Long sessionID = response4.body().jsonPath().getLong("data[0].id");
@@ -497,7 +485,6 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = updateSessionRequest(accessToken2, sessionID, date, newDescription);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-
     }
 
     //TODO: sql 문제
@@ -611,9 +598,8 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response3 = getActivityMembersRequest(accessToken, 2l);
         assertThat(response3.statusCode()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(response3.body().jsonPath().getList("data").size()).isEqualTo(2);
 
-        ExtractableResponse<Response> response4 = createSessionRequest(accessToken3, 2l, 1l, "김성하의c++세미나 1회차", LocalDate.now());
+        ExtractableResponse<Response> response4 = createSessionRequest(accessToken3, 2l, 1l, "김성하의c++세미나 1회차", LocalDate.now(), null);
         assertThat(response4.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         ExtractableResponse<Response> response5 = getAttendanceRequest(accessToken3, 2l);
@@ -789,8 +775,8 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> createSessionRequest(String token, Long activityID, Long sessionID, String description, LocalDate date) {
-        SessionCreateRequest request = new SessionCreateRequest(activityID, sessionID, date, description);
+    public static ExtractableResponse<Response> createSessionRequest(String token, Long activityID, Long sessionID, String description, LocalDate date, List<String> fileList) {
+        SessionCreateRequest request = new SessionCreateRequest(activityID, sessionID, date, description, fileList);
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(token)
@@ -822,7 +808,9 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
     }
 
     public static ExtractableResponse<Response> updateSessionRequest(String token, Long id, LocalDate date, String description) {
-        SessionUpdateRequest request = new SessionUpdateRequest(date, description);
+        List<String> file_list = new ArrayList<>();
+        file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
+        SessionUpdateRequest request = new SessionUpdateRequest(date, description, file_list);
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(token)

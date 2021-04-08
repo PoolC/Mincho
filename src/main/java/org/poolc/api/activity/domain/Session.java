@@ -1,6 +1,7 @@
 package org.poolc.api.activity.domain;
 
 import lombok.Getter;
+import org.poolc.api.activity.vo.SessionCreateValues;
 import org.poolc.api.activity.vo.SessionUpdateValues;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "Session")
@@ -42,19 +44,26 @@ public class Session {
     @Column(name = "member_loginid")
     private List<String> attendedMemberLoginIDs = new ArrayList<>();
 
+    @ElementCollection(fetch = EAGER)
+    @CollectionTable(name = "session_file_list", joinColumns = @JoinColumn(name = "session_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"session_id", "file_uri"})})
+    @Column(name = "file_uri", columnDefinition = "varchar(1024)")
+    private List<String> fileList = new ArrayList<>();
+
     public Session() {
     }
 
-    public Session(Activity activity, String description, LocalDate date, Long sessionNumber) {
+    public Session(Activity activity, SessionCreateValues values) {
         this.activity = activity;
-        this.description = description;
-        this.date = date;
-        this.sessionNumber = sessionNumber;
+        this.description = values.getDescription();
+        this.date = values.getDate();
+        this.sessionNumber = values.getSessionNumber();
+        this.fileList = values.getFileList();
     }
 
     public void update(SessionUpdateValues values) {
         this.date = values.getDate();
         this.description = values.getDescription();
+        this.fileList = values.getFileList();
     }
 
     @Transactional

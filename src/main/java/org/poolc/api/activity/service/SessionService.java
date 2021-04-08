@@ -36,7 +36,7 @@ public class SessionService {
         if (!checkUserIsHost(activity.getHost().getUUID(), member.getUUID())) {
             throw new NotHostException("호스트가 아닌 사람은 세션 정보를 입력할수 없습니다");
         }
-        Session session = new Session(activity, sessionCreateValues.getDescription(), sessionCreateValues.getDate(), sessionCreateValues.getSessionNumber());
+        Session session = new Session(activity, sessionCreateValues);
         sessionRepository.save(session);
         return session;
     }
