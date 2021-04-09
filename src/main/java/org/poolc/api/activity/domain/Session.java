@@ -27,19 +27,19 @@ public class Session {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "activity_id", nullable = false, referencedColumnName = "id")
     private Activity activity;
 
-    @Column(name = "description", columnDefinition = "varchar(1024)", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "varchar(1024)")
     private String description;
 
-    @Column(name = "date", columnDefinition = "date", nullable = false)
+    @Column(name = "date", nullable = false, columnDefinition = "date")
     private LocalDate date;
 
     @Column(name = "session_number", nullable = false)
     private Long sessionNumber;
 
-    @Column(name = "hour", columnDefinition = "bigint default 1", nullable = false)
+    @Column(name = "hour", nullable = false, columnDefinition = "bigint default 1")
     private Long hour;
 
     @ElementCollection(fetch = LAZY)

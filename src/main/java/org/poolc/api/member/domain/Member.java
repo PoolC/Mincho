@@ -25,7 +25,7 @@ public class Member extends TimestampEntity implements UserDetails {
     @Column(name = "uuid", length = 40)
     private String UUID;
 
-    @Column(name = "login_id", unique = true, columnDefinition = "varchar(40)", nullable = false)
+    @Column(name = "login_id", unique = true, nullable = false, columnDefinition = "varchar(40)")
     private String loginID;
 
     @Column(name = "password_hash", nullable = false)

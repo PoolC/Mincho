@@ -26,10 +26,10 @@ public class Book extends TimestampEntity {
     @JoinColumn(name = "borrower", referencedColumnName = "UUID")
     private Member borrower = null;
 
-    @Column(name = "title", length = 1024, nullable = false)
+    @Column(name = "title", nullable = false, length = 1024)
     private String title;
 
-    @Column(name = "author", length = 1024, nullable = false)
+    @Column(name = "author", nullable = false, length = 1024)
     private String author;
 
     @Column(name = "image_url", length = 1024)

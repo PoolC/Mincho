@@ -30,23 +30,23 @@ public class Activity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "title", columnDefinition = "varchar(1024)", nullable = false)
+    @Column(name = "title", nullable = false, columnDefinition = "varchar(1024)")
     private String title;
 
-    @Column(name = "description", columnDefinition = "text", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "text")
     private String description;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "host", referencedColumnName = "UUID", nullable = false)
+    @JoinColumn(name = "host", nullable = false, referencedColumnName = "UUID")
     private Member host;
 
-    @Column(name = "start_date", columnDefinition = "date", nullable = false)
+    @Column(name = "start_date", nullable = false, columnDefinition = "date")
     private LocalDate startDate;
 
-    @Column(name = "class_hour", columnDefinition = "varchar(1024)", nullable = false)
+    @Column(name = "class_hour", nullable = false, columnDefinition = "varchar(1024)")
     private String classHour;
 
-    @Column(name = "is_seminar", columnDefinition = "boolean default false", nullable = false)
+    @Column(name = "is_seminar", nullable = false, columnDefinition = "boolean default false")
     private Boolean isSeminar;
 
     @Column(name = "capacity", nullable = false)
@@ -55,7 +55,7 @@ public class Activity {
     @Column(name = "hour", nullable = false)
     private Long hour;
 
-    @Column(name = "available", columnDefinition = "boolean default false", nullable = false)
+    @Column(name = "available", nullable = false, columnDefinition = "boolean default false")
     private Boolean available;
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)

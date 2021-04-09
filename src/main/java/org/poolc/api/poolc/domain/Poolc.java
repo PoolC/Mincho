@@ -19,19 +19,19 @@ public class Poolc {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "president_name", columnDefinition = "varchar(40)", nullable = false)
+    @Column(name = "president_name", nullable = false, columnDefinition = "varchar(40)")
     private String presidentName;
 
-    @Column(name = "phone_number", columnDefinition = "varchar(40)", nullable = false)
+    @Column(name = "phone_number", nullable = false, columnDefinition = "varchar(40)")
     private String phoneNumber;
 
-    @Column(name = "location", columnDefinition = "varchar(100)", nullable = false)
+    @Column(name = "location", nullable = false, columnDefinition = "varchar(100)")
     private String location;
 
     @Column(name = "location_url", columnDefinition = "varchar(1024)")
     private String locationUrl;
 
-    @Column(name = "introduction", columnDefinition = "text", nullable = false)
+    @Column(name = "introduction", nullable = false, columnDefinition = "text")
     private String introduction;
 
     @Column(name = "main_image_url", columnDefinition = "varchar(1024)")

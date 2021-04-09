@@ -22,22 +22,22 @@ public class Project extends TimestampEntity {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "name", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "name", nullable = false, columnDefinition = "varchar(255)")
     private String name;
 
-    @Column(name = "description", columnDefinition = "text", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "text")
     private String description;
 
-    @Column(name = "genre", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "genre", nullable = false, columnDefinition = "varchar(255)")
     private String genre;
 
-    @Column(name = "duration", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "duration", nullable = false, columnDefinition = "varchar(255)")
     private String duration;
 
-    @Column(name = "thumbnail_url", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "thumbnail_url", nullable = false, columnDefinition = "varchar(255)")
     private String thumbnailURL;
 
-    @Column(name = "body", columnDefinition = "text", nullable = false)
+    @Column(name = "body", nullable = false, columnDefinition = "text")
     private String body;
 
     @ElementCollection(fetch = FetchType.EAGER)

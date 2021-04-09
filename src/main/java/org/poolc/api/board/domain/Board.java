@@ -22,18 +22,18 @@ public class Board extends TimestampEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", columnDefinition = "varchar(40)", nullable = false, unique = true)
+    @Column(name = "name", unique = true, nullable = false, columnDefinition = "varchar(40)")
     private String name;
 
-    @Column(name = "url_path", columnDefinition = "varchar(40)", nullable = false, unique = true)
+    @Column(name = "url_path", unique = true, nullable = false, columnDefinition = "varchar(40)")
     private String urlPath;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "read_permission", columnDefinition = "varchar(10)", nullable = false)
+    @Column(name = "read_permission", nullable = false, columnDefinition = "varchar(10)")
     private MemberRole readPermission;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "write_permission", columnDefinition = "varchar(10)", nullable = false)
+    @Column(name = "write_permission", nullable = false, columnDefinition = "varchar(10)")
     private MemberRole writePermission;
 
     public Board() {

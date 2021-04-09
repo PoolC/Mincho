@@ -25,14 +25,14 @@ public class Comment extends TimestampEntity {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "post_id", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "post_id", nullable = false, referencedColumnName = "ID")
     private Post post;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "author_uuid", referencedColumnName = "UUID", nullable = false)
+    @JoinColumn(name = "author_uuid", nullable = false, referencedColumnName = "UUID")
     private Member member;
 
-    @Column(name = "body", columnDefinition = "text", nullable = false)
+    @Column(name = "body", nullable = false, columnDefinition = "text")
     private String body;
 
     public Comment(Long id, Post post, Member member, String body) {

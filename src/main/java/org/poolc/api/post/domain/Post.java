@@ -31,18 +31,18 @@ public class Post extends TimestampEntity {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "board_id", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "board_id", nullable = false, referencedColumnName = "ID")
     private Board board;
 
     @JsonIgnore
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "author_uuid", referencedColumnName = "UUID", nullable = false)
+    @JoinColumn(name = "author_uuid", nullable = false, referencedColumnName = "UUID")
     private Member member;
 
-    @Column(name = "title", columnDefinition = "char(255)", nullable = false)
+    @Column(name = "title", nullable = false, columnDefinition = "char(255)")
     private String title;
 
-    @Column(name = "body", columnDefinition = "text", nullable = false)
+    @Column(name = "body", nullable = false, columnDefinition = "text")
     private String body;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)

@@ -19,7 +19,7 @@ public class ActivityTag {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "activity_id", nullable = false, referencedColumnName = "id")
     private Activity activity;
 
     private String content;
