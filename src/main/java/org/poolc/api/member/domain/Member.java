@@ -59,7 +59,7 @@ public class Member extends TimestampEntity implements UserDetails {
     private String introduction;
 
     @Column(name = "is_excepted", columnDefinition = "boolean default false")
-    private Boolean isExcepted;
+    private Boolean isExcepted = false;
 
     @Embedded
     private MemberRoles roles;
@@ -159,6 +159,12 @@ public class Member extends TimestampEntity implements UserDetails {
         this.passwordResetTokenValidUntil = null;
         this.passwordResetToken = null;
         this.passwordHash = newPasswordHash;
+    }
+
+    public void updateIsExcepted() {
+        if (roles.checkIsExcepted() && !isExcepted) {
+            toggleIsExcepted();
+        }
     }
 
     private void onlyAdmin() {

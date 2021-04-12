@@ -68,7 +68,12 @@ public class MemberService {
     public List<Member> getAllMembers() {
         List<Member> members = memberRepository.findAll();
         members.sort(Comparator.comparing(Member::getName));
+        return members;
+    }
 
+    public List<Member> getAllMembersAndUpdateMemberIsExcepted() {
+        List<Member> members = getAllMembers();
+        members.forEach(member -> member.updateIsExcepted());
         return members;
     }
 

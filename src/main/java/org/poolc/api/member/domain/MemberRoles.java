@@ -83,6 +83,14 @@ public class MemberRoles {
                 .collect(Collectors.toSet());
     }
 
+    public boolean checkIsExcepted() {
+        int memberOrdinal = MemberRole.MEMBER.ordinal();
+        if (getHighestRole().ordinal() < memberOrdinal) {
+            return true;
+        }
+        return false;
+    }
+
     private void checkRolesAreCorrect() {
         checkIsMemberButHasNonMemberRole();
         checkIsSpecialRoleButDoesNotHaveMemberRole();

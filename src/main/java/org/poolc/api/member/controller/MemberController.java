@@ -55,9 +55,9 @@ public class MemberController {
     public ResponseEntity<Map<String, List<MemberResponseWithHour>>> findMembersWithHoursInSpecificSemester(@RequestParam String when) {
         List<MemberResponseWithHour> list = new ArrayList<>();
         Map<Member, Long> map = new HashMap<>();
-        memberService.getAllMembers().forEach(m -> map.put(m, 0L));
-        memberService.getHoursWithMembers(when).forEach(m -> System.out.println(m.getRight()));
+        memberService.getAllMembersAndUpdateMemberIsExcepted().forEach(m -> map.put(m, 0L));
         memberService.getHoursWithMembers(when).forEach(m -> map.replace(memberService.getMemberByLoginID(m.getKey()), m.getValue()));
+
         for (Member member : map.keySet()) {
             list.add(MemberResponseWithHour.of(member, map.get(member)));
         }
