@@ -162,7 +162,18 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     public void updateIsExcepted() {
+        updateIsExceptedFalse();
+        updateIsExceptedTrue();
+    }
+
+    private void updateIsExceptedFalse() {
         if (roles.checkIsExcepted() && !isExcepted) {
+            toggleIsExcepted();
+        }
+    }
+
+    private void updateIsExceptedTrue() {
+        if (isExcepted && !roles.checkIsExcepted()) {
             toggleIsExcepted();
         }
     }
