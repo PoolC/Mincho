@@ -17,7 +17,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,15 +56,8 @@ public class MemberController {
 
     @GetMapping(value = "/hour")
     public ResponseEntity<Map<String, List<MemberResponseWithHour>>> findMembersWithHoursInSpecificSemester(@RequestParam String when) {
-        List<MemberResponseWithHour> list = new ArrayList<>();
-        Map<Member, Long> map = new HashMap<>();
-        memberService.getAllMembersAndUpdateMemberIsExcepted().forEach(m -> map.put(m, 0L));
-        memberService.getHoursWithMembers(when).forEach(m -> map.replace(memberService.getMemberByLoginID(m.getKey()), m.getValue()));
-
-        for (Member member : map.keySet()) {
-            list.add(MemberResponseWithHour.of(member, map.get(member)));
-        }
-        return ResponseEntity.ok().body(Collections.singletonMap("data", list));
+        List<MemberResponseWithHour> responseList = memberService.getHoursWithMembers(when);
+        return ResponseEntity.ok().body(Collections.singletonMap("data", responseList));
     }
 
     @GetMapping(value = "/me")

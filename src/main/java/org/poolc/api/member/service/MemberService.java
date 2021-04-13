@@ -1,13 +1,13 @@
 package org.poolc.api.member.service;
 
 import net.bytebuddy.utility.RandomString;
-import org.apache.commons.lang3.tuple.MutablePair;
 import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.activity.vo.YearSemester;
 import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.domain.MemberRoles;
+import org.poolc.api.member.dto.MemberResponseWithHour;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.poolc.api.member.exception.DuplicateMemberException;
 import org.poolc.api.member.exception.WrongPasswordException;
@@ -16,12 +16,11 @@ import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.member.vo.MemberCreateValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberService {
@@ -71,9 +70,13 @@ public class MemberService {
         return members;
     }
 
+    @Transactional
     public List<Member> getAllMembersAndUpdateMemberIsExcepted() {
         List<Member> members = getAllMembers();
-        members.forEach(member -> member.updateIsExcepted());
+        members.forEach(member -> {
+            member.updateIsExcepted();
+            memberRepository.saveAndFlush(member);
+        });
         return members;
     }
 
@@ -109,11 +112,25 @@ public class MemberService {
                 .orElseThrow(() -> new WrongPasswordException("아이디와 비밀번호를 확인해주세요."));
     }
 
-    public List<MutablePair<String, Long>> getHoursWithMembers(String when) {
+    // TODO: 이부분 좀 더 깨끗하게 Refactoring해야할 거 같다.
+    public List<MemberResponseWithHour> getHoursWithMembers(String when) {
+        List<MemberResponseWithHour> list = new ArrayList<>();
+        Map<Member, Long> map = new HashMap<>();
+        getAllMembersAndUpdateMemberIsExcepted().forEach(m -> map.put(m, 0L));
+
         YearSemester yearSemester = activityService.getYearSemesterFromString(when);
         LocalDate startDate = activityService.getFirstDateFromYearSemester(yearSemester);
         LocalDate endDate = activityService.getLastDateFromYearSemester(yearSemester);
-        return memberQueryRepository.getHours(startDate, endDate);
+        memberQueryRepository.getHours(startDate, endDate).forEach(m -> map.replace(getMemberByLoginID(m.getKey()), m.getValue()));
+
+        map.forEach((member, hour) -> list.add(MemberResponseWithHour.of(member, hour)));
+
+        return list.stream().sorted(new Comparator<MemberResponseWithHour>() {
+            @Override
+            public int compare(MemberResponseWithHour o1, MemberResponseWithHour o2) {
+                return o1.getMember().getName().compareTo(o2.getMember().getName());
+            }
+        }).collect(Collectors.toList());
     }
 
     public void authorizeMember(String loginID) {
