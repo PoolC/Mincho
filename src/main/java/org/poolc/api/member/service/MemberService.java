@@ -2,8 +2,8 @@ package org.poolc.api.member.service;
 
 import net.bytebuddy.utility.RandomString;
 import org.poolc.api.activity.service.ActivityService;
-import org.poolc.api.activity.vo.YearSemester;
 import org.poolc.api.auth.infra.PasswordHashProvider;
+import org.poolc.api.common.domain.YearSemester;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.domain.MemberRoles;
@@ -113,14 +113,14 @@ public class MemberService {
     }
 
     // TODO: 이부분 좀 더 깨끗하게 Refactoring해야할 거 같다.
-    public List<MemberResponseWithHour> getHoursWithMembers(String when) {
+    public List<MemberResponseWithHour> getHoursWithMembers() {
         List<MemberResponseWithHour> list = new ArrayList<>();
         Map<Member, Long> map = new HashMap<>();
         getAllMembersAndUpdateMemberIsExcepted().forEach(m -> map.put(m, 0L));
 
-        YearSemester yearSemester = activityService.getYearSemesterFromString(when);
-        LocalDate startDate = activityService.getFirstDateFromYearSemester(yearSemester);
-        LocalDate endDate = activityService.getLastDateFromYearSemester(yearSemester);
+        YearSemester yearSemester = YearSemester.of(LocalDate.now());
+        LocalDate startDate = yearSemester.getFirstDateFromYearSemester();
+        LocalDate endDate = yearSemester.getLastDateFromYearSemester();
         memberQueryRepository.getHours(startDate, endDate).forEach(m -> map.replace(getMemberByLoginID(m.getKey()), m.getValue()));
 
         map.forEach((member, hour) -> list.add(MemberResponseWithHour.of(member, hour)));

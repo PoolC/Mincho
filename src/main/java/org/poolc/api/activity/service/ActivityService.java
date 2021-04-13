@@ -9,7 +9,7 @@ import org.poolc.api.activity.repository.ActivityRepository;
 import org.poolc.api.activity.repository.SessionRepository;
 import org.poolc.api.activity.vo.ActivityCreateValues;
 import org.poolc.api.activity.vo.ActivityUpdateValues;
-import org.poolc.api.activity.vo.YearSemester;
+import org.poolc.api.common.domain.YearSemester;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -19,8 +19,6 @@ import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
 
 @Service
@@ -91,10 +89,10 @@ public class ActivityService {
         return activities;
     }
 
-    public List<Activity> findActivitiesInSemester(String val) {
-        YearSemester yearSemester = getYearSemesterFromString(val);
-        LocalDate startDate = getFirstDateFromYearSemester(yearSemester);
-        LocalDate endDate = getLastDateFromYearSemester(yearSemester);
+    public List<Activity> findActivitiesInSemester(String value) {
+        YearSemester yearSemester = YearSemester.getYearSemesterFromString(value);
+        LocalDate startDate = yearSemester.getFirstDateFromYearSemester();
+        LocalDate endDate = yearSemester.getLastDateFromYearSemester();
         List<Activity> activities = activityRepository.findActivitiesWithHostAndTagsInSemester(startDate, endDate);
         activities.sort(Comparator.comparing(Activity::getTitle));
         return activities;
@@ -134,32 +132,6 @@ public class ActivityService {
         return activityRepository.findAll().stream().map(a -> YearSemester.of(a.getStartDate())).distinct().collect(Collectors.toList());
     }
 
-    public YearSemester getYearSemesterFromString(String val) {
-        String[] splits = val.split("-");
-        if (splits.length != 2) {
-            throw new IllegalArgumentException("제대로된 형식의 시간이 아닙니다");
-        }
-        Integer year = tryParse(splits[0]);
-        Integer semester = tryParse(splits[1]);
-        return new YearSemester(year, semester);
-    }
-
-    public LocalDate getFirstDateFromYearSemester(YearSemester yearSemester) {
-        if (yearSemester.getSemester() == 1) {
-            return LocalDate.of(yearSemester.getYear(), 3, 1);
-        } else {
-            return LocalDate.of(yearSemester.getYear(), 9, 1);
-        }
-    }
-
-    public LocalDate getLastDateFromYearSemester(YearSemester yearSemester) {
-        if (yearSemester.getSemester() == 1) {
-            return LocalDate.of(yearSemester.getYear(), 8, 1).with(lastDayOfMonth());
-        } else {
-            return LocalDate.of(yearSemester.getYear() + 1, 2, 1).with(lastDayOfMonth());
-        }
-    }
-
     private void checkActivityIsClosed(Activity activity) {
         if (activity.getAvailable()) {
             throw new IllegalStateException("이미 신청가능한 활동입니다");
@@ -169,14 +141,6 @@ public class ActivityService {
     private void checkActivityIsOpen(Activity activity) {
         if (!activity.getAvailable()) {
             throw new IllegalStateException("이미 닫혀있는 활동입니다");
-        }
-    }
-
-    private Integer tryParse(String text) {
-        try {
-            return Integer.parseInt(text);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("제대로된 형식의 시간이 아닙니다");
         }
     }
 

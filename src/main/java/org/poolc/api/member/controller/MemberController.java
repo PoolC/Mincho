@@ -55,8 +55,8 @@ public class MemberController {
     }
 
     @GetMapping(value = "/hour")
-    public ResponseEntity<Map<String, List<MemberResponseWithHour>>> findMembersWithHoursInSpecificSemester(@RequestParam String when) {
-        List<MemberResponseWithHour> responseList = memberService.getHoursWithMembers(when);
+    public ResponseEntity<Map<String, List<MemberResponseWithHour>>> findMembersWithHoursInSpecificSemester() {
+        List<MemberResponseWithHour> responseList = memberService.getHoursWithMembers();
         return ResponseEntity.ok().body(Collections.singletonMap("data", responseList));
     }
 
