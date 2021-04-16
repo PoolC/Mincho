@@ -7,8 +7,8 @@ import org.poolc.api.board.domain.Board;
 import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.post.vo.PostCreateValues;
-import org.poolc.api.post.vo.PostUpdateValues;
+import org.poolc.api.post.dto.RegisterPostRequest;
+import org.poolc.api.post.dto.UpdatePostRequest;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -66,27 +66,26 @@ public class Post extends TimestampEntity {
         this.fileList = fileList;
     }
 
-    public Post(PostCreateValues postCreateValues) {
-        this.board = postCreateValues.getBoard();
-        this.member = postCreateValues.getMember();
-        this.title = postCreateValues.getTitle();
-        this.body = postCreateValues.getBody();
+    public Post(Member writer, Board board, RegisterPostRequest request) {
+        this.board = board;
+        this.member = writer;
+        this.title = request.getTitle();
+        this.body = request.getBody();
         this.commentList = null;
 
-        if (postCreateValues.getFileList() != null) {
-            checkDuplicateFileList(postCreateValues.getFileList());
-            this.fileList = postCreateValues.getFileList();
+        if (request.getFileList() != null) {
+            checkDuplicateFileList(request.getFileList());
+            this.fileList = request.getFileList();
         }
     }
 
+    public void update(UpdatePostRequest value) {
+        this.title = value.getTitle();
+        this.body = value.getBody();
 
-    public void update(PostUpdateValues postUpdateValues) {
-        this.title = postUpdateValues.getTitle();
-        this.body = postUpdateValues.getBody();
-
-        if (postUpdateValues.getFileList() != null) {
-            checkDuplicateFileList(postUpdateValues.getFileList());
-            this.fileList = postUpdateValues.getFileList();
+        if (value.getFileList() != null) {
+            checkDuplicateFileList(value.getFileList());
+            this.fileList = value.getFileList();
         }
     }
 

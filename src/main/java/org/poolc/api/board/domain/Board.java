@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.poolc.api.board.vo.BoardCreateValues;
 import org.poolc.api.board.vo.BoardUpdateValue;
 import org.poolc.api.common.domain.TimestampEntity;
+import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.domain.MemberRoles;
 
@@ -72,12 +73,12 @@ public class Board extends TimestampEntity {
         return this.readPermission.equals(MemberRole.PUBLIC);
     }
 
-    public boolean memberHasWritePermissions(MemberRoles roles) {
-        if (onlyAdminAllowed(writePermission, roles)) {
+    public boolean memberHasWritePermissions(Member user) {
+        if (onlyAdminAllowed(writePermission, user.getRoles())) {
             return false;
         }
 
-        return !onlyMemberAllowed(writePermission, roles);
+        return !onlyMemberAllowed(writePermission, user.getRoles());
     }
 
     public boolean memberHasReadPermissions(MemberRoles roles) {

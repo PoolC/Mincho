@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Objects;
 
 @Entity(name = "Member")
 @Getter
@@ -166,34 +167,6 @@ public class Member extends TimestampEntity implements UserDetails {
         updateIsExceptedTrue();
     }
 
-    private void updateIsExceptedFalse() {
-        if (roles.checkIsExcepted() && !isExcepted) {
-            toggleIsExcepted();
-        }
-    }
-
-    private void updateIsExceptedTrue() {
-        if (isExcepted && !roles.checkIsExcepted()) {
-            toggleIsExcepted();
-        }
-    }
-
-    private void onlyAdmin() {
-        if (!isAdmin()) {
-            throw new UnauthorizedException("Only admins can do this");
-        }
-    }
-
-    private void checkHasCorrectPermissions(MemberRole role) {
-        if (!role.isSelfToggleable()) {
-            throw new UnauthorizedException(String.format("Role %s cannot be self toggled", role.name()));
-        }
-    }
-
-    private void toggleIsExcepted() {
-        isExcepted = !isExcepted;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.getAuthorities();
@@ -227,5 +200,46 @@ public class Member extends TimestampEntity implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return getUUID().equals(member.getUUID());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUUID());
+    }
+
+    private void updateIsExceptedFalse() {
+        if (roles.checkIsExcepted() && !isExcepted) {
+            toggleIsExcepted();
+        }
+    }
+
+    private void updateIsExceptedTrue() {
+        if (isExcepted && !roles.checkIsExcepted()) {
+            toggleIsExcepted();
+        }
+    }
+
+    private void onlyAdmin() {
+        if (!isAdmin()) {
+            throw new UnauthorizedException("Only admins can do this");
+        }
+    }
+
+    private void checkHasCorrectPermissions(MemberRole role) {
+        if (!role.isSelfToggleable()) {
+            throw new UnauthorizedException(String.format("Role %s cannot be self toggled", role.name()));
+        }
+    }
+
+    private void toggleIsExcepted() {
+        isExcepted = !isExcepted;
     }
 }

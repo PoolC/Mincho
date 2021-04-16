@@ -333,7 +333,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 임원게시글삭제() {
-        String accessToken = 작성자비임원진로그인();
+        String accessToken = 임원진로그인();
 
         ExtractableResponse<Response> response = deletePost(accessToken, adminWillDeletePostId);
 

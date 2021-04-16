@@ -27,7 +27,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<CommentResponse> createComment(@AuthenticationPrincipal Member user,
                                                          @RequestBody RegisterCommentRequest registerCommentRequest) {
-        Post correspondingPost = postService.getPost(registerCommentRequest.getPostId());
+        Post correspondingPost = postService.getPost(user, registerCommentRequest.getPostId());
 
         String body = registerCommentRequest.getBody();
         CommentCreateValues commentCreateValues = new CommentCreateValues(correspondingPost, user, body);

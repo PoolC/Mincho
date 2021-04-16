@@ -1,17 +1,12 @@
 package org.poolc.api.post.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.auth.exception.UnauthorizedException;
-import org.poolc.api.board.domain.Board;
 import org.poolc.api.board.service.BoardService;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.dto.RegisterPostRequest;
 import org.poolc.api.post.dto.UpdatePostRequest;
 import org.poolc.api.post.service.PostService;
-import org.poolc.api.post.vo.PostCreateValues;
-import org.poolc.api.post.vo.PostUpdateValues;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,14 +27,8 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<Map<String, Long>> createPost(@AuthenticationPrincipal Member writer,
-                                                        @RequestBody RegisterPostRequest registerPostRequest) {
-        Board correspondingBoard = boardService.findBoardById(registerPostRequest.getBoardId());
-
-        checkWritePermissions(writer, correspondingBoard);
-
-        PostCreateValues postCreateValues = new PostCreateValues(writer, correspondingBoard, registerPostRequest);
-        Long postId = postService.create(postCreateValues);
-
+                                                        @RequestBody RegisterPostRequest request) {
+        Long postId = postService.create(writer, request);
         return ResponseEntity.accepted().body(Collections.singletonMap("postId", postId));
     }
 
@@ -47,23 +36,15 @@ public class PostController {
     @GetMapping(value = "/{postId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PostResponse> getPost(@AuthenticationPrincipal Member user,
                                                 @PathVariable Long postId) {
-        Post findPost = postService.getPost(postId);
-        Board correspondingBoard = findPost.getBoard();
-
-        checkReadPermissions(user, correspondingBoard);
-
-        PostResponse postResponse = PostResponse.of(findPost);
+        PostResponse postResponse = PostResponse.of(postService.getPost(user, postId));
         return ResponseEntity.ok().body(postResponse);
     }
 
     @GetMapping(value = "/board/{urlPath}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, List<PostResponse>>> findPostsByBoard(@AuthenticationPrincipal Member user, @PathVariable String urlPath) {
-        Board correspondingBoard = boardService.findBoardByUrlPath(urlPath);
-
-        checkReadPermissions(user, correspondingBoard);
-
+    public ResponseEntity<Map<String, List<PostResponse>>> findPostsByBoard(@AuthenticationPrincipal Member user,
+                                                                            @PathVariable String urlPath) {
         HashMap<String, List<PostResponse>> responseBody = new HashMap<>() {{
-            put("data", postService.getPostsByBoard(correspondingBoard).stream()
+            put("data", postService.getPostsByBoard(user, urlPath).stream()
                     .map(PostResponse::of)
                     .collect(Collectors.toList()));
         }};
@@ -74,59 +55,14 @@ public class PostController {
     @PutMapping(value = "/{postId}")
     public ResponseEntity<Void> updatePost(@AuthenticationPrincipal Member user,
                                            @PathVariable Long postId,
-                                           @RequestBody UpdatePostRequest updatePostRequest) {
-        Post updatePost = postService.getPost(postId);
-
-        checkWriter(user, updatePost);
-
-        PostUpdateValues postUpdateValues = new PostUpdateValues(updatePostRequest);
-        postService.updatePost(postId, postUpdateValues);
-
+                                           @RequestBody UpdatePostRequest request) {
+        postService.updatePost(postId, user, request);
         return ResponseEntity.ok().build();
-    }
-
-    private void checkWriter(Member user, Post updatePost) {
-        if (!updatePost.getMember().getUUID().equals(user.getUUID())) {
-            throw new org.poolc.api.auth.exception.UnauthorizedException("접근할 수 없습니다.");
-        }
     }
 
     @DeleteMapping(value = "/{postId}")
     public ResponseEntity<Void> deletePost(@AuthenticationPrincipal Member user, @PathVariable Long postId) {
-        Post updatePost = postService.getPost(postId);
-
-        checkWriterOrAdmin(user, updatePost);
-
-        postService.deletePost(postId);
+        postService.deletePost(user, postId);
         return ResponseEntity.ok().build();
-    }
-
-    private void checkWritePermissions(Member user, Board board) {
-        if (!board.memberHasWritePermissions(user.getRoles())) {
-            throw new UnauthorizedException("접근할 수 없습니다.");
-        }
-    }
-
-    private void checkReadPermissions(Member user, Board board) {
-        checkReadPermissionIfNoLogin(user, board);
-        checkReadPermissionIfLogin(user, board);
-    }
-
-    private void checkReadPermissionIfNoLogin(Member user, Board correspondingBoard) {
-        if (user == null && !correspondingBoard.isPublicReadPermission()) {
-            throw new UnauthorizedException("접근할 수 없습니다.");
-        }
-    }
-
-    private void checkReadPermissionIfLogin(Member user, Board board) {
-        if (user != null && !board.memberHasReadPermissions(user.getRoles())) {
-            throw new UnauthorizedException("접근할 수 없습니다.");
-        }
-    }
-
-    private void checkWriterOrAdmin(Member user, Post updatePost) {
-        if (!updatePost.getMember().getUUID().equals(user.getUUID()) && !user.isAdmin()) {
-            throw new UnauthorizedException("접근할 수 없습니다.");
-        }
     }
 }

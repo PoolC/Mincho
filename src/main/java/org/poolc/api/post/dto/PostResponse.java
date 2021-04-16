@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Builder
+
 @Getter
 public class PostResponse {
     private final Long postId;
@@ -25,6 +25,7 @@ public class PostResponse {
     private final List<String> fileList;
 
     @JsonCreator
+    @Builder
     public PostResponse(Long postId, String writerLoginId, String writerName, String title, String body, LocalDateTime createdAt, List<CommentResponse> comments, Long commentCount, List<String> fileList) {
         this.postId = postId;
         this.writerLoginId = writerLoginId;
