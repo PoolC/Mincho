@@ -7,6 +7,9 @@ spring:
     url: jdbc:postgresql://${DB_HOST}/${DB_NAME}
     username: ${DB_USER_NAME}
     password: ${DB_PASSWORD}
+  servlet:
+    multipart:
+      max-file-size: 50MB
   jpa:
     hibernate:
       ddl-auto: update
