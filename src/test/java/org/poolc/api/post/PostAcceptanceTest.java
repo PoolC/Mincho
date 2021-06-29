@@ -36,10 +36,12 @@ public class PostAcceptanceTest extends AcceptanceTest {
     private String freeUrlPath = "free";
     private String adminUrlPath = "meeting";
     private String notExistUrlPath = "notExist";
+    private final int pageNum = 1, pageSize = 15;
 
     @Test
     void 로그인xPUBLIC게시물조회() {
-        ExtractableResponse<Response> response = getPostRequestNoLogin(noticePostId);
+        String accessToken = "";
+        ExtractableResponse<Response> response = getPostRequest(accessToken, noticePostId);
         PostResponse responseBody = response.as(PostResponse.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -48,14 +50,16 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 로그인xMEMBER게시물조회() {
-        ExtractableResponse<Response> response = getPostRequestNoLogin(freePostId);
+        String accessToken = "";
+        ExtractableResponse<Response> response = getPostRequest(accessToken, freePostId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
     void 로그인xADMIN게시물조회() {
-        ExtractableResponse<Response> response = getPostRequestNoLogin(adminPostId);
+        String accessToken = "";
+        ExtractableResponse<Response> response = getPostRequest(accessToken, adminPostId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
@@ -126,14 +130,15 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 로그인xPUBLIC게시판게시물전체조회() {
-        ExtractableResponse<Response> response = getPostsByBoardIdRequestNoLogin(noticeUrlPath);
-
+        String accessToken = "", urlPath = noticeUrlPath;
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     void 로그인xMEMBER게시판게시물전체조회() {
-        ExtractableResponse<Response> response = getPostsByBoardIdRequestNoLogin(freeUrlPath);
+        String accessToken = "", urlPath = freeUrlPath;
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
 
@@ -141,70 +146,64 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 로그인xADMIN게시판게시물전체조회() {
-        ExtractableResponse<Response> response = getPostsByBoardIdRequestNoLogin(adminUrlPath);
+        String accessToken = "", urlPath = adminUrlPath;
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
     void 멤버PUBLIC게시판게시물전체조회() {
-        String accessToken = 작성자비임원진로그인();
-
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, noticeUrlPath);
+        String accessToken = 작성자비임원진로그인(), urlPath = noticeUrlPath;
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     void 멤버MEMBER게시판게시물전체조회() {
-        String accessToken = 작성자비임원진로그인();
-
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeUrlPath);
+        String accessToken = 작성자비임원진로그인(), urlPath = freeUrlPath;
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     void 멤버ADMIN게시판게시물전체조회() {
-        String accessToken = 작성자비임원진로그인();
-
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, adminUrlPath);
+        String accessToken = 작성자비임원진로그인(), urlPath = adminUrlPath;
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
     void 임원PUBLIC게시판게시물전체조회() {
-        String accessToken = 임원진로그인();
-
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeUrlPath);
+        String accessToken = 임원진로그인(), urlPath = freeUrlPath;
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     void 임원MEMBER게시판게시물전체조회() {
-        String accessToken = 임원진로그인();
-
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeUrlPath);
+        String accessToken = 임원진로그인(), urlPath = freeUrlPath;
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     void 임원ADMIN게시판게시물전체조회() {
-        String accessToken = 임원진로그인();
-
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, freeUrlPath);
+        String accessToken = 임원진로그인(), urlPath = freeUrlPath;
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     void 없는게시판게시물전체조회() {
-        String accessToken = 임원진로그인();
-
-        ExtractableResponse<Response> response = getPostsByBoardIdRequest(accessToken, notExistUrlPath);
+        String accessToken = 임원진로그인(), urlPath = notExistUrlPath;
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -212,10 +211,11 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 로그인x게시물생성() {
+        String accessToken = "";
         List<String> file_list = new ArrayList<>();
         file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
         RegisterPostRequest request = new RegisterPostRequest(freeBoardId, "testtest", "testtest", file_list);
-        ExtractableResponse<Response> response = createPostRequestNoLogin(request);
+        ExtractableResponse<Response> response = createPostRequest(accessToken, request);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
@@ -340,6 +340,16 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Test
+    void 페이지네이션기능구현() {
+        String accessToken = 임원진로그인(), urlPath = "pagination";
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getList("data").size()).isEqualTo(pageSize);
+    }
+
+
     private String 임원진로그인() {
         return loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
@@ -358,14 +368,6 @@ public class PostAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
     }
 
-    public static ExtractableResponse<Response> getPostRequestNoLogin(Long postId) {
-        return RestAssured
-                .given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/post/{postId}", postId)
-                .then().log().all()
-                .extract();
-    }
 
     public static ExtractableResponse<Response> getPostRequest(String accessToken, Long postId) {
         return RestAssured
@@ -377,30 +379,12 @@ public class PostAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> getAllPostRequest() {
-        return RestAssured
-                .given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/post")
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> getPostsByBoardIdRequest(String accessToken, String urlPath) {
+    public static ExtractableResponse<Response> getPostsByUrlPath(String accessToken, String urlPath, int page) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/post/board/{urlPath}", urlPath)
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> getPostsByBoardIdRequestNoLogin(String urlPath) {
-        return RestAssured
-                .given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/post/board/{urlPath}", urlPath)
+                .when().get("/post/board/{urlPath}?page={page}", urlPath, page)
                 .then().log().all()
                 .extract();
     }
@@ -409,16 +393,6 @@ public class PostAcceptanceTest extends AcceptanceTest {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/post")
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> createPostRequestNoLogin(RegisterPostRequest request) {
-        return RestAssured
-                .given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/post")
@@ -438,30 +412,10 @@ public class PostAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> updatePostNoLogin(Long postId, UpdatePostRequest updatePostRequest) {
-        return RestAssured
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .body(updatePostRequest)
-                .when().put("/post/{postId}", postId)
-                .then().log().all()
-                .extract();
-    }
-
     public static ExtractableResponse<Response> deletePost(String accessToken, Long postId) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/post/{postId}", postId)
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> deletePostLoginId(Long postId) {
-        return RestAssured
-                .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/post/{postId}", postId)
                 .then().log().all()

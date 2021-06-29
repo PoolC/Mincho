@@ -31,6 +31,7 @@ public class PostDataLoader implements CommandLineRunner {
     private final Long noticeBoardId = 1L;
     private final Long freeBoardId = 2L;
     private final Long adminBoardId = 6L;
+    private final Long paginationBoardId = 9L;
 
     @Override
     public void run(String... args) {
@@ -40,6 +41,7 @@ public class PostDataLoader implements CommandLineRunner {
         Board noticeBoard = boardRepository.findById(noticeBoardId).get();
         Board freeBoard = boardRepository.findById(freeBoardId).get();
         Board adminBoard = boardRepository.findById(adminBoardId).get();
+        Board paginationBoard = boardRepository.findById(paginationBoardId).get();
 
         List<String> file_list = new ArrayList<>();
         file_list.add("https://s.pstatic.net/shopping.phinf/20210315_22/6303748a-9e79-49ff-807a-1f28626988d5.jpg");
@@ -58,6 +60,9 @@ public class PostDataLoader implements CommandLineRunner {
         postRepository.save(new Post(freeBoard, notAdmin, "임원willBeDeleted", "willBeDeleted", null, null));
         postRepository.save(new Post(freeBoard, notAdmin, "test4", "test4", null, null));
 
+        for (int i = 0; i < 45; i++) {
+            postRepository.save(new Post(paginationBoard, notAdmin, "test" + i, "test" + i, null, null));
+        }
         commentRepository.save(new Comment(noticePost, notAdmin, "test1"));
         commentRepository.save(new Comment(freePost, notAdmin, "test2"));
         commentRepository.save(new Comment(noticePost, notAdmin, "test3"));

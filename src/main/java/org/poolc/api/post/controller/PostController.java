@@ -1,7 +1,6 @@
 package org.poolc.api.post.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.board.service.BoardService;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.dto.RegisterPostRequest;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/post")
 @RequiredArgsConstructor
 public class PostController {
-    private final BoardService boardService;
     private final PostService postService;
 
     @PostMapping
@@ -40,14 +38,18 @@ public class PostController {
         return ResponseEntity.ok().body(postResponse);
     }
 
+
     @GetMapping(value = "/board/{urlPath}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, List<PostResponse>>> findPostsByBoard(@AuthenticationPrincipal Member user,
-                                                                            @PathVariable String urlPath) {
-        HashMap<String, List<PostResponse>> responseBody = new HashMap<>() {{
-            put("data", postService.getPostsByBoard(user, urlPath).stream()
-                    .map(PostResponse::of)
-                    .collect(Collectors.toList()));
-        }};
+    public ResponseEntity<Map<String, List<PostResponse>>> findPostsByBoardPagination(@AuthenticationPrincipal Member user,
+                                                                                      @PathVariable String urlPath, @RequestParam Long page) {
+        HashMap<String, List<PostResponse>> responseBody = new HashMap<>() {
+            {
+                put("data", postService.getPostsByBoard(user, urlPath, page).stream()
+                        .map(PostResponse::of)
+                        .collect(Collectors.toList())
+                );
+            }
+        };
 
         return ResponseEntity.ok().body(responseBody);
     }

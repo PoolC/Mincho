@@ -10,6 +10,8 @@ import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.RegisterPostRequest;
 import org.poolc.api.post.dto.UpdatePostRequest;
 import org.poolc.api.post.repository.PostRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import java.util.NoSuchElementException;
 public class PostService {
     private final PostRepository postRepository;
     private final BoardService boardService;
+    private final int PAGE_SIZE = 15;
 
     public Long create(Member writer, RegisterPostRequest request) {
         Board correspondingBoard = boardService.findBoardById(request.getBoardId());
@@ -43,13 +46,20 @@ public class PostService {
         return post;
     }
 
-    public List<Post> getPostsByBoard(Member user, String urlPath) {
+//    public List<Post> getPostsByBoard(Member user, String urlPath) {
+//        Board board = boardService.findBoardByUrlPath(urlPath);
+//
+//        checkReadPermissions(user, board);
+//
+//        return postRepository.findAllByBoard(board);
+//    }
+
+    public List<Post> getPostsByBoard(Member user, String urlPath, Long Page) {
         Board board = boardService.findBoardByUrlPath(urlPath);
-
         checkReadPermissions(user, board);
-
-        return postRepository.findAllByBoard(board);
+        return postRepository.findPaginationByBoard(board, PageRequest.of(PAGE_SIZE * (Page.intValue() - 1), PAGE_SIZE * Page.intValue(), Sort.by("id").descending()));
     }
+
 
     @Transactional
     public void updatePost(Long postId, Member user, UpdatePostRequest request) {
