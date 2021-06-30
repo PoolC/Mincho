@@ -35,7 +35,6 @@ public class PostService {
         return post.getId();
     }
 
-
     public Post getPost(Member user, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NoSuchElementException("no post found with given postId"));
@@ -46,20 +45,11 @@ public class PostService {
         return post;
     }
 
-//    public List<Post> getPostsByBoard(Member user, String urlPath) {
-//        Board board = boardService.findBoardByUrlPath(urlPath);
-//
-//        checkReadPermissions(user, board);
-//
-//        return postRepository.findAllByBoard(board);
-//    }
-
     public List<Post> getPostsByBoard(Member user, String urlPath, Long Page) {
         Board board = boardService.findBoardByUrlPath(urlPath);
         checkReadPermissions(user, board);
         return postRepository.findPaginationByBoard(board, PageRequest.of(PAGE_SIZE * (Page.intValue() - 1), PAGE_SIZE * Page.intValue(), Sort.by("id").descending()));
     }
-
 
     @Transactional
     public void updatePost(Long postId, Member user, UpdatePostRequest request) {
