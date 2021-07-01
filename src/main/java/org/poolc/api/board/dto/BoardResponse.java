@@ -10,6 +10,7 @@ public class BoardResponse {
     private final Long ID;
     private final String name;
     private final String urlPath;
+    private final Long postCount;
     private final MemberRole readPermission;
     private final MemberRole writePermission;
 
@@ -18,6 +19,7 @@ public class BoardResponse {
         this.ID = board.getId();
         this.name = board.getName();
         this.urlPath = board.getUrlPath();
+        this.postCount = board.getPostCount();
         this.readPermission = board.getReadPermission();
         this.writePermission = board.getWritePermission();
     }

@@ -30,7 +30,7 @@ public class Board extends TimestampEntity {
     private String urlPath;
 
     @Column(name = "post_count")
-    private Long postCount = 0L;
+    private Long postCount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "read_permission", nullable = false, columnDefinition = "varchar(10)")
@@ -55,6 +55,7 @@ public class Board extends TimestampEntity {
         this.urlPath = boardCreateValues.getURLPath();
         this.readPermission = boardCreateValues.getReadPermission();
         this.writePermission = boardCreateValues.getWritePermission();
+        this.postCount = 0L;
     }
 
     public void update(BoardUpdateValue boardUpdateValue) {
