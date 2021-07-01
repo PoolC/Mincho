@@ -20,8 +20,7 @@ import static javax.persistence.FetchType.LAZY;
 @Entity(name = "Post")
 @SequenceGenerator(
         name = "POST_SEQ_GENERATOR",
-        sequenceName = "POST_SEQ",
-        allocationSize = 1
+        sequenceName = "POST_SEQ"
 )
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
