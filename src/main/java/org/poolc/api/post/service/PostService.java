@@ -46,10 +46,10 @@ public class PostService {
         return post;
     }
 
-    public List<Post> getPostsByBoard(Member user, String urlPath, Long Page) {
+    public List<Post> getPostsByBoard(Member user, String urlPath, Long page) {
         Board board = boardService.findBoardByUrlPath(urlPath);
         checkReadPermissions(user, board);
-        return postRepository.findPaginationByBoard(board, PageRequest.of(PAGE_SIZE * (Page.intValue() - 1), PAGE_SIZE * Page.intValue(), Sort.by("id").descending()));
+        return postRepository.findPaginationByBoard(board, PageRequest.of(page.intValue() - 1, PAGE_SIZE, Sort.by("id").descending()));
     }
 
     @Transactional

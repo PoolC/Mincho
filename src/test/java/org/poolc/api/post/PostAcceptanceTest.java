@@ -349,6 +349,32 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getList("data").size()).isEqualTo(pageSize);
     }
 
+    @Test
+    void 페이지네이션기능구현2() {
+        String accessToken = 임원진로그인(), urlPath = "pagination";
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, 2);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getList("data").size()).isEqualTo(pageSize);
+    }
+
+    @Test
+    void 페이지네이션기능구현3() {
+        String accessToken = 임원진로그인(), urlPath = "pagination";
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, 3);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getList("data").size()).isEqualTo(pageSize);
+    }
+
+    @Test
+    void 페이지네이션기능구현4() {
+        String accessToken = 임원진로그인(), urlPath = "pagination";
+        ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, 4);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getList("data").size()).isEqualTo(1);
+    }
 
     private String 임원진로그인() {
         return loginRequest("ADMIN_ID", "ADMIN_PASSWORD")

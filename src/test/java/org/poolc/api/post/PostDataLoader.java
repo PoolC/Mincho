@@ -60,7 +60,7 @@ public class PostDataLoader implements CommandLineRunner {
         postRepository.save(new Post(freeBoard, notAdmin, "임원willBeDeleted", "willBeDeleted", null, null));
         postRepository.save(new Post(freeBoard, notAdmin, "test4", "test4", null, null));
 
-        for (int i = 0; i < 45; i++) {
+        for (int i = 0; i < 46; i++) {
             postRepository.save(new Post(paginationBoard, notAdmin, "test" + i, "test" + i, null, null));
         }
         commentRepository.save(new Comment(noticePost, notAdmin, "test1"));

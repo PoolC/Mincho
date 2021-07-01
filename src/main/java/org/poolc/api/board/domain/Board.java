@@ -44,9 +44,10 @@ public class Board extends TimestampEntity {
     public Board() {
     }
 
-    public Board(String name, String urlPath, MemberRole readPermission, MemberRole writePermission) {
+    public Board(String name, String urlPath, Long postCount, MemberRole readPermission, MemberRole writePermission) {
         this.name = name;
         this.urlPath = urlPath;
+        this.postCount = postCount;
         this.readPermission = readPermission;
         this.writePermission = writePermission;
     }
