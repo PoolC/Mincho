@@ -26,12 +26,13 @@ public class PostService {
     private final BoardService boardService;
     private final int PAGE_SIZE = 15;
 
+    @Transactional
     public Long create(Member writer, RegisterPostRequest request) {
         Board correspondingBoard = boardService.findBoardById(request.getBoardId());
-
         checkWritePermission(writer, correspondingBoard);
 
         Post post = postRepository.save(new Post(writer, correspondingBoard, request));
+        correspondingBoard.addPostCount();
         return post.getId();
     }
 
@@ -61,8 +62,10 @@ public class PostService {
     @Transactional
     public void deletePost(Member user, Long postId) {
         Post deletePost = getPost(user, postId);
+        Board correspondingBoard = deletePost.getBoard();
         checkWriterOrAdmin(user, deletePost);
         postRepository.delete(deletePost);
+        correspondingBoard.deletePostCount();
     }
 
     private void checkWritePermission(Member writer, Board board) {

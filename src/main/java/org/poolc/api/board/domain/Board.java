@@ -29,6 +29,9 @@ public class Board extends TimestampEntity {
     @Column(name = "url_path", unique = true, nullable = false, columnDefinition = "varchar(40)")
     private String urlPath;
 
+    @Column(name = "post_count")
+    private Long postCount = 0L;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "read_permission", nullable = false, columnDefinition = "varchar(10)")
     private MemberRole readPermission;
@@ -87,6 +90,14 @@ public class Board extends TimestampEntity {
         }
 
         return !onlyMemberAllowed(readPermission, roles);
+    }
+
+    public void addPostCount() {
+        this.postCount++;
+    }
+
+    public void deletePostCount() {
+        this.postCount--;
     }
 
     private boolean onlyAdminAllowed(MemberRole permission, MemberRoles roles) {
