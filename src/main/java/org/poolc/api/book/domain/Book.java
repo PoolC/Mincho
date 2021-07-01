@@ -12,7 +12,8 @@ import java.time.LocalDate;
 @Getter
 @SequenceGenerator(
         name = "BOOK_SEQ_GENERATOR",
-        sequenceName = "BOOK_SEQ"
+        sequenceName = "BOOK_SEQ",
+        allocationSize = 1
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Book extends TimestampEntity {

@@ -12,7 +12,8 @@ import java.util.List;
 @Getter
 @SequenceGenerator(
         name = "PROJECT_SEQ_GENERATOR",
-        sequenceName = "PROJECT_SEQ"
+        sequenceName = "PROJECT_SEQ",
+        allocationSize = 1
 )
 @Table(name = "Project")
 public class Project extends TimestampEntity {
