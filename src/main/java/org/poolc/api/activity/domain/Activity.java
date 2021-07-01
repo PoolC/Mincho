@@ -20,7 +20,8 @@ import static javax.persistence.FetchType.LAZY;
 @Entity(name = "Activity")
 @SequenceGenerator(
         name = "ACTIVITY_SEQ_GENERATOR",
-        sequenceName = "ACTIVITY_SEQ"
+        sequenceName = "ACTIVITY_SEQ",
+        allocationSize = 1
 )
 @Getter
 @Builder

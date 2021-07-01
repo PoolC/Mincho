@@ -13,7 +13,8 @@ import javax.persistence.*;
 @Entity(name = "Board")
 @SequenceGenerator(
         name = "BOARD_SEQ_GENERATOR",
-        sequenceName = "BOARD_SEQ"
+        sequenceName = "BOARD_SEQ",
+        allocationSize = 1
 )
 @Getter
 public class Board extends TimestampEntity {
