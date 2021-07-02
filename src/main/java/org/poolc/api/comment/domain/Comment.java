@@ -14,8 +14,7 @@ import static javax.persistence.FetchType.LAZY;
 @Entity(name = "Comment")
 @SequenceGenerator(
         name = "COMMENT_SEQ_GENERATOR",
-        sequenceName = "COMMENT_SEQ",
-        allocationSize = 1
+        sequenceName = "COMMENT_SEQ"
 )
 @Builder
 @Getter
