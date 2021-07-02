@@ -105,7 +105,7 @@ public class Board extends TimestampEntity {
     }
 
     public Boolean checkPageNumberInBound(Long pageNumber) {
-        if (PAGE_SIZE * pageNumber > postCount)
+        if (PAGE_SIZE * (pageNumber - 1) > postCount)
             return false;
         return true;
     }
