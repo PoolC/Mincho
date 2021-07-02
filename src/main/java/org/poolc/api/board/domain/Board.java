@@ -18,6 +18,7 @@ import javax.persistence.*;
 )
 @Getter
 public class Board extends TimestampEntity {
+    public static final int PAGE_SIZE = 15;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOARD_SEQ_GENERATOR")
@@ -101,6 +102,12 @@ public class Board extends TimestampEntity {
 
     public void deletePostCount() {
         this.postCount--;
+    }
+
+    public Boolean checkPageNumberInBound(Long pageNumber) {
+        if (PAGE_SIZE * pageNumber > postCount)
+            return false;
+        return true;
     }
 
     private boolean onlyAdminAllowed(MemberRole permission, MemberRoles roles) {

@@ -24,7 +24,6 @@ import java.util.NoSuchElementException;
 public class PostService {
     private final PostRepository postRepository;
     private final BoardService boardService;
-    private final int PAGE_SIZE = 15;
 
     @Transactional
     public Long create(Member writer, RegisterPostRequest request) {
@@ -46,10 +45,13 @@ public class PostService {
         return post;
     }
 
-    public List<Post> getPostsByBoard(Member user, String urlPath, Long page) {
-        Board board = boardService.findBoardByUrlPath(urlPath);
-        checkReadPermissions(user, board);
-        return postRepository.findPaginationByBoard(board, PageRequest.of(page.intValue() - 1, PAGE_SIZE, Sort.by("id").descending()));
+    public List<Post> getPostsByBoard(Member user, String urlPath, Long pageNumber) {
+        Board correspondingBoard = boardService.findBoardByUrlPath(urlPath);
+        if (!correspondingBoard.checkPageNumberInBound(pageNumber)) {
+            throw new IndexOutOfBoundsException("해당 페이지는 존재하지 않습니다.");
+        }
+        checkReadPermissions(user, correspondingBoard);
+        return postRepository.findPaginationByBoard(correspondingBoard, PageRequest.of(pageNumber.intValue() - 1, Board.PAGE_SIZE, Sort.by("id").descending()));
     }
 
     @Transactional

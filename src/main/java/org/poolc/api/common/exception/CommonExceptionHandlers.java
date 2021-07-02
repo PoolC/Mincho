@@ -27,7 +27,7 @@ public class CommonExceptionHandlers {
                 .body(Collections.singletonMap("message", e.getMessage()));
     }
 
-    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class, IllegalStateException.class})
+    @ExceptionHandler({NoSuchElementException.class, IllegalArgumentException.class, IllegalStateException.class, IndexOutOfBoundsException.class})
     public ResponseEntity<Map<String, String>> noSuchElementHandler(Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonMap("message", e.getMessage()));
