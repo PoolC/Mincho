@@ -16,12 +16,12 @@ public class PoolcService {
         poolcRespository.save(Poolc.of(createValues));
     }
 
-    public Poolc findPoolc() {
+    public Poolc get() {
         return poolcRespository.findAll().get(0);
     }
 
     public void updatePoolc(PoolcUpdateValues updateValues) {
-        Poolc poolc = findPoolc();
+        Poolc poolc = get();
         poolc.update(updateValues);
         poolcRespository.flush();
     }
