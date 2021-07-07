@@ -177,9 +177,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getIsAdmin()).isEqualTo(false);
     }
 
-    ₩
     @Test
-
     void deleteMemberAsNonAdminIsUnauthorized() {
         String accessToken = loginRequest("UPDATE_MEMBER_ID", "UPDATE_MEMBER_PASSWORD")
                 .as(AuthResponse.class)
