@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthRequest;
 import org.poolc.api.auth.dto.AuthResponse;
+import org.poolc.api.poolc.PoolcAcceptanceTest;
+import org.poolc.api.poolc.dto.UpdatePoolcRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -15,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("memberTest")
 public class AuthAcceptanceTest extends AcceptanceTest {
+
     @Test
     void tokenIsIssued() {
         ExtractableResponse<Response> response = loginRequest("MEMBER_ID", "MEMBER_PASSWORD");
@@ -43,6 +46,11 @@ public class AuthAcceptanceTest extends AcceptanceTest {
 
     @Test
     void unactivatedUser() {
+        String accessToken = 임원진로그인();
+
+        UpdatePoolcRequest request = new UpdatePoolcRequest("전영주", "01067679584", "공A 537호", null, "프로그래밍 동아리", null, false, null);
+        PoolcAcceptanceTest.updatePoolcInfo(accessToken, request);
+
         String loginID = "UNACCEPTED_MEMBER_ID";
         String password = "UNACCEPTED_MEMBER_PASSWORD";
 
@@ -51,6 +59,33 @@ public class AuthAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Test
+    void 가입신청기간일시UNACCEPTED회원로그인() {
+        String accessToken = 임원진로그인();
+
+        UpdatePoolcRequest request = new UpdatePoolcRequest("전영주", "01067679584", "공A 537호", null, "프로그래밍 동아리", null, true, null);
+        PoolcAcceptanceTest.updatePoolcInfo(accessToken, request);
+
+        String loginID = "UNACCEPTED_MEMBER_ID";
+        String password = "UNACCEPTED_MEMBER_PASSWORD";
+
+        ExtractableResponse<Response> response = loginRequest(loginID, password);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+
+    public static String 임원진로그인() {
+        return loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+    }
+
+    public static String 비임원진로그인() {
+        return loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+    }
 
     public static ExtractableResponse<Response> loginRequest(String loginID, String password) {
         AuthRequest request = new AuthRequest(loginID, password);
