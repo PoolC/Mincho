@@ -177,29 +177,9 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getIsAdmin()).isEqualTo(false);
     }
 
+    ₩
     @Test
-    void adminDeleteExistingMember() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
 
-        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "WILL_DELETE_MEMBER_ID");
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @Test
-    void adminDeleteNotExistingMember() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
-
-        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "NO_MEMBER_ID");
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
     void deleteMemberAsNonAdminIsUnauthorized() {
         String accessToken = loginRequest("UPDATE_MEMBER_ID", "UPDATE_MEMBER_PASSWORD")
                 .as(AuthResponse.class)
