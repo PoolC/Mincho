@@ -3,6 +3,7 @@ package org.poolc.api.member;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
@@ -238,6 +239,28 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = updateMemberIsExceptedRequest(accessToken, "MEMBER_ID");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    @DisplayName("테스트 01. 임원진이 UNACCEPTANCE 자격인 모든 회원 정상적으로 삭제")
+    public void 임원진_UNACCEPTANCE회원_전체_삭제() {
+        //given
+
+        //when
+
+        //then
+
+    }
+
+    @Test
+    @DisplayName("테스트 02. 임원진이 UNACCEPTANCE 자격인 모든 회원 삭제시 에러 발생 ")
+    public void 임원진X_UNACCEPTANCE회원_전체_삭제시_에러() {
+        //given
+
+        //when
+
+        //then
+
     }
 
     public static ExtractableResponse<Response> createMemberRequest(RegisterMemberRequest request) {

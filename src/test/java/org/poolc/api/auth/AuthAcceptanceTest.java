@@ -46,7 +46,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
 
     @Test
     void unactivatedUser() {
-        String accessToken = 임원진로그인();
+        String accessToken = adminLogin();
 
         UpdatePoolcRequest request = new UpdatePoolcRequest("전영주", "01067679584", "공A 537호", null, "프로그래밍 동아리", null, false, null);
         PoolcAcceptanceTest.updatePoolcInfo(accessToken, request);
@@ -61,7 +61,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 가입신청기간일시UNACCEPTED회원로그인() {
-        String accessToken = 임원진로그인();
+        String accessToken = adminLogin();
 
         UpdatePoolcRequest request = new UpdatePoolcRequest("전영주", "01067679584", "공A 537호", null, "프로그래밍 동아리", null, true, null);
         PoolcAcceptanceTest.updatePoolcInfo(accessToken, request);
@@ -75,14 +75,38 @@ public class AuthAcceptanceTest extends AcceptanceTest {
     }
 
 
-    public static String 임원진로그인() {
+    public static String adminLogin() {
         return loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
     }
 
-    public static String 비임원진로그인() {
+    public static String memberLogin() {
         return loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+    }
+
+    public static String unacceptanceLogin() {
+        return loginRequest("UNACCEPTED_MEMBER_ID", "UNACCEPTED_MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+    }
+
+    public static String unacceptance1Login() {
+        return loginRequest("UNACCEPTED_MEMBER_ID1", "UNACCEPTED_MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+    }
+
+    public static String unacceptance2Login() {
+        return loginRequest("UNACCEPTED_MEMBER_ID2", "UNACCEPTED_MEMBER_PASSWORD")
+                .as(AuthResponse.class)
+                .getAccessToken();
+    }
+
+    public static String unacceptance3Login() {
+        return loginRequest("UNACCEPTED_MEMBER_ID3", "UNACCEPTED_MEMBER_PASSWORD")
                 .as(AuthResponse.class)
                 .getAccessToken();
     }

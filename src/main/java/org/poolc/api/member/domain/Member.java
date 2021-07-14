@@ -5,16 +5,16 @@ import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.common.domain.TimestampEntity;
+import org.poolc.api.interview.domain.InterviewSlot;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @Entity(name = "Member")
@@ -64,6 +64,10 @@ public class Member extends TimestampEntity implements UserDetails {
 
     @Embedded
     private MemberRoles roles;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "interview_table_id")
+    private List<InterviewSlot> interviewSlots = new ArrayList<>();
 
     protected Member() {
     }
