@@ -57,7 +57,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void UNACCEPTANCE회원_INTERVIEW_면접시간_신청() {
         //given
         String accessToken = unacceptanceLogin();
-        int applySlotId = 1;
+        long applySlotId = 1;
 
         //when
         ExtractableResponse<Response> response = applyInterview(accessToken, applySlotId);
@@ -73,8 +73,8 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void 이미_면접시간_신청한_UNACCEPTANCE회원_면접시간_신청_에러() {
         //given
         String accessToken = unacceptanceLogin();
-        int AlreadyApplySlotId = 1;
-        int applySlotId = 2;
+        long AlreadyApplySlotId = 1;
+        long applySlotId = 2;
 
         //when
         applyInterview(accessToken, AlreadyApplySlotId);
@@ -92,7 +92,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void UNACCEPTANCE회원X_면접_시간_신청시_에러() {
         //given
         String accessToken = AuthAcceptanceTest.memberLogin();
-        int applySlotId = 2;
+        long applySlotId = 2;
 
         //when
         ExtractableResponse<Response> response = applyInterview(accessToken, applySlotId);
@@ -107,7 +107,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void UNACCEPTANCE회원_INTERVIEW_면접_신청_취소() {
         //given
         String accessToken = unacceptanceLogin();
-        int deleteSlotId = 2;
+        long deleteSlotId = 2;
 
         applyInterview(accessToken, deleteSlotId);
 
@@ -124,7 +124,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void 해당_slotId_신청하지_않은_UNACCEPTANCE회원_면접_취소시_에러_발생() {
         //given
         String accessToken = unacceptanceLogin();
-        int deleteSlotId = 1;
+        long deleteSlotId = 1;
 
         //when
         ExtractableResponse<Response> response = cancelApplyInterview(accessToken, deleteSlotId);
@@ -139,7 +139,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void UNACCEPTACE회원x_면접_취소시_에러_발생() {
         //given
         String accessToken = memberLogin();
-        int deleteSlotId = 1;
+        long deleteSlotId = 1;
 
         //when
         ExtractableResponse<Response> response = cancelApplyInterview(accessToken, deleteSlotId);
@@ -217,7 +217,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void 임원진_SLOT_수정() {
         //given
         String accessToken = adminLogin();
-        int slotId = 13;
+        long slotId = 13;
         UpdateInterviewSlotRequest request = UpdateInterviewSlotRequest.builder()
                 .startTime(LocalTime.of(16, 00))
                 .endTime(LocalTime.of(16, 15))
@@ -243,7 +243,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void 임원진x_SLOT_수정_에러_발생() {
         //given
         String accessToken = memberLogin();
-        int slotId = 12;
+        long slotId = 12;
         UpdateInterviewSlotRequest request = UpdateInterviewSlotRequest.builder()
                 .startTime(LocalTime.of(15, 30))
                 .endTime(LocalTime.of(15, 45))
@@ -265,7 +265,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         String applyAccessToken1 = unacceptance1Login();
         String applyAccessToken2 = unacceptance2Login();
         String applyAccessToken3 = unacceptance3Login();
-        int applySlotId = 13;
+        long applySlotId = 13;
         applyInterview(applyAccessToken1, applySlotId);
         applyInterview(applyAccessToken2, applySlotId);
         applyInterview(applyAccessToken3, applySlotId);
@@ -293,7 +293,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void 임원진_SLOT_같은_DATE_startTime_endTIme이_같을시_수정시_에러() {
         //given
         String accessToken = adminLogin();
-        int applySlotId = 13;
+        long applySlotId = 13;
         UpdateInterviewSlotRequest request = UpdateInterviewSlotRequest.builder()
                 .startTime(LocalTime.of(12, 00))
                 .endTime(LocalTime.of(12, 15))
@@ -312,7 +312,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void 임원진_SLOT_개별_삭제() {
         //given
         String accessToken = adminLogin();
-        int deleteSlotId = 15;
+        long deleteSlotId = 15;
 
         //when
         ExtractableResponse<Response> response = deleteInterviewSlot(accessToken, deleteSlotId);
@@ -326,7 +326,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void 임원진X_SLOT_개별_삭제_에러() {
         //given
         String accessToken = memberLogin();
-        int deleteSlotId = 10000;
+        long deleteSlotId = 10000;
 
         //when
         ExtractableResponse<Response> response = deleteInterviewSlot(accessToken, deleteSlotId);
@@ -340,7 +340,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void 임원진_없는_SLOTID_개별_삭제_에러() {
         //given
         String accessToken = adminLogin();
-        int deleteSlotId = 10000;
+        long deleteSlotId = 10000;
 
         //when
         ExtractableResponse<Response> response = deleteInterviewSlot(accessToken, deleteSlotId);
@@ -386,7 +386,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> applyInterview(String accessToken, int slotId) {
+    private ExtractableResponse<Response> applyInterview(String accessToken, long slotId) {
         return RestAssured
                 .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -395,7 +395,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> cancelApplyInterview(String accessToken, int deleteSlotId) {
+    private ExtractableResponse<Response> cancelApplyInterview(String accessToken, long deleteSlotId) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
@@ -416,7 +416,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> updateInterviewSlot(String accessToken, int slotId, UpdateInterviewSlotRequest request) {
+    private ExtractableResponse<Response> updateInterviewSlot(String accessToken, long slotId, UpdateInterviewSlotRequest request) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
@@ -427,7 +427,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> deleteInterviewSlot(String accessToken, int slotId) {
+    private ExtractableResponse<Response> deleteInterviewSlot(String accessToken, long slotId) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
