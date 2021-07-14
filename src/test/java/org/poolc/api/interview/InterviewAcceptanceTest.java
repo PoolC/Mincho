@@ -390,7 +390,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         return RestAssured
                 .given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("interview/application/{slotId}", slotId)
+                .when().post("interview/application/{slotId}", slotId)
                 .then().log().all()
                 .extract();
     }
@@ -400,7 +400,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/interview/application/{slotId}", deleteSlotId)
+                .when().delete("/interview/application/{slotId}", deleteSlotId)
                 .then().log().all()
                 .extract();
     }
