@@ -12,14 +12,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 @Entity(name = "Member")
 @Getter
-@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends TimestampEntity implements UserDetails {
     @Id
@@ -65,13 +62,14 @@ public class Member extends TimestampEntity implements UserDetails {
     @Embedded
     private MemberRoles roles;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "interview_table_id")
-    private List<InterviewSlot> interviewSlots = new ArrayList<>();
+    private InterviewSlot interviewSlot;
 
     protected Member() {
     }
 
+    @Builder
     public Member(String UUID, String loginID, String passwordHash, String email, String phoneNumber, String name, String department, String studentID, String passwordResetToken, LocalDateTime passwordResetTokenValidUntil, String profileImageURL, String introduction, Boolean isExcepted, MemberRoles roles) {
         this.UUID = UUID;
         this.loginID = loginID;
@@ -169,6 +167,14 @@ public class Member extends TimestampEntity implements UserDetails {
     public void updateIsExcepted() {
         updateIsExceptedFalse();
         updateIsExceptedTrue();
+    }
+
+    public void applyInterviewSlot(InterviewSlot slot) {
+        this.interviewSlot = slot;
+    }
+
+    public void cancelInterviewSlot() {
+        this.interviewSlot = null;
     }
 
     @Override
