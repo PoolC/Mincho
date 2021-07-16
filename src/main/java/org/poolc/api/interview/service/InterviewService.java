@@ -5,21 +5,21 @@ import org.poolc.api.interview.dto.RegisterInterviewSlotRequest;
 import org.poolc.api.interview.dto.UpdateInterviewSlotRequest;
 import org.poolc.api.member.domain.Member;
 
+import javax.naming.NoPermissionException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public interface InterviewService {
     public List<InterviewSlot> getAllInterviewSlot();
 
-    public InterviewSlot applyInterviewSlot(Member member, Long slotId) throws NoSuchElementException;
+    public InterviewSlot applyInterviewSlot(Member member, Long slotId) throws NoPermissionException;
 
     public void cancelApplicationInterviewSlot(Member member, Long slotId);
 
-    public void createInterviewSlot(RegisterInterviewSlotRequest request);
+    public void createInterviewSlot(Member admin, RegisterInterviewSlotRequest request);
 
-    public void updateInterviewSlot(Long updateSlotId, UpdateInterviewSlotRequest request);
+    public void updateInterviewSlot(Member admin, Long updateSlotId, UpdateInterviewSlotRequest request) throws NoPermissionException;
 
-    public void deleteInterviewSlot(Long deleteSlotId);
+    public void deleteInterviewSlot(Member admin, Long deleteSlotId);
 
-    public void deleteAllInterviewSlots();
+    public void deleteAllInterviewSlots(Member admin);
 }

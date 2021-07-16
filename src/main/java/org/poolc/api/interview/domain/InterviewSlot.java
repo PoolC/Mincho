@@ -1,6 +1,7 @@
 package org.poolc.api.interview.domain;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.interview.dto.RegisterInterviewSlotRequest;
 import org.poolc.api.interview.dto.UpdateInterviewSlotRequest;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 @Entity(name = "interview_slots")
 @SequenceGenerator(
         name = "INTERVIEW_SLOTS_SEQ_GENERATOR",
@@ -41,8 +43,11 @@ public class InterviewSlot extends TimestampEntity {
     @Column(name = "capacity", nullable = false)
     private int capacity;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Member> members = new ArrayList<>();
+    @OneToMany(mappedBy = "interviewSlot", cascade = CascadeType.ALL)
+    private List<Member> interviewees;
+
+    protected InterviewSlot() {
+    }
 
     @Builder
     public InterviewSlot(LocalDate date, LocalTime startTime, LocalTime endTime, int capacity, List<Member> members) {
@@ -50,15 +55,29 @@ public class InterviewSlot extends TimestampEntity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.capacity = capacity;
-        this.members = members;
+        this.interviewees = members;
+    }
+
+    public InterviewSlot(RegisterInterviewSlotRequest request) {
+        this.date = request.getDate();
+        this.startTime = request.getStartTime();
+        this.endTime = request.getEndTime();
+        this.capacity = request.getCapacity();
+        this.interviewees = new ArrayList<>();
+    }
+
+    public boolean checkSlotIdSame(Long slotId) {
+        if (id == slotId)
+            return true;
+        return false;
     }
 
     public void insertMember(Member member) {
-        members.add(member);
+        interviewees.add(member);
     }
 
     public void deleteMember(Member member) {
-        this.members = members.stream()
+        this.interviewees = interviewees.stream()
                 .filter(m -> member != m)
                 .collect(Collectors.toList());
     }
@@ -69,13 +88,15 @@ public class InterviewSlot extends TimestampEntity {
         this.capacity = request.getCapacity();
     }
 
-    public static InterviewSlot of(RegisterInterviewSlotRequest request) {
-        return InterviewSlot.builder()
-                .date(request.getDate())
-                .startTime(request.getStartTime())
-                .endTime(request.getEndTime())
-                .capacity(request.getCapacity())
-                .members(new ArrayList<>())
-                .build();
+    public boolean checkIntervieweesAcceptable() {
+        if (capacity > interviewees.size())
+            return true;
+        return false;
+    }
+
+    public boolean checkUpdateCapacity(int updateCapacity) {
+        if (interviewees.size() < updateCapacity)
+            return true;
+        return false;
     }
 }

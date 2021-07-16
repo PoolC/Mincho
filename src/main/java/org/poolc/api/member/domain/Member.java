@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Entity(name = "Member")
@@ -170,11 +171,25 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     public void applyInterviewSlot(InterviewSlot slot) {
+        if (isAcceptedMember())
+            throw new UnauthorizedException("No permission to apply interview slot");
+        if (checkInterviewSlotExist())
+            throw new IllegalArgumentException("Already apply");
         this.interviewSlot = slot;
     }
 
-    public void cancelInterviewSlot() {
+    public void cancelInterviewSlot(Long slotId) {
+        if (isAcceptedMember())
+            throw new UnauthorizedException("No permission to cancel interview slot application");
+
+        if (interviewSlot == null)
+            throw new NoSuchElementException("No slot in member");
+
+        if (!interviewSlot.checkSlotIdSame(slotId))
+            throw new NoSuchElementException("No slot found with given slotId in member");
+
         this.interviewSlot = null;
+
     }
 
     @Override
@@ -251,5 +266,11 @@ public class Member extends TimestampEntity implements UserDetails {
 
     private void toggleIsExcepted() {
         isExcepted = !isExcepted;
+    }
+
+    private boolean checkInterviewSlotExist() {
+        if (this.interviewSlot != null)
+            return true;
+        return false;
     }
 }

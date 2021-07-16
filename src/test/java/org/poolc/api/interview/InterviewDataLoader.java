@@ -31,7 +31,7 @@ public class InterviewDataLoader implements CommandLineRunner {
                         .date(LocalDate.of(2021, 7, 8))
                         .startTime(LocalTime.of(15, 15))
                         .endTime(LocalTime.of(15, 30))
-                        .capacity(4)
+                        .capacity(2)
                         .build()
         );
         interviewSlotRepository.save(
