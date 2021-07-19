@@ -16,6 +16,8 @@ public class InterviewSlotsByDateResponse {
     @JsonCreator
     public InterviewSlotsByDateResponse(LocalDate date, List<InterviewSlotResponse> slots) {
         this.date = date;
-        this.slots = slots.stream().sorted(Comparator.comparing(InterviewSlotResponse::getStartTime)).collect(Collectors.toList());
+        this.slots = slots.stream()
+                .sorted(Comparator.comparing(InterviewSlotResponse::getStartTime))
+                .collect(Collectors.toList());
     }
 }

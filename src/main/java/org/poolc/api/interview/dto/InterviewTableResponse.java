@@ -15,6 +15,8 @@ public class InterviewTableResponse {
     @JsonCreator
     public InterviewTableResponse(Long mySlotId, List<InterviewSlotsByDateResponse> data) {
         this.mySlotId = mySlotId;
-        this.data = data.stream().sorted(Comparator.comparing(InterviewSlotsByDateResponse::getDate)).collect(Collectors.toList());
+        this.data = data.stream()
+                .sorted(Comparator.comparing(InterviewSlotsByDateResponse::getDate))
+                .collect(Collectors.toList());
     }
 }
