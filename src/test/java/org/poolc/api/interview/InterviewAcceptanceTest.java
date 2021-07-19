@@ -6,9 +6,10 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.AuthAcceptanceTest;
-import org.poolc.api.interview.dto.InterviewSlotResponse;
+import org.poolc.api.interview.dto.InterviewSlotsByDateResponse;
 import org.poolc.api.interview.dto.RegisterInterviewSlotRequest;
 import org.poolc.api.interview.dto.UpdateInterviewSlotRequest;
+import org.poolc.api.member.dto.MemberResponse;
 import org.poolc.api.poolc.PoolcAcceptanceTest;
 import org.poolc.api.poolc.dto.UpdatePoolcRequest;
 import org.poolc.api.poolc.repository.PoolcRespository;
@@ -44,12 +45,22 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         String accessToken = unacceptanceLogin();
         applyInterview(accessToken, 1L);
         //when
-        ExtractableResponse<Response> response = getInterviewTable(accessToken);
+        ExtractableResponse<Response> response = getInterviewSlots(accessToken);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("", InterviewSlotResponse.class).get(0).getInterviewees().get(0).getLoginID()).isEqualTo("UNACCEPTED_MEMBER_ID");
-        assertThat(response.body().jsonPath().getList("", InterviewSlotResponse.class).get(0).getInterviewees().get(0).getName()).isEqualTo(null);
+
+        MemberResponse memberDataCheck = response.body().jsonPath()
+                .getList("data", InterviewSlotsByDateResponse.class).get(0)
+                .getSlots().get(0)
+                .getInterviewees().get(0);
+        String unaccepted_member_id = "UNACCEPTED_MEMBER_ID";
+
+        assertThat(memberDataCheck.getLoginID()).isEqualTo(unaccepted_member_id);
+        assertThat(memberDataCheck.getName()).isEqualTo(null);
+        assertThat(memberDataCheck.getStudentID()).isEqualTo(null);
+        assertThat(memberDataCheck.getDepartment()).isEqualTo(null);
+        assertThat(memberDataCheck.getPhoneNumber()).isEqualTo(null);
 
     }
 
@@ -63,13 +74,24 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         applyInterview(applyAccessToken, slotId);
 
         //when
-        ExtractableResponse<Response> response = getInterviewTable(accessToken);
+        ExtractableResponse<Response> response = getInterviewSlots(accessToken);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("", InterviewSlotResponse.class).get(0).getInterviewees().get(0).getLoginID()).isEqualTo("UNACCEPTED_MEMBER_ID");
-        assertThat(response.body().jsonPath().getList("", InterviewSlotResponse.class).get(0).getInterviewees().get(0).getName()).isEqualTo("MEMBER_NAME2");
 
+        MemberResponse memberDataCheck = response.body().jsonPath()
+                .getList("data", InterviewSlotsByDateResponse.class).get(0)
+                .getSlots().get(0)
+                .getInterviewees().get(0);
+        String unaccepted_member_id = "UNACCEPTED_MEMBER_ID", member_name = "MEMBER_NAME2",
+                member_department = "exampleDepartment", member_studentId = "2021147594",
+                member_phoneNumber = "010-5555-5555";
+
+        assertThat(memberDataCheck.getLoginID()).isEqualTo(unaccepted_member_id);
+        assertThat(memberDataCheck.getName()).isEqualTo(member_name);
+        assertThat(memberDataCheck.getStudentID()).isEqualTo(member_studentId);
+        assertThat(memberDataCheck.getDepartment()).isEqualTo(member_department);
+        assertThat(memberDataCheck.getPhoneNumber()).isEqualTo(member_phoneNumber);
         cancelApplyInterview(applyAccessToken, slotId);
     }
 
@@ -434,13 +456,13 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
-    private ExtractableResponse<Response> getInterviewTable(String accessToken) {
+    private ExtractableResponse<Response> getInterviewSlots(String accessToken) {
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/interview/table")
+                .when().get("/interview/slots")
                 .then().log().all()
                 .extract();
     }
