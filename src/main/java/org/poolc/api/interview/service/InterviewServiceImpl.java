@@ -24,7 +24,7 @@ public class InterviewServiceImpl implements InterviewService {
     @Override
     @Transactional(readOnly = true)
     public List<InterviewSlot> getAllInterviewSlot() {
-        return interviewSlotRepository.findAll();
+        return interviewSlotRepository.findAllByFetchJoin();
     }
 
     @Override
