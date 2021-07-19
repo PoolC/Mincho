@@ -48,6 +48,8 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getInterviewSlots(accessToken);
 
         //then
+        cancelApplyInterview(accessToken, 1L);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         MemberResponse memberDataCheck = response.body().jsonPath()
@@ -56,11 +58,13 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
                 .getInterviewees().get(0);
         String unaccepted_member_id = "UNACCEPTED_MEMBER_ID";
 
+        assertThat(response.body().jsonPath().getLong("mySlotId")).isEqualTo(1L);
         assertThat(memberDataCheck.getLoginID()).isEqualTo(unaccepted_member_id);
         assertThat(memberDataCheck.getName()).isEqualTo(null);
         assertThat(memberDataCheck.getStudentID()).isEqualTo(null);
         assertThat(memberDataCheck.getDepartment()).isEqualTo(null);
         assertThat(memberDataCheck.getPhoneNumber()).isEqualTo(null);
+
 
     }
 
@@ -77,6 +81,8 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getInterviewSlots(accessToken);
 
         //then
+        cancelApplyInterview(applyAccessToken, slotId);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         MemberResponse memberDataCheck = response.body().jsonPath()
@@ -87,12 +93,12 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
                 member_department = "exampleDepartment", member_studentId = "2021147594",
                 member_phoneNumber = "010-5555-5555";
 
+        assertThat(response.body().jsonPath().getObject("mySlotId", Long.class)).isNull();
         assertThat(memberDataCheck.getLoginID()).isEqualTo(unaccepted_member_id);
         assertThat(memberDataCheck.getName()).isEqualTo(member_name);
         assertThat(memberDataCheck.getStudentID()).isEqualTo(member_studentId);
         assertThat(memberDataCheck.getDepartment()).isEqualTo(member_department);
         assertThat(memberDataCheck.getPhoneNumber()).isEqualTo(member_phoneNumber);
-        cancelApplyInterview(applyAccessToken, slotId);
     }
 
     @Test
@@ -105,10 +111,10 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> response = applyInterview(accessToken, applySlotId);
 
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
-        cancelApplyInterview(accessToken, applySlotId);
 
+        //then
+        cancelApplyInterview(accessToken, applySlotId);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
     }
 
     @Test
@@ -119,15 +125,16 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         long AlreadyApplySlotId = 1;
         long applySlotId = 2;
 
-        //when
         applyInterview(accessToken, AlreadyApplySlotId);
+
+        //when
         ExtractableResponse<Response> response = applyInterview(accessToken, applySlotId);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-
         cancelApplyInterview(accessToken, AlreadyApplySlotId);
         cancelApplyInterview(accessToken, applySlotId);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @Test
@@ -141,8 +148,9 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = applyInterview(accessToken, applySlotId);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
         cancelApplyInterview(accessToken, applySlotId);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
@@ -162,9 +170,10 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = applyInterview(accessToken, applySlotId);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
         cancelApplyInterview(alreadyApplyAccessToken1, applySlotId);
         cancelApplyInterview(alreadyApplyAccessToken2, applySlotId);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @Test
@@ -293,14 +302,14 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = updateInterviewSlot(accessToken, slotId, request);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
-
         UpdateInterviewSlotRequest postRequest = UpdateInterviewSlotRequest.builder()
                 .startTime(LocalTime.of(15, 45))
                 .endTime(LocalTime.of(16, 00))
                 .capacity(2)
                 .build();
+        updateInterviewSlot(accessToken, slotId, postRequest);
 
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
     }
 
     @Test
@@ -346,11 +355,11 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = updateInterviewSlot(accessToken, applySlotId, request);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-
         cancelApplyInterview(applyAccessToken1, applySlotId);
         cancelApplyInterview(applyAccessToken2, applySlotId);
         cancelApplyInterview(applyAccessToken3, applySlotId);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @Test
