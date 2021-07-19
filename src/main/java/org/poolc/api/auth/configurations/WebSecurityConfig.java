@@ -119,9 +119,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/file").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers("/**").permitAll()
 
-                .antMatchers(HttpMethod.GET, "/interview/table").permitAll()
                 .antMatchers(HttpMethod.POST, "/interview/application/*").hasAuthority(MemberRole.UNACCEPTED.name())
                 .antMatchers(HttpMethod.DELETE, "/interview/application/*").hasAuthority(MemberRole.UNACCEPTED.name())
+                .antMatchers(HttpMethod.GET, "/interview/slots").permitAll()
                 .antMatchers(HttpMethod.POST, "/interview/slots").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/interview/slots/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/interview/slots/*").hasAuthority(MemberRole.ADMIN.name())
