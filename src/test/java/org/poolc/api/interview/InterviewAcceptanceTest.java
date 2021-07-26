@@ -10,9 +10,11 @@ import org.poolc.api.interview.dto.InterviewSlotsByDateResponse;
 import org.poolc.api.interview.dto.RegisterInterviewSlotRequest;
 import org.poolc.api.interview.dto.UpdateInterviewSlotRequest;
 import org.poolc.api.member.dto.MemberResponse;
-import org.poolc.api.poolc.PoolcAcceptanceTest;
+import org.poolc.api.poolc.domain.Poolc;
 import org.poolc.api.poolc.dto.UpdatePoolcRequest;
 import org.poolc.api.poolc.repository.PoolcRespository;
+import org.poolc.api.poolc.service.PoolcService;
+import org.poolc.api.poolc.vo.PoolcUpdateValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,14 +30,19 @@ import static org.poolc.api.auth.AuthAcceptanceTest.*;
 @TestMethodOrder(MethodOrderer.DisplayName.class)
 public class InterviewAcceptanceTest extends AcceptanceTest {
     @Autowired
+    private PoolcService poolcService;
+
+    @Autowired
     private PoolcRespository poolcRespository;
 
     @BeforeEach
     public void init() {
-        String accessToken = adminLogin();
-
-        UpdatePoolcRequest request = new UpdatePoolcRequest("전영주", "01067679584", "공A 537호", null, "프로그래밍 동아리", null, true, null);
-        PoolcAcceptanceTest.updatePoolcInfo(accessToken, request);
+        UpdatePoolcRequest request = new UpdatePoolcRequest("전영주", "01067679584",
+                "공A 537호", null, "프로그래밍 동아리", null,
+                true, null);
+        Poolc poolc = poolcService.get();
+        poolc.update(new PoolcUpdateValues(request));
+        poolcRespository.saveAndFlush(poolc);
     }
 
     @Test
