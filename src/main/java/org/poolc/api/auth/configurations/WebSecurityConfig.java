@@ -90,6 +90,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/book/**").hasAuthority(MemberRole.MEMBER.name())
 
                 .antMatchers(HttpMethod.POST, "/member").permitAll()
+                .antMatchers(HttpMethod.GET, "/member/me").not().hasAuthority(MemberRole.EXPELLED.name())
                 .antMatchers(HttpMethod.PUT, "/member/reset-password-token").permitAll()
                 .antMatchers(HttpMethod.PUT, "/member/reset-password").permitAll()
                 .antMatchers(HttpMethod.GET, "/member").hasAuthority(MemberRole.MEMBER.name())
@@ -118,7 +119,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/activity/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers("/file").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers("/**").permitAll()
-
 
                 .anyRequest().authenticated().and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService),
