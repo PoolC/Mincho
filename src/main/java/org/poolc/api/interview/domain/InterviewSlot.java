@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 })
 public class InterviewSlot extends TimestampEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INTERVIEW_TABLE_SEQ_GENERATOR")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INTERVIEW_SLOTS_SEQ_GENERATOR")
     @Column(name = "id")
     private Long id;
 
