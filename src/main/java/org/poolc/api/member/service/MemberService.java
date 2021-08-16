@@ -136,7 +136,7 @@ public class MemberService {
 
         map.forEach((member, hour) -> list.add(MemberResponseWithHour.of(member, hour)));
 
-        return list.stream().sorted((o1, o2) -> o1.getMember().getName().compareTo(o2.getMember().getName())).collect(Collectors.toList());
+        return list.stream().sorted(Comparator.comparing(o -> o.getMember().getName())).collect(Collectors.toList());
     }
 
     public void authorizeMember(String loginID) {
