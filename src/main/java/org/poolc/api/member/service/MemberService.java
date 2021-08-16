@@ -105,6 +105,13 @@ public class MemberService {
         return memberRepository.findAllMembersByLoginIDList(members);
     }
 
+    public void checkGetRoles(Member loginMember) {
+        Poolc poolc = poolcService.get();
+        if (!poolc.checkSubscriptionPeriod() && !loginMember.isAcceptedMember()) {
+            throw new UnauthorizedException("인증받지 않은 회원입니다.");
+        }
+    }
+
     public Member getMemberByLoginID(String loginID) {
         return memberRepository.findByLoginID(loginID)
                 .orElseThrow(() -> new NoSuchElementException("No user found with given loginID"));

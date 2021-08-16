@@ -70,6 +70,7 @@ public class MemberController {
 
     @GetMapping(value = "/role")
     public ResponseEntity<Map<String, List<MemberRolesResponse>>> getRoles(@AuthenticationPrincipal Member loginMember) {
+        memberService.checkGetRoles(loginMember);
         return ResponseEntity.ok(Collections.singletonMap("data", Stream.of(MemberRole.values())
                 .filter(not(MemberRole.SUPER_ADMIN::equals))
                 .filter(role -> (!Optional.ofNullable(loginMember).isEmpty() && loginMember.isAdmin()) || role.isSelfToggleable())  // TODO: public member 만들면 null 체크 지우기
