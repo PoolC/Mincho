@@ -1,11 +1,14 @@
 package org.poolc.api.member.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.poolc.api.activity.dto.ActivityResponse;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.dto.*;
 import org.poolc.api.member.service.MemberService;
 import org.poolc.api.member.vo.MemberCreateValues;
+import org.poolc.api.project.dto.ProjectResponse;
+import org.poolc.api.project.service.ProjectService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +29,7 @@ import static java.util.function.Predicate.not;
 @RequestMapping(value = "/member", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberController {
     private final MemberService memberService;
+    private final ProjectService projectService;
 
     @GetMapping
     public ResponseEntity<Map<String, List<MemberResponse>>> getAllMembers(@AuthenticationPrincipal Member loginMember) {
@@ -46,15 +50,21 @@ public class MemberController {
     }
 
     @GetMapping(value = "/me")
-    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal Member loginMember) {
+    public ResponseEntity<MemberResponse> getMe(@AuthenticationPrincipal Member loginMember) {
         memberService.checkMe(loginMember);
         MemberResponse response = MemberResponse.of(loginMember);
         return ResponseEntity.ok().body(response);
     }
 
     @GetMapping(value = "/{loginID}")
-    public ResponseEntity<MemberResponse> adminGetMemberInfoByloginID(@PathVariable String loginID) {
-        MemberResponse response = memberService.getMemberResponseByLoginID(loginID);
+    public ResponseEntity<MemberResponse> getMemberWithProjectAndActivity(@PathVariable String loginID) {
+        //TODO: project schema 변경한 뒤에 refactoring 진행
+        Member findMember = memberService.getMemberByLoginID(loginID);
+        List<ActivityResponse> activityResponses = memberService.getMemberActivityResponses(loginID);
+        List<ActivityResponse> hostActivityResponses = memberService.getHostActivityResponses(findMember);
+        List<ProjectResponse> projectResponses = projectService.findProjectsByProjectMembers(loginID).stream().map(project -> ProjectResponse.of(project, memberService.findMembers(project.getMemberLoginIDs())))
+                .collect(Collectors.toList());
+        MemberResponse response = MemberResponse.of(findMember, hostActivityResponses, activityResponses, projectResponses);
         return ResponseEntity.ok().body(response);
     }
 

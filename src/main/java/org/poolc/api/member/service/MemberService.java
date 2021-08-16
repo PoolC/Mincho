@@ -21,8 +21,6 @@ import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.member.vo.MemberCreateValues;
 import org.poolc.api.poolc.domain.Poolc;
 import org.poolc.api.poolc.service.PoolcService;
-import org.poolc.api.project.dto.ProjectResponse;
-import org.poolc.api.project.service.ProjectService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +36,6 @@ public class MemberService {
     private final PasswordHashProvider passwordHashProvider;
     private final MemberQueryRepository memberQueryRepository;
     private final ActivityService activityService;
-    private final ProjectService projectService;
     private final MailService mailService;
     private final PoolcService poolcService;
 
@@ -91,13 +88,21 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    public MemberResponse getMemberResponseByLoginID(String loginID) {
-        Member findMember = getMemberByLoginID(loginID);
-        List<ActivityResponse> activitiesByActivityMembers = getActivityResponses(loginID);
-        List<ActivityResponse> activitiesByHost = getActivityResponses(findMember);
-        List<ProjectResponse> projects = getProjectResponses(loginID);
+    public List<ActivityResponse> getMemberActivityResponses(String loginID) {
+        return activityService.findActivitiesByMemberLoginId(loginID)
+                .stream().map(ActivityResponse::of)
+                .collect(Collectors.toList());
+    }
 
-        return MemberResponse.of(findMember, activitiesByHost, activitiesByActivityMembers, projects);
+    public List<ActivityResponse> getHostActivityResponses(Member findMember) {
+        List<ActivityResponse> activitiesByHost = activityService.findActivitiesByHost(findMember)
+                .stream().map(ActivityResponse::of)
+                .collect(Collectors.toList());
+        return activitiesByHost;
+    }
+
+    public List<Member> findMembers(List<String> members) {
+        return memberRepository.findAllMembersByLoginIDList(members);
     }
 
     public Member getMemberByLoginID(String loginID) {
@@ -110,9 +115,8 @@ public class MemberService {
                 .filter(member -> passwordHashProvider.matches(password, member.getPasswordHash()))
                 .orElseThrow(() -> new WrongPasswordException("아이디와 비밀번호를 확인해주세요."));
     }
-
-
     // TODO: 이부분 좀 더 깨끗하게 Refactoring해야할 거 같다.
+
     public List<MemberResponseWithHour> getHoursWithMembers() {
         List<MemberResponseWithHour> list = new ArrayList<>();
         Map<Member, Long> map = new HashMap<>();
@@ -197,26 +201,6 @@ public class MemberService {
             memberRepository.saveAndFlush(member);
         });
         return members;
-    }
-
-    private List<ActivityResponse> getActivityResponses(String loginID) {
-        return activityService.findActivitiesByMemberLoginId(loginID)
-                .stream().map(ActivityResponse::of)
-                .collect(Collectors.toList());
-    }
-
-    private List<ActivityResponse> getActivityResponses(Member findMember) {
-        List<ActivityResponse> activitiesByHost = activityService.findActivitiesByHost(findMember)
-                .stream().map(ActivityResponse::of)
-                .collect(Collectors.toList());
-        return activitiesByHost;
-    }
-
-    private List<ProjectResponse> getProjectResponses(String loginID) {
-        List<ProjectResponse> projects = projectService.findProjectsByProjectMembers(loginID)
-                .stream().map(project -> ProjectResponse.of(project, memberRepository.findAllMembersByLoginIDList(project.getMemberLoginIDs())))
-                .collect(Collectors.toList());
-        return projects;
     }
 
     private String resetMemberPasswordToken(String email) {
