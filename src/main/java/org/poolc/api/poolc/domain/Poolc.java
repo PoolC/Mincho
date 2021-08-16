@@ -80,6 +80,7 @@ public class Poolc {
         this.applyUri = updateValues.getApplyUri();
     }
 
+    //TODO: refactoring 필요성 느껴짐
     public boolean checkSubscriptionPeriod() {
         return isSubscriptionPeriod;
     }

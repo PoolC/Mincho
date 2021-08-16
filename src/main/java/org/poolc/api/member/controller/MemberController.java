@@ -1,26 +1,21 @@
 package org.poolc.api.member.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.activity.dto.ActivityResponse;
-import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.dto.*;
-import org.poolc.api.member.service.MailService;
 import org.poolc.api.member.service.MemberService;
 import org.poolc.api.member.vo.MemberCreateValues;
-import org.poolc.api.project.dto.ProjectResponse;
-import org.poolc.api.project.service.ProjectService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,26 +26,16 @@ import static java.util.function.Predicate.not;
 @RequestMapping(value = "/member", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberController {
     private final MemberService memberService;
-    private final ProjectService projectService;
-    private final ActivityService activityService;
-    private final MailService mailService;
 
     @GetMapping
-    public ResponseEntity<Map<String, List<MemberResponse>>> getAllMembers(@AuthenticationPrincipal Member member) {
-        List<MemberResponse> memberResponses = memberService.getAllMembers()
-                .stream()
-                .filter(responseMember -> (member != null && member.isAdmin()) || !responseMember.shouldHide())  // TODO: public member 만들면 null 체크 지우기
-                .map(MemberResponse::of)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(Collections.singletonMap("data", memberResponses));
+    public ResponseEntity<Map<String, List<MemberResponse>>> getAllMembers(@AuthenticationPrincipal Member loginMember) {
+        List<MemberResponse> responses = memberService.getAllMembersResponse(loginMember);
+        return ResponseEntity.ok().body(Collections.singletonMap("data", responses));
     }
 
     @GetMapping(value = "/name")
     public ResponseEntity<Map<String, List<MemberResponse>>> findMembersForProject(@RequestParam String name) {
-        List<MemberResponse> memberResponses = memberService.getAllMembersByName(name)
-                .stream()
-                .map(MemberResponse::of)
-                .collect(Collectors.toList());
+        List<MemberResponse> memberResponses = memberService.getAllMembersResponseByName(name);
         return ResponseEntity.ok().body(Collections.singletonMap("data", memberResponses));
     }
 
@@ -61,49 +46,24 @@ public class MemberController {
     }
 
     @GetMapping(value = "/me")
-    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal Member member) {
-        String loginID = member.getLoginID();
-
-        List<Member> memberList = new ArrayList<>(); // TODO: 이부분 수정해야할 듯
-
-        List<ActivityResponse> activitiesByActivityMembers = activityService.findActivitiesByMemberLoginId(loginID)
-                .stream().map(ActivityResponse::of)
-                .collect(Collectors.toList());
-        List<ActivityResponse> activitiesByHost = activityService.findActivitiesByHost(member)
-                .stream().map(ActivityResponse::of)
-                .collect(Collectors.toList());
-        List<ProjectResponse> projects = projectService.findProjectsByProjectMembers(loginID)
-                .stream().map(project -> ProjectResponse.of(project, memberList))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(MemberResponse.of(member, activitiesByHost, activitiesByActivityMembers, projects));
+    public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal Member loginMember) {
+        memberService.checkMe(loginMember);
+        MemberResponse response = MemberResponse.of(loginMember);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping(value = "/{loginID}")
     public ResponseEntity<MemberResponse> adminGetMemberInfoByloginID(@PathVariable String loginID) {
-        Member member = memberService.getMemberByLoginID(loginID);
-
-        List<Member> memberList = new ArrayList<>(); // TODO: 이부분 수정해야할 듯
-
-        List<ActivityResponse> activitiesByActivityMembers = activityService.findActivitiesByMemberLoginId(loginID)
-                .stream().map(ActivityResponse::of)
-                .collect(Collectors.toList());
-        List<ActivityResponse> activitiesByHost = activityService.findActivitiesByHost(member)
-                .stream().map(ActivityResponse::of)
-                .collect(Collectors.toList());
-        List<ProjectResponse> projects = projectService.findProjectsByProjectMembers(loginID)
-                .stream().map(project -> ProjectResponse.of(project, memberList))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(MemberResponse.of(member, activitiesByHost, activitiesByActivityMembers, projects));
+        MemberResponse response = memberService.getMemberResponseByLoginID(loginID);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping(value = "/role")
-    public ResponseEntity<Map<String, List<MemberRolesResponse>>> getRoles(@AuthenticationPrincipal Member member) {
+    public ResponseEntity<Map<String, List<MemberRolesResponse>>> getRoles(@AuthenticationPrincipal Member loginMember) {
         return ResponseEntity.ok(Collections.singletonMap("data", Stream.of(MemberRole.values())
                 .filter(not(MemberRole.SUPER_ADMIN::equals))
-                .filter(role -> (member != null && member.isAdmin()) || role.isSelfToggleable())  // TODO: public member 만들면 null 체크 지우기
-                .filter(role -> (member != null && member.isAdmin()) || !MemberRole.QUIT.equals(role))
+                .filter(role -> (!Optional.ofNullable(loginMember).isEmpty() && loginMember.isAdmin()) || role.isSelfToggleable())  // TODO: public member 만들면 null 체크 지우기
+                .filter(role -> (!Optional.ofNullable(loginMember).isEmpty() && loginMember.isAdmin()) || !MemberRole.QUIT.equals(role))
                 .map(MemberRolesResponse::of)
                 .collect(Collectors.toList())));
     }
@@ -111,17 +71,15 @@ public class MemberController {
     @PostMapping
     public ResponseEntity<Void> createMember(@RequestBody RegisterMemberRequest request) {
         checkIsValidMemberCreateInput(request);
-
         memberService.create(new MemberCreateValues(request));
         return ResponseEntity.accepted().build();
     }
 
     @PutMapping(path = "/me")
-    public ResponseEntity<Void> updateMember(@AuthenticationPrincipal Member member,
+    public ResponseEntity<Void> updateMember(@AuthenticationPrincipal Member loginMember,
                                              @RequestBody UpdateMemberRequest updateMemberRequest) {
         checkIsValidMemberUpdateInput(updateMemberRequest);
-
-        memberService.updateMember(member, updateMemberRequest);
+        memberService.updateMember(loginMember, updateMemberRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -150,30 +108,21 @@ public class MemberController {
     }
 
     @PutMapping(path = "/role")
-    public ResponseEntity<Void> selfChangeRole(@AuthenticationPrincipal Member member, @RequestBody ToggleRoleRequest role) {
-        memberService.selfChangeToRole(member, MemberRole.valueOf(role.getRole()));
+    public ResponseEntity<Void> selfChangeRole(@AuthenticationPrincipal Member loginMember, @RequestBody ToggleRoleRequest role) {
+        memberService.selfChangeToRole(loginMember, MemberRole.valueOf(role.getRole()));
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/reset-password-token")
-    public ResponseEntity<String> sendResetPasswordTokenMail(@RequestBody MemberResetRequest memberResetRequest) throws MessagingException {
-        String email = memberResetRequest.getEmail();
-        String resetPasswordToken = memberService.resetMemberPasswordToken(email);
-
-        mailService.sendEmailPasswordResetToken(email, resetPasswordToken);
-
+    public ResponseEntity<String> sendResetPasswordTokenMail(@RequestBody MemberResetRequest request) throws MessagingException {
+        memberService.sendResetPasswordMail(request);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/reset-password")
-    public ResponseEntity<Void> updateMemberPassword(@RequestBody MemberResetRequest memberResetRequest) {
-        checkIsValidMemberResetRequest(memberResetRequest);
-
-        String passwordResetToken = memberResetRequest.getPasswordResetToken();
-        String newPassword = memberResetRequest.getNewPassword();
-
-        memberService.updateMemberPassword(passwordResetToken, newPassword);
-
+    public ResponseEntity<Void> updateMemberPassword(@RequestBody MemberResetRequest request) {
+        checkIsValidMemberResetRequest(request);
+        memberService.resetPassword(request);
         return ResponseEntity.ok().build();
     }
 
@@ -191,6 +140,7 @@ public class MemberController {
         // TODO: 전화 번호 11자리 숫자 확인
     }
 
+    //TODO: abstract class로 구현
     private void checkIsValidMemberResetRequest(MemberResetRequest request) {
         if (!request.getNewPassword().equals(request.getNewPasswordCheck())) {
             throw new IllegalArgumentException("passwords should match");

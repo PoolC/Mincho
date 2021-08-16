@@ -18,6 +18,7 @@ public class AuthService {
 
     public String createAccessToken(String loginID, String password) {
         Member member = memberService.getMemberIfRegistered(loginID, password);
+        //refactoring 필요느껴짐
         Poolc poolc = poolcService.get();
         if (!poolc.checkSubscriptionPeriod() && !member.isAcceptedMember() && !member.isMember()) {
             throw new UnactivatedException("관리자 승인 전에는 로그인이 불가능합니다.");

@@ -16,6 +16,7 @@ public class PoolcService {
         poolcRespository.save(Poolc.of(createValues));
     }
 
+    //TODO: refactoring 필요느껴짐
     public Poolc get() {
         return poolcRespository.findAll().get(0);
     }
