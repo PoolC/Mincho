@@ -95,7 +95,7 @@ public class InterviewSlot extends TimestampEntity {
     }
 
     public boolean checkUpdateCapacity(int updateCapacity) {
-        if (interviewees.size() < updateCapacity)
+        if (interviewees.size() <= updateCapacity)
             return true;
         return false;
     }
