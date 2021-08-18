@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.AuthAcceptanceTest;
+import org.poolc.api.interview.dto.InterviewSlotResponse;
 import org.poolc.api.interview.dto.InterviewSlotsByDateResponse;
 import org.poolc.api.interview.dto.RegisterInterviewSlotRequest;
 import org.poolc.api.interview.dto.UpdateInterviewSlotRequest;
@@ -204,16 +205,20 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     public void UNACCEPTANCE회원_INTERVIEW_면접_신청_취소() {
         //given
         String accessToken = unacceptanceLogin();
-        long deleteSlotId = 2;
+        long cancelSlotId = 1;
 
-        applyInterview(accessToken, deleteSlotId);
+        applyInterview(accessToken, cancelSlotId);
 
         //when
-        ExtractableResponse<Response> response = cancelApplyInterview(accessToken, deleteSlotId);
+        ExtractableResponse<Response> response = cancelApplyInterview(accessToken, cancelSlotId);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().jsonPath().getObject("mySlotId", Long.class)).isNull();
+        InterviewSlotResponse interviewSlotResponse = response.body().jsonPath()
+                .getList("data", InterviewSlotsByDateResponse.class).get(0)
+                .getSlots().get(0);
+        assertThat(interviewSlotResponse.getInterviewees()).isEmpty();
     }
 
     @Test
