@@ -289,27 +289,6 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
 
     }
 
-    @Test
-    @DisplayName("테스트 12. 중복된 (date, startTime, endTime)일시 임원진이 SLOT 등록시 에러 발생 409")
-    public void 중복된_date_startTime_endTime_일시_임원진_SLOT_등록_에러() {
-        //given
-        String accessToken = adminLogin();
-        RegisterInterviewSlotRequest request = RegisterInterviewSlotRequest.builder()
-                .date(LocalDate.now())
-                .startTime(LocalTime.of(19, 15))
-                .endTime(LocalTime.of(19, 30))
-                .capacity(4)
-                .build();
-        postInterviewSlot(accessToken, request);
-
-        //when
-        ExtractableResponse<Response> response = postInterviewSlot(accessToken, request);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-
-    }
-
 
     @Test
     @DisplayName("테스트 13. 임원진이 SLOT 정상적으로 수정 200")
@@ -330,7 +309,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         UpdateInterviewSlotRequest postRequest = UpdateInterviewSlotRequest.builder()
                 .startTime(LocalTime.of(15, 45))
                 .endTime(LocalTime.of(16, 00))
-                .capacity(2)
+                .capacity(4)
                 .build();
         updateInterviewSlot(accessToken, slotId, postRequest);
 
@@ -387,25 +366,6 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         cancelApplyInterview(applyAccessToken2, applySlotId);
         cancelApplyInterview(applyAccessToken3, applySlotId);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-    }
-
-    @Test
-    @DisplayName("테스트 16. 임원진이 SLOT 같은 Date과 startTime과 endTime 중복될 정도로 수정시 에러 발생 409")
-    public void 임원진_SLOT_같은_DATE_startTime_endTIme이_같을시_수정시_에러() {
-        //given
-        String accessToken = adminLogin();
-        long applySlotId = 13;
-        UpdateInterviewSlotRequest request = UpdateInterviewSlotRequest.builder()
-                .startTime(LocalTime.of(12, 00))
-                .endTime(LocalTime.of(12, 15))
-                .capacity(4)
-                .build();
-
-        //when
-        ExtractableResponse<Response> response = updateInterviewSlot(accessToken, applySlotId, request);
-
-        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
