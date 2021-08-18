@@ -63,7 +63,7 @@ public class Member extends TimestampEntity implements UserDetails {
     @Embedded
     private MemberRoles roles;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "interview_table_id")
     private InterviewSlot interviewSlot;
 
@@ -176,6 +176,7 @@ public class Member extends TimestampEntity implements UserDetails {
         if (checkInterviewSlotExist())
             throw new IllegalArgumentException("Already apply");
         this.interviewSlot = slot;
+        slot.insertMember(this);
     }
 
     public void cancelInterviewSlot(Long slotId) {
@@ -187,9 +188,8 @@ public class Member extends TimestampEntity implements UserDetails {
 
         if (!interviewSlot.checkSlotIdSame(slotId))
             throw new NoSuchElementException("No slot found with given slotId in member");
-
+        interviewSlot.deleteMember(this);
         this.interviewSlot = null;
-
     }
 
     @Override

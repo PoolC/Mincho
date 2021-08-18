@@ -27,6 +27,7 @@ public class InterviewService {
     public InterviewTableResponse getInterviewTable(Member loginMember) {
         List<InterviewSlotsByDateResponse> interviewSlotsResponses = new ArrayList<>();
         interviewSlotRepository.findAllByFetchJoin().stream()
+                .distinct()
                 .map(slot -> new InterviewSlotResponse(slot, loginMember.isAdmin()))
                 .collect(Collectors.groupingBy(InterviewSlotResponse::getDate))
                 .forEach((k, v) -> interviewSlotsResponses.add(new InterviewSlotsByDateResponse(k, v)));
@@ -39,20 +40,19 @@ public class InterviewService {
     }
 
     @Transactional
-    public InterviewSlot applyInterviewSlot(Member member, Long slotId) throws NoPermissionException {
+    public void applyInterviewSlot(Member member, Long slotId) throws NoPermissionException {
         InterviewSlot slot = getInterviewSlot(slotId);
         checkIntervieweesAcceptable(slot);
         member.applyInterviewSlot(slot);
-        slot.insertMember(member);
+        interviewSlotRepository.saveAndFlush(slot);
         memberRepository.saveAndFlush(member);
-        return slot;
     }
 
     @Transactional
     public void cancelApplicationInterviewSlot(Member member, Long slotId) {
         InterviewSlot slot = getInterviewSlot(slotId);
         member.cancelInterviewSlot(slotId);
-        slot.deleteMember(member);
+        interviewSlotRepository.saveAndFlush(slot);
         memberRepository.saveAndFlush(member);
     }
 

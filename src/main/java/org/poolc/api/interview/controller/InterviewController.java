@@ -1,7 +1,6 @@
 package org.poolc.api.interview.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.interview.domain.InterviewSlot;
 import org.poolc.api.interview.dto.InterviewTableResponse;
 import org.poolc.api.interview.dto.RegisterInterviewSlotRequest;
 import org.poolc.api.interview.dto.UpdateInterviewSlotRequest;
@@ -27,41 +26,45 @@ public class InterviewController {
     }
 
     @PostMapping(value = "/slots")
-    public ResponseEntity<Void> enrollInterviewSlot(@AuthenticationPrincipal Member member, @RequestBody RegisterInterviewSlotRequest request) {
+    public ResponseEntity<InterviewTableResponse> enrollInterviewSlot(@AuthenticationPrincipal Member member, @RequestBody RegisterInterviewSlotRequest request) {
         interviewService.createInterviewSlot(member, request);
-        return ResponseEntity.accepted().build();
+        InterviewTableResponse response = interviewService.getInterviewTable(member);
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping(value = "/slots/{slotId}")
-    public ResponseEntity<Void> updateInterviewSlot(@AuthenticationPrincipal Member member, @PathVariable Long slotId, @RequestBody UpdateInterviewSlotRequest request) throws NoPermissionException {
+    public ResponseEntity<InterviewTableResponse> updateInterviewSlot(@AuthenticationPrincipal Member member, @PathVariable Long slotId, @RequestBody UpdateInterviewSlotRequest request) throws NoPermissionException {
         interviewService.updateInterviewSlot(member, slotId, request);
-        return ResponseEntity.accepted().build();
+        InterviewTableResponse response = interviewService.getInterviewTable(member);
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping(value = "/slots/{slotId}")
-    public ResponseEntity<Void> deleteInterviewSlot(@AuthenticationPrincipal Member member, @PathVariable Long slotId) {
+    public ResponseEntity<InterviewTableResponse> deleteInterviewSlot(@AuthenticationPrincipal Member member, @PathVariable Long slotId) {
         interviewService.deleteInterviewSlot(member, slotId);
-        return ResponseEntity.accepted().build();
+        InterviewTableResponse response = interviewService.getInterviewTable(member);
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping(value = "/slots")
-    public ResponseEntity<Void> deleteAllInterviewSlot(@AuthenticationPrincipal Member member) {
+    public ResponseEntity<InterviewTableResponse> deleteAllInterviewSlot(@AuthenticationPrincipal Member member) {
         interviewService.deleteAllInterviewSlots(member);
-        return ResponseEntity.accepted().build();
+        InterviewTableResponse response = interviewService.getInterviewTable(member);
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping(value = "/application/{slotId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<InterviewTableResponse> applyInterviewSlot(@AuthenticationPrincipal Member member, @PathVariable Long slotId) throws NoPermissionException {
-        InterviewSlot slot = interviewService.applyInterviewSlot(member, slotId);
+        interviewService.applyInterviewSlot(member, slotId);
         InterviewTableResponse response = interviewService.getInterviewTable(member);
-        return ResponseEntity.accepted().body(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping(value = "/application/{slotId}")
     public ResponseEntity<InterviewTableResponse> cancelInterviewSlot(@AuthenticationPrincipal Member member, @PathVariable Long slotId) {
         interviewService.cancelApplicationInterviewSlot(member, slotId);
         InterviewTableResponse response = interviewService.getInterviewTable(member);
-        return ResponseEntity.accepted().body(response);
+        return ResponseEntity.ok().body(response);
     }
 
 

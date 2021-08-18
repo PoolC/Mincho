@@ -43,7 +43,7 @@ public class InterviewSlot extends TimestampEntity {
     @Column(name = "capacity", nullable = false)
     private int capacity;
 
-    @OneToMany(mappedBy = "interviewSlot", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "interviewSlot", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Member> interviewees;
 
     protected InterviewSlot() {
@@ -78,7 +78,7 @@ public class InterviewSlot extends TimestampEntity {
 
     public void deleteMember(Member member) {
         this.interviewees = interviewees.stream()
-                .filter(m -> member != m)
+                .filter(m -> !member.equals(m))
                 .collect(Collectors.toList());
     }
 
