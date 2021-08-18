@@ -59,7 +59,6 @@ public class InterviewService {
     @Transactional
     public void createInterviewSlot(Member admin, RegisterInterviewSlotRequest request) {
         checkAdmin(admin);
-        checkDuplicateSlotWithDateAndStartTimeAndEndTime(request);
         interviewSlotRepository.save(new InterviewSlot(request));
     }
 
@@ -68,7 +67,6 @@ public class InterviewService {
         checkAdmin(admin);
         InterviewSlot slot = getInterviewSlot(updateSlotId);
         checkUpdateCapacity(request, slot);
-        checkDuplicateSlotWithDateAndStartTimeAndEndTime(request, slot);
 
         slot.update(request);
         interviewSlotRepository.saveAndFlush(slot);
@@ -101,16 +99,6 @@ public class InterviewService {
         if (!slot.checkIntervieweesAcceptable()) {
             throw new NoPermissionException("It's over capacity");
         }
-    }
-
-    private void checkDuplicateSlotWithDateAndStartTimeAndEndTime(RegisterInterviewSlotRequest request) {
-        if (interviewSlotRepository.findByDateAndStartTimeAndEndTime(request.getDate(), request.getStartTime(), request.getEndTime()).isPresent())
-            throw new IllegalArgumentException("exist duplicate slot with date, startTime, endTime");
-    }
-
-    private void checkDuplicateSlotWithDateAndStartTimeAndEndTime(UpdateInterviewSlotRequest request, InterviewSlot interviewSlot) {
-        if (interviewSlotRepository.findByDateAndStartTimeAndEndTime(interviewSlot.getDate(), request.getStartTime(), request.getEndTime()).isPresent())
-            throw new IllegalArgumentException("exist duplicate slot with date, startTime, endTime");
     }
 
     private void checkUpdateCapacity(UpdateInterviewSlotRequest request, InterviewSlot slot) throws NoPermissionException {

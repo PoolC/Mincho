@@ -21,10 +21,6 @@ import java.util.stream.Collectors;
         sequenceName = "INTERVIEW_SLOTS_SEQ",
         allocationSize = 1
 )
-@Table(uniqueConstraints = {
-        @UniqueConstraint(name = "unique_date_start_time_end_time",
-                columnNames = {"date", "start_time", "end_time"})
-})
 public class InterviewSlot extends TimestampEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INTERVIEW_SLOTS_SEQ_GENERATOR")
