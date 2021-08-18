@@ -49,13 +49,14 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     @DisplayName("테스트 01. 임원진이 아닌 회원이 interview table 조회시 login id 확인할 수 없지만 정상적으로 출력 200")
     public void 임원진X_Interview_table_조회() {
         //given
+        Long applySlotId = 1L;
         String accessToken = unacceptanceLogin();
-        applyInterview(accessToken, 1L);
+        applyInterview(accessToken, applySlotId);
         //when
         ExtractableResponse<Response> response = getInterviewSlots(accessToken);
 
         //then
-        cancelApplyInterview(accessToken, 1L);
+        cancelApplyInterview(accessToken, applySlotId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
@@ -65,7 +66,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
                 .getInterviewees().get(0);
         String unaccepted_member_id = "UNACCEPTED_MEMBER_ID";
 
-        assertThat(response.body().jsonPath().getLong("mySlotId")).isEqualTo(1L);
+        assertThat(response.body().jsonPath().getLong("mySlotId")).isEqualTo(applySlotId);
         assertThat(memberDataCheck.getLoginID()).isEqualTo(unaccepted_member_id);
         assertThat(memberDataCheck.getName()).isEqualTo(null);
         assertThat(memberDataCheck.getStudentID()).isEqualTo(null);
@@ -122,6 +123,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         //then
         cancelApplyInterview(accessToken, applySlotId);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.body().jsonPath().getLong("mySlotId")).isEqualTo(applySlotId);
     }
 
     @Test
@@ -171,7 +173,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         applyInterview(alreadyApplyAccessToken1, applySlotId);
         applyInterview(alreadyApplyAccessToken2, applySlotId);
 
-        String accessToken = memberLogin();
+        String accessToken = unacceptanceLogin();
 
         //when
         ExtractableResponse<Response> response = applyInterview(accessToken, applySlotId);
@@ -197,7 +199,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
-
+        assertThat(response.body().jsonPath().getString("mySlotId")).isNull();
     }
 
     @Test
