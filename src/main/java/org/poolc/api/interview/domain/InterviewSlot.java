@@ -39,7 +39,7 @@ public class InterviewSlot extends TimestampEntity {
     @Column(name = "capacity", nullable = false)
     private int capacity;
 
-    @OneToMany(mappedBy = "interviewSlot", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "interviewSlot", fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Member> interviewees;
 
     protected InterviewSlot() {
