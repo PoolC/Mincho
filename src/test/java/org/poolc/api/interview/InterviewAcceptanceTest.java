@@ -22,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.*;
@@ -110,7 +111,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("테스트 03. UNACCEPTANCE 회원이 정상적으로 면접시간 신청 202")
+    @DisplayName("테스트 03. UNACCEPTANCE 회원이 정상적으로 면접시간 신청 200")
     public void UNACCEPTANCE회원_INTERVIEW_면접시간_신청() {
         //given
         String accessToken = unacceptanceLogin();
@@ -122,8 +123,21 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
 
         //then
         cancelApplyInterview(accessToken, applySlotId);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().jsonPath().getLong("mySlotId")).isEqualTo(applySlotId);
+        MemberResponse memberDataCheck = response.body().jsonPath()
+                .getList("data", InterviewSlotsByDateResponse.class).get(0)
+                .getSlots().get(0)
+                .getInterviewees().get(0);
+        String unaccepted_member_id = "UNACCEPTED_MEMBER_ID", member_name = "MEMBER_NAME2",
+                member_department = "exampleDepartment", member_studentId = "2021147594",
+                member_phoneNumber = "010-5555-5555";
+
+        assertThat(memberDataCheck.getLoginID()).isEqualTo(unaccepted_member_id);
+        assertThat(memberDataCheck.getName()).isEqualTo(null);
+        assertThat(memberDataCheck.getStudentID()).isEqualTo(null);
+        assertThat(memberDataCheck.getDepartment()).isEqualTo(null);
+        assertThat(memberDataCheck.getPhoneNumber()).isEqualTo(null);
     }
 
     @Test
@@ -186,7 +200,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("테스트 07. UNACCEPTANCE 회원 정상적으로 면접 취소 202")
+    @DisplayName("테스트 07. UNACCEPTANCE 회원 정상적으로 면접 취소 200")
     public void UNACCEPTANCE회원_INTERVIEW_면접_신청_취소() {
         //given
         String accessToken = unacceptanceLogin();
@@ -198,8 +212,8 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = cancelApplyInterview(accessToken, deleteSlotId);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
-        assertThat(response.body().jsonPath().getString("mySlotId")).isNull();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getObject("mySlotId", Long.class)).isNull();
     }
 
     @Test
@@ -233,7 +247,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("테스트 10. 임원진이 SLOT 정상적으로 등록 202")
+    @DisplayName("테스트 10. 임원진이 SLOT 정상적으로 등록 200")
     public void 임원진_SLOT_등록() {
         //given
         String accessToken = adminLogin();
@@ -248,8 +262,10 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = postInterviewSlot(accessToken, request);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
-
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<InterviewSlotsByDateResponse> data = response.body().jsonPath()
+                .getList("data", InterviewSlotsByDateResponse.class);
+        assertThat(data).isNotNull();
     }
 
 
@@ -296,7 +312,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
 
 
     @Test
-    @DisplayName("테스트 13. 임원진이 SLOT 정상적으로 수정 202")
+    @DisplayName("테스트 13. 임원진이 SLOT 정상적으로 수정 200")
     public void 임원진_SLOT_수정() {
         //given
         String accessToken = adminLogin();
@@ -318,7 +334,10 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
                 .build();
         updateInterviewSlot(accessToken, slotId, postRequest);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<InterviewSlotsByDateResponse> data = response.body().jsonPath()
+                .getList("data", InterviewSlotsByDateResponse.class);
+        assertThat(data).isNotNull();
     }
 
     @Test
@@ -391,7 +410,7 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("테스트 17. 임원진이 정상적으로 면접 시간 삭제 202")
+    @DisplayName("테스트 17. 임원진이 정상적으로 면접 시간 삭제 200")
     public void 임원진_SLOT_개별_삭제() {
         //given
         String accessToken = adminLogin();
@@ -401,11 +420,14 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = deleteInterviewSlot(accessToken, deleteSlotId);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<InterviewSlotsByDateResponse> data = response.body().jsonPath()
+                .getList("data", InterviewSlotsByDateResponse.class);
+        assertThat(data).isNotNull();
     }
 
     @Test
-    @DisplayName("테스트 18. 임원진이 회원이 신청한 면접시간 정상적으로 면접 시간 삭제 202")
+    @DisplayName("테스트 18. 임원진이 회원이 신청한 면접시간 정상적으로 면접 시간 삭제 200")
     public void 임원진_회원이_신청한_SLOT_개별_삭제() {
         //given
         long deleteSlotId = 15;
@@ -417,7 +439,10 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = deleteInterviewSlot(accessToken, deleteSlotId);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<InterviewSlotsByDateResponse> data = response.body().jsonPath()
+                .getList("data", InterviewSlotsByDateResponse.class);
+        assertThat(data).isNotNull();
     }
 
     @Test
@@ -458,7 +483,10 @@ public class InterviewAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = deleteAllInterviewSlots(accessToken);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<InterviewSlotsByDateResponse> data = response.body().jsonPath()
+                .getList("data", InterviewSlotsByDateResponse.class);
+        assertThat(data).isEmpty();
     }
 
     @Test
