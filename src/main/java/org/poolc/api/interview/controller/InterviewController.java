@@ -60,9 +60,9 @@ public class InterviewController {
         return ResponseEntity.ok().body(response);
     }
 
-    @DeleteMapping(value = "/application/{slotId}")
-    public ResponseEntity<InterviewTableResponse> cancelInterviewSlot(@AuthenticationPrincipal Member member, @PathVariable Long slotId) {
-        interviewService.cancelApplicationInterviewSlot(member, slotId);
+    @DeleteMapping(value = "/application/{loginId}")
+    public ResponseEntity<InterviewTableResponse> cancelInterviewSlot(@AuthenticationPrincipal Member member, @PathVariable String loginId) {
+        interviewService.cancelApplicationInterviewSlot(member, loginId);
         InterviewTableResponse response = interviewService.getInterviewTable(member);
         return ResponseEntity.ok().body(response);
     }

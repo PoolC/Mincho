@@ -7,6 +7,7 @@ import org.poolc.api.interview.dto.*;
 import org.poolc.api.interview.repository.InterviewSlotRepository;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
+import org.poolc.api.member.service.MemberService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InterviewService {
     private final InterviewSlotRepository interviewSlotRepository;
+    private final MemberService memberService;
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
@@ -49,11 +51,9 @@ public class InterviewService {
     }
 
     @Transactional
-    public void cancelApplicationInterviewSlot(Member member, Long slotId) {
-        InterviewSlot slot = getInterviewSlot(slotId);
-        member.cancelInterviewSlot(slot);
-        memberRepository.saveAndFlush(member);
-        interviewSlotRepository.saveAndFlush(slot);
+    public void cancelApplicationInterviewSlot(Member loginMember, String loginId) {
+        adminCancelInterviewSlot(loginMember, loginId);
+        unacceptedCancelInterviewSlot(loginMember, loginId);
     }
 
     @Transactional
@@ -83,6 +83,7 @@ public class InterviewService {
     @Transactional
     public void deleteAllInterviewSlots(Member admin) {
         checkAdmin(admin);
+        interviewSlotRepository.findAll().stream().forEach(InterviewSlot::deleteAllMembers);
         interviewSlotRepository.deleteAll();
     }
 
@@ -105,5 +106,30 @@ public class InterviewService {
     private void checkUpdateCapacity(UpdateInterviewSlotRequest request, InterviewSlot slot) throws NoPermissionException {
         if (!slot.checkUpdateCapacity(request.getCapacity()))
             throw new NoPermissionException("The capacity to modify is less than current capacity");
+    }
+
+    private void adminCancelInterviewSlot(Member loginMember, String loginId) {
+        if (loginMember.isAdmin()) {
+            Member interviewCancelMember = memberService.getMemberByLoginID(loginId);
+            InterviewSlot slot = interviewCancelMember.cancelInterviewSlot();
+            memberRepository.saveAndFlush(interviewCancelMember);
+            interviewSlotRepository.saveAndFlush(slot);
+        }
+    }
+
+    private void unacceptedCancelInterviewSlot(Member loginMember, String loginId) {
+        if (!loginMember.isAcceptedMember()) {
+            Member interviewCancelMember = memberService.getMemberByLoginID(loginId);
+            checkSameMember(loginMember, interviewCancelMember);
+            InterviewSlot slot = loginMember.cancelInterviewSlot();
+            memberRepository.saveAndFlush(loginMember);
+            interviewSlotRepository.saveAndFlush(slot);
+        }
+    }
+
+    private void checkSameMember(Member loginMember, Member interviewCancelMember) {
+        if (!interviewCancelMember.equals(loginMember)) {
+            throw new UnauthorizedException("본인 아이디가 아니면 허가되지 않습니다.");
+        }
     }
 }

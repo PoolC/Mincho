@@ -79,10 +79,11 @@ public class InterviewSlot extends TimestampEntity {
         this.interviewees = null;
     }
 
-    public void deleteMember(Member member) {
+    public InterviewSlot deleteMember(Member member) {
         this.interviewees = this.interviewees.stream()
                 .filter(m -> !member.equals(m))
                 .collect(Collectors.toList());
+        return this;
     }
 
     public void update(UpdateInterviewSlotRequest request) {
