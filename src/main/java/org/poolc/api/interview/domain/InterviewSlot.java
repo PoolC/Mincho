@@ -39,7 +39,7 @@ public class InterviewSlot extends TimestampEntity {
     @Column(name = "capacity", nullable = false)
     private int capacity;
 
-    @OneToMany(mappedBy = "interviewSlot", fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "interviewSlot", fetch = FetchType.EAGER)
     private List<Member> interviewees;
 
     protected InterviewSlot() {
@@ -62,8 +62,8 @@ public class InterviewSlot extends TimestampEntity {
         this.interviewees = new ArrayList<>();
     }
 
-    public boolean checkSlotIdSame(Long slotId) {
-        if (id == slotId)
+    public boolean checkSlotIdSame(InterviewSlot slot) {
+        if (id == slot.getId())
             return true;
         return false;
     }
@@ -72,8 +72,15 @@ public class InterviewSlot extends TimestampEntity {
         interviewees.add(member);
     }
 
+    public void deleteAllMembers() {
+        interviewees.stream().forEach(member -> {
+            member.cancelInterviewSlot();
+        });
+        this.interviewees = null;
+    }
+
     public void deleteMember(Member member) {
-        this.interviewees = interviewees.stream()
+        this.interviewees = this.interviewees.stream()
                 .filter(m -> !member.equals(m))
                 .collect(Collectors.toList());
     }

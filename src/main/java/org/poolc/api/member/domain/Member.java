@@ -179,16 +179,21 @@ public class Member extends TimestampEntity implements UserDetails {
         slot.insertMember(this);
     }
 
-    public void cancelInterviewSlot(Long slotId) {
+    public void cancelInterviewSlot(InterviewSlot slot) {
         if (isAcceptedMember())
             throw new UnauthorizedException("No permission to cancel interview slot application");
 
         if (interviewSlot == null)
             throw new NoSuchElementException("No slot in member");
 
-        if (!interviewSlot.checkSlotIdSame(slotId))
+        if (!interviewSlot.checkSlotIdSame(slot))
             throw new NoSuchElementException("No slot found with given slotId in member");
-        interviewSlot.deleteMember(this);
+
+        slot.deleteMember(this);
+        this.interviewSlot = null;
+    }
+
+    public void cancelInterviewSlot() {
         this.interviewSlot = null;
     }
 

@@ -51,9 +51,9 @@ public class InterviewService {
     @Transactional
     public void cancelApplicationInterviewSlot(Member member, Long slotId) {
         InterviewSlot slot = getInterviewSlot(slotId);
-        member.cancelInterviewSlot(slotId);
-        interviewSlotRepository.saveAndFlush(slot);
+        member.cancelInterviewSlot(slot);
         memberRepository.saveAndFlush(member);
+        interviewSlotRepository.saveAndFlush(slot);
     }
 
     @Transactional
@@ -75,8 +75,9 @@ public class InterviewService {
     @Transactional
     public void deleteInterviewSlot(Member admin, Long deleteSlotId) {
         checkAdmin(admin);
-        getInterviewSlot(deleteSlotId);
-        interviewSlotRepository.delete(getInterviewSlot(deleteSlotId));
+        InterviewSlot deleteInterviewSlot = getInterviewSlot(deleteSlotId);
+        deleteInterviewSlot.deleteAllMembers();
+        interviewSlotRepository.delete(deleteInterviewSlot);
     }
 
     @Transactional
