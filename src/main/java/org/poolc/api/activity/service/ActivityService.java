@@ -10,6 +10,7 @@ import org.poolc.api.activity.repository.SessionRepository;
 import org.poolc.api.activity.vo.ActivityCreateValues;
 import org.poolc.api.activity.vo.ActivityUpdateValues;
 import org.poolc.api.common.domain.YearSemester;
+import org.poolc.api.common.exception.ConflictException;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -74,9 +75,9 @@ public class ActivityService {
     public Activity apply(Long id, Member user) {
         Activity activity = activityRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당하는 활동이 없습니다"));
         if (!activity.getAvailable()) {
-            throw new IllegalStateException("아직 신청할수 없습니다.");
+            throw new ConflictException("아직 신청할수 없습니다.");
         } else if (!activity.checkMemberContain(user.getLoginID()) && activity.getCapacity() <= activity.getMemberLoginIDs().size()) {
-            throw new IllegalStateException("정원을 초과하였습니다");
+            throw new ConflictException("정원을 초과하였습니다");
         } else {
             activity.toggleApply(user.getLoginID());
         }
@@ -134,13 +135,13 @@ public class ActivityService {
 
     private void checkActivityIsClosed(Activity activity) {
         if (activity.getAvailable()) {
-            throw new IllegalStateException("이미 신청가능한 활동입니다");
+            throw new ConflictException("이미 신청가능한 활동입니다");
         }
     }
 
     private void checkActivityIsOpen(Activity activity) {
         if (!activity.getAvailable()) {
-            throw new IllegalStateException("이미 닫혀있는 활동입니다");
+            throw new ConflictException("이미 닫혀있는 활동입니다");
         }
     }
 

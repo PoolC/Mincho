@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.common.domain.TimestampEntity;
+import org.poolc.api.common.exception.ConflictException;
 import org.poolc.api.interview.domain.InterviewSlot;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.springframework.security.core.GrantedAuthority;
@@ -173,14 +174,14 @@ public class Member extends TimestampEntity implements UserDetails {
         if (isAcceptedMember())
             throw new UnauthorizedException("No permission to apply interview slot");
         if (checkInterviewSlotExist())
-            throw new IllegalArgumentException("Already apply");
+            throw new ConflictException("Already apply");
         this.interviewSlot = slot;
         slot.insertMember(this);
     }
 
     public InterviewSlot cancelInterviewSlot() {
         if (interviewSlot == null)
-            throw new IllegalArgumentException("No slot in member");
+            throw new ConflictException("No slot in member");
 
         InterviewSlot slot = interviewSlot.deleteMember(this);
         this.interviewSlot = null;

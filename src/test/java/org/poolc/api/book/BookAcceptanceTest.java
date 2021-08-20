@@ -75,7 +75,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = getBookRequest(accessToken, 100L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = borrowBookRequest(accessToken, 3L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = borrowBookRequest(accessToken, 423L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = returnBookRequest(accessToken, 432L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = returnBookRequest(accessToken, 5L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = returnBookRequest(accessToken, 6L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = updateBookRequest(accessToken, "형철이의 삶 3", "박형철", "d", "ㅇㄴ", 432L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -254,7 +254,7 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = deleteBookRequest(accessToken, 432L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     public static ExtractableResponse<Response> getBooksRequest(String accessToken) {

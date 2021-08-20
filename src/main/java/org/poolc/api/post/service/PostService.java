@@ -35,6 +35,7 @@ public class PostService {
         return post.getId();
     }
 
+    @Transactional(readOnly = true)
     public Post getPost(Member user, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NoSuchElementException("no post found with given postId"));

@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
-import org.poolc.api.auth.dto.AuthResponse;
+import org.poolc.api.auth.AuthAcceptanceTest;
 import org.poolc.api.poolc.domain.Poolc;
 import org.poolc.api.poolc.dto.CreatePoolcRequest;
 import org.poolc.api.poolc.dto.UpdatePoolcRequest;
@@ -18,7 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
+import static org.poolc.api.auth.AuthAcceptanceTest.adminLogin;
+import static org.poolc.api.auth.AuthAcceptanceTest.memberLogin;
 
 @ActiveProfiles("memberTest")
 public class PoolcAcceptanceTest extends AcceptanceTest {
@@ -44,7 +45,7 @@ public class PoolcAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 회원풀씨정보조회() {
-        String accessToken = 비임원진로그인();
+        String accessToken = AuthAcceptanceTest.memberLogin();
 
         ExtractableResponse<Response> response = getPoolcRequest(accessToken);
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -57,34 +58,22 @@ public class PoolcAcceptanceTest extends AcceptanceTest {
     }
 
     //TODO: ADMIN_MEMBER가 사라져서 로그인이 안된다.
-//    @Test
-//    void 임원진_풀씨정보업데이트() {
-//        String accessToken = 임원진로그인();
-//        UpdatePoolcRequest request = new UpdatePoolcRequest("전영주", "01067679584", "공A 537호", null, "프로그래밍 동아리", null, false, null);
-//        ExtractableResponse<Response> response = updatePoolcInfo(accessToken, request);
-//
-//        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-//    }
+    @Test
+    void 임원진_풀씨정보업데이트() {
+        String accessToken = adminLogin();
+        UpdatePoolcRequest request = new UpdatePoolcRequest("전영주", "01067679584", "공A 537호", null, "프로그래밍 동아리", null, false, null);
+        ExtractableResponse<Response> response = updatePoolcInfo(accessToken, request);
+
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 
     @Test
     void 비임원진_풀씨정보업데이트() {
-        String accessToken = 비임원진로그인();
+        String accessToken = memberLogin();
         UpdatePoolcRequest request = new UpdatePoolcRequest("전영주", "01067679584", "공A 537호", null, "프로그래밍 동아리", null, false, null);
         ExtractableResponse<Response> response = updatePoolcInfo(accessToken, request);
 
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
-    }
-
-    private String 임원진로그인() {
-        return loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
-    }
-
-    private String 비임원진로그인() {
-        return loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
     }
 
     public static ExtractableResponse<Response> createPoolcRequest(String accessToken, CreatePoolcRequest request) {
