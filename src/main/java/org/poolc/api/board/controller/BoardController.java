@@ -56,7 +56,7 @@ public class BoardController {
                     .map(BoardResponse::new)
                     .collect(Collectors.toList());
         }
-        boards.sort(Comparator.comparing(BoardResponse::getName));
+        boards.sort(Comparator.comparing(BoardResponse::getID));
 
         BoardsResponse response = new BoardsResponse(boards);
         return ResponseEntity.ok().body(response);
