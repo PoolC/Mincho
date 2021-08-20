@@ -23,13 +23,13 @@ public class CommonExceptionHandlers {
                 .body(Collections.singletonMap("message", e.getMessage()));
     }
 
-    @ExceptionHandler({UnauthenticatedException.class, WrongPasswordException.class})
+    @ExceptionHandler({UnauthenticatedException.class})
     public ResponseEntity<Map<String, String>> unauthorizedHandler(Exception e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Collections.singletonMap("message", e.getMessage()));
     }
 
-    @ExceptionHandler({UnactivatedException.class, UnauthorizedException.class})
+    @ExceptionHandler({UnactivatedException.class, UnauthorizedException.class, WrongPasswordException.class})
     public ResponseEntity<Map<String, String>> forbiddenHandler(Exception e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(Collections.singletonMap("message", e.getMessage()));

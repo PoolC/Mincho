@@ -45,7 +45,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
     void loginWrongPassword() {
         ExtractableResponse<Response> response = loginRequest(member_id, wrong_password);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Order(3)
@@ -53,7 +53,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
     void loginNotExistMember() {
         ExtractableResponse<Response> response = loginRequest(not_existing_loginId, wrong_password);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Order(4)
