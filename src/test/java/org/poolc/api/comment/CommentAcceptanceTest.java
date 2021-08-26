@@ -20,6 +20,7 @@ import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 @ActiveProfiles({"postTest", "boardTest", "memberTest"})
 public class CommentAcceptanceTest extends AcceptanceTest {
     private final Long NOTICE_POST_ID = 7L;
+    private final Long EXIST_COMMENT_ID = 1L;
     private final Long WILL_NOT_DELETE_COMMENT_ID = 21L;
 
     @Test
@@ -69,9 +70,9 @@ public class CommentAcceptanceTest extends AcceptanceTest {
     @Test
     void 작성자x댓글삭제() {
         String accessToken = 작성자x로그인();
-        ExtractableResponse<Response> response = deleteComment(accessToken, WILL_NOT_DELETE_COMMENT_ID);
+        ExtractableResponse<Response> response = deleteComment(accessToken, EXIST_COMMENT_ID);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test

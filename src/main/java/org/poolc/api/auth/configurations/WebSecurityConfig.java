@@ -90,6 +90,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/book/**").hasAuthority(MemberRole.MEMBER.name())
 
                 .antMatchers(HttpMethod.POST, "/member").permitAll()
+                .antMatchers(HttpMethod.GET, "/member/me").not().hasAuthority(MemberRole.EXPELLED.name())
+                .antMatchers(HttpMethod.GET, "/member/role").not().hasAuthority(MemberRole.EXPELLED.name())
                 .antMatchers(HttpMethod.PUT, "/member/reset-password-token").permitAll()
                 .antMatchers(HttpMethod.PUT, "/member/reset-password").permitAll()
                 .antMatchers(HttpMethod.GET, "/member").hasAuthority(MemberRole.MEMBER.name())
@@ -116,9 +118,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/activity/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.PUT, "/activity/session/*").hasAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.DELETE, "/activity/*").hasAuthority(MemberRole.MEMBER.name())
-                .antMatchers("/file").hasAuthority(MemberRole.MEMBER.name())
-                .antMatchers("/**").permitAll()
 
+                .antMatchers("/file").hasAuthority(MemberRole.MEMBER.name())
+
+                .antMatchers(HttpMethod.POST, "/interview/application/*").hasAuthority(MemberRole.UNACCEPTED.name())
+                .antMatchers(HttpMethod.DELETE, "/interview/application/*").hasAnyAuthority(MemberRole.UNACCEPTED.name(), MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.GET, "/interview/slots").permitAll()
+                .antMatchers(HttpMethod.POST, "/interview/slots").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.PUT, "/interview/slots/*").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.DELETE, "/interview/slots/*").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.PUT, "/interview/slots").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers("/**").permitAll()
 
                 .anyRequest().authenticated().and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService),

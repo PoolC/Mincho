@@ -3,7 +3,10 @@ package org.poolc.api.member;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
 import org.poolc.api.member.domain.MemberRole;
@@ -15,11 +18,13 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
+import static org.poolc.api.auth.AuthAcceptanceTest.*;
 
 @ActiveProfiles("memberTest")
+@TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 public class MemberAcceptanceTest extends AcceptanceTest {
 
+    @Order(1)
     @Test
     void testCreate() {
         RegisterMemberRequest request = new RegisterMemberRequest("testName", "testId",
@@ -31,6 +36,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
     }
 
+    @Order(2)
     @Test
     void testCreateWrongPasswordCheck() {
         RegisterMemberRequest request = new RegisterMemberRequest("WrongPassword", "WrongPasswordId",
@@ -42,6 +48,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Order(3)
     @Test
     void testDuplicateCreate() {
         RegisterMemberRequest request = new RegisterMemberRequest("DuplicateName", "DuplicateTestId",
@@ -55,11 +62,10 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(notPass.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
+    @Order(4)
     @Test
     void testGetMe() {
-        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = memberLogin();
 
         ExtractableResponse<Response> response = getMemberRequest(accessToken);
         MemberResponse responseBody = response.as(MemberResponse.class);
@@ -68,25 +74,22 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getName()).isEqualTo("MEMBER_NAME");
     }
 
+    @Order(5)
     @Test
     void getAllMembersAsAdmin() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = adminLogin();
 
         ExtractableResponse<Response> response = getMembersRequest(accessToken);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         MemberListResponse responseBody = response.body().as(MemberListResponse.class);
-        assertThat(responseBody.getData()).hasSize(10);
     }
 
+    @Order(6)
     @Test
     void getAllMembersAsMember() {
-        String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = memberLogin();
 
         ExtractableResponse<Response> response = getMembersRequest(accessToken);
 
@@ -103,22 +106,19 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(memberStatuses).isEqualTo(0);
     }
 
+    @Order(7)
     @Test
     void updateWrongPasswordCheckMemberInfo() {
-        String accessToken = loginRequest("UPDATE_MEMBER_ID", "UPDATE_MEMBER_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
-
+        String accessToken = updateMemberLogin();
         ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "UPDATE_MEMBER_PASSWORD", "NEW_PASSWORD", "NEW@naver.com", "01033334444", "야이야");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Order(8)
     @Test
     void updateMemberInfo() {
-        String accessToken = loginRequest("UPDATE_MEMBER_ID", "UPDATE_MEMBER_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = updateMemberLogin();
 
         ExtractableResponse<Response> response = updateMemberInfoRequest(accessToken, "NEW_MEMBER_NAME", "UPDATE_MEMBER_PASSWORD", "UPDATE_MEMBER_PASSWORD", "NEW@naver.com", "01033334444", "야이야");
 
@@ -129,11 +129,10 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getName()).isEqualTo("NEW_MEMBER_NAME");
     }
 
+    @Order(9)
     @Test
     void ActivateMember() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = adminLogin();
 
         String loginID = "UNACCEPTED_MEMBER_ID";
 
@@ -145,11 +144,10 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getIsActivated()).isEqualTo(true);
     }
 
+    @Order(10)
     @Test
     void promoteAsAdmin() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = adminLogin();
 
         String not_admin_loginID = "NOT_ADMIN_ID";
 
@@ -161,11 +159,10 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getIsAdmin()).isEqualTo(true);
     }
 
+    @Order(11)
     @Test
     void revokeAdminPrivileges() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = adminLogin();
 
         String willRevokeAdminID = "WILL_REVOKE_ADMIN_ID";
 
@@ -177,67 +174,41 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getIsAdmin()).isEqualTo(false);
     }
 
-    @Test
-    void adminDeleteExistingMember() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
-
-        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "WILL_DELETE_MEMBER_ID");
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @Test
-    void adminDeleteNotExistingMember() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
-
-        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "NO_MEMBER_ID");
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
+    @Order(12)
     @Test
     void deleteMemberAsNonAdminIsUnauthorized() {
-        String accessToken = loginRequest("UPDATE_MEMBER_ID", "UPDATE_MEMBER_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = updateMemberLogin();
 
         ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "WILL_DELETE_MEMBER_ID");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(13)
     @Test
     void adminUpdatesMemberStatusAsExpelled() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = adminLogin();
         ExtractableResponse<Response> response = adminUpdateMemberStatusRequest(accessToken, "TO_BE_EXPELLED_ID", "EXPELLED");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Order(14)
     @Test
     void adminUpdatesMemberStatus() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = adminLogin();
         ExtractableResponse<Response> response = adminUpdateMemberStatusRequest(accessToken, "MEMBER_ID", MemberRole.GRADUATED.name());
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        accessToken = memberLogin();
         response = getMemberRequest(accessToken);
         MemberResponse memberResponse = response.as(MemberResponse.class);
 
         assertThat(memberResponse.getRole()).isEqualTo(MemberRole.GRADUATED.name());
     }
 
+    @Order(15)
     @Test
     void selfUpdateStatus() {
         String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
@@ -252,14 +223,35 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(memberResponse.getRole()).isEqualTo(MemberRole.COMPLETE.name());
     }
 
+    @Order(16)
     @Test
     void updateIsExcepted() {
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = adminLogin();
         ExtractableResponse<Response> response = updateMemberIsExceptedRequest(accessToken, "MEMBER_ID");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Order(17)
+    @Test
+    public void 임원진_UNACCEPTANCE회원_전체_삭제() {
+        //given
+
+        //when
+
+        //then
+
+    }
+
+    @Order(18)
+    @Test
+    public void 임원진X_UNACCEPTANCE회원_전체_삭제시_에러() {
+        //given
+
+        //when
+
+        //then
+
     }
 
     public static ExtractableResponse<Response> createMemberRequest(RegisterMemberRequest request) {

@@ -3,7 +3,10 @@ package org.poolc.api.board;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
 import org.poolc.api.board.dto.BoardResponse;
@@ -19,12 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
 @ActiveProfiles({"boardTest", "memberTest"})
+@TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 public class BoardAcceptanceTest extends AcceptanceTest {
     private final Long notExistBoardId = 1000L;
     private final Long noticeBoardId = 1L;
     private final Long deleteBoardId = 6L;
     private final Long updateBoardId = 7L;
 
+    @Order(1)
     @Test
     void 게시판생성() {
         String accessToken = 임원진로그인();
@@ -34,6 +39,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
     }
 
+    @Order(2)
     @Test
     void 비인가자게시판생성() {
         String accessToken = 비임원진로그인();
@@ -43,6 +49,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(3)
     @Test
     void 특정게시판조회() {
         String accessToken = 비임원진로그인();
@@ -54,6 +61,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getName().equals("공지사항"));
     }
 
+    @Order(4)
     @Test
     void 외부인_특정PUBLIC게시판조회() {
         String accessToken = "";
@@ -65,15 +73,17 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getName().equals("공지사항"));
     }
 
+    @Order(5)
     @Test
     void 없는특정게시판조회() {
         String accessToken = 비임원진로그인();
 
         ExtractableResponse<Response> response = getBoardRequest(accessToken, notExistBoardId);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
+    @Order(6)
     @Test
     void 전체게시판조회() {
         String accessToken = 비임원진로그인();
@@ -82,9 +92,9 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         BoardsResponse requestBody = response.as(BoardsResponse.class);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(requestBody.getData()).hasSize(8);
     }
 
+    @Order(7)
     @Test
     void 외부인_전체게시판조회() {
         String accessToken = "";
@@ -95,6 +105,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Order(8)
     @Test
     void 임원게시판삭제() {
         String accessToken = 임원진로그인();
@@ -104,9 +115,10 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         ExtractableResponse<Response> 확인Response = getBoardRequest(accessToken, deleteBoardId);
-        assertThat(확인Response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(확인Response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
+    @Order(9)
     @Test
     void 비임원게시판삭제() {
         String accessToken = 비임원진로그인();
@@ -116,16 +128,17 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
-
+    @Order(10)
     @Test
     void 없는게시판삭제() {
         String accessToken = 임원진로그인();
 
         ExtractableResponse<Response> response = deleteBoard(accessToken, notExistBoardId);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
+    @Order(11)
     @Test
     void 임원진게시판_nameAndUrlPath_수정() {
         String accessToken = 임원진로그인();
@@ -143,6 +156,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(requestBody.getWritePermission()).isEqualTo(MemberRole.ADMIN);
     }
 
+    @Order(12)
     @Test
     void 임원진게시판_urlpath만_수정() {
         String accessToken = 임원진로그인();
@@ -160,6 +174,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(requestBody.getWritePermission()).isEqualTo(MemberRole.ADMIN);
     }
 
+    @Order(13)
     @Test
     void 임원진게시판_name만_수정() {
         String accessToken = 임원진로그인();
@@ -177,6 +192,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(requestBody.getWritePermission()).isEqualTo(MemberRole.ADMIN);
     }
 
+    @Order(14)
     @Test
     void 임원진게시판수정_nameDuplicate() {
         String accessToken = 임원진로그인();
@@ -189,6 +205,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
+    @Order(15)
     @Test
     void 임원진게시판수정_urlPathduplicate() {
         String accessToken = 임원진로그인();
@@ -201,6 +218,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
+    @Order(16)
     @Test
     void 비임원진게시판수정() {
         String accessToken = 비임원진로그인();
@@ -211,6 +229,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(17)
     @Test
     void 없는게시판수정() {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")

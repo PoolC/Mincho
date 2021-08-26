@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,21 +44,22 @@ public class BoardController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BoardsResponse> getAllBoard(@AuthenticationPrincipal Member member) {
         //TODO: MEMBER DEFAULT 값이 PUBLIC으로 만들시 삭제
+        List<BoardResponse> boards = new ArrayList<>();
         if (member == null) {
-            List<BoardResponse> boards = boardService.getAllBoards().stream()
+            boards = boardService.getAllBoards().stream()
                     .filter(board -> board.isPublicReadPermission())
                     .map(BoardResponse::new)
                     .collect(Collectors.toList());
-
-            return ResponseEntity.ok().body(new BoardsResponse(boards));
+        } else {
+            boards = boardService.getAllBoards().stream()
+                    .filter(board -> board.memberHasReadPermissions(member.getRoles()))
+                    .map(BoardResponse::new)
+                    .collect(Collectors.toList());
         }
+        boards.sort(Comparator.comparing(BoardResponse::getID));
 
-        List<BoardResponse> boards = boardService.getAllBoards().stream()
-                .filter(board -> board.memberHasReadPermissions(member.getRoles()))
-                .map(BoardResponse::new)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(new BoardsResponse(boards));
+        BoardsResponse response = new BoardsResponse(boards);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping(value = "/{boardId}", produces = MediaType.APPLICATION_JSON_VALUE)

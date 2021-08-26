@@ -80,6 +80,11 @@ public class Poolc {
         this.applyUri = updateValues.getApplyUri();
     }
 
+    //TODO: refactoring 필요성 느껴짐
+    public boolean checkSubscriptionPeriod() {
+        return isSubscriptionPeriod;
+    }
+
     // TODO: DB에 poolc 정보를 넣을 수 있으면 삭제
     public static Poolc of(PoolcCreateValues createValues) {
         return new Poolc(createValues.getPresidentName(), createValues.getPhoneNumber(), createValues.getLocation(), createValues.getLocationUrl(), createValues.getIntroduction(), createValues.getMainImageUrl(), createValues.getIsSubscriptionPeriod(), createValues.getApplyUri());

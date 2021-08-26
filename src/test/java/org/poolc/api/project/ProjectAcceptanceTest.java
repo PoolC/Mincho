@@ -76,7 +76,7 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = getProjectRequest(accessToken, 3L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response2 = addProjectRequest(accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", Collections.singletonList("123123"));
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -157,7 +157,7 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ids.add("1234");
         ExtractableResponse<Response> response2 = updateProjectRequest(1L, accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -169,7 +169,7 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response2 = updateProjectRequest(45L, accessToken, "두번쨰 프로젝트", "배고파", "게임", "기간", "http://naver.com", "장난장난", ids);
 
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -196,7 +196,7 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
                 .as(AuthResponse.class)
                 .getAccessToken();
         ExtractableResponse<Response> response2 = deleteProjectRequest(455L, accessToken);
-        assertThat(response2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     public static ExtractableResponse<Response> getProjectsRequest(String accessToken) {

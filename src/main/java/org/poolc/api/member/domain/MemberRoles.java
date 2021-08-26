@@ -1,6 +1,7 @@
 package org.poolc.api.member.domain;
 
 import org.poolc.api.auth.exception.UnauthorizedException;
+import org.poolc.api.common.exception.ConflictException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -105,7 +106,7 @@ public class MemberRoles {
                 .filter(not(MemberRole::isMember))
                 .findAny()
                 .ifPresent(role -> {
-                    throw new IllegalStateException("Member cannot have non-member role: " + role.name());
+                    throw new ConflictException("Member cannot have non-member role: " + role.name());
                 });
     }
 
@@ -119,7 +120,7 @@ public class MemberRoles {
                 .filter(MemberRole::isMember)
                 .findAny()
                 .ifPresent(specialRole -> {
-                    throw new IllegalStateException(
+                    throw new ConflictException(
                             String.format("Special role %s also needs %s role",
                                     specialRole.name(), MemberRole.MEMBER));
                 });

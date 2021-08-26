@@ -3,7 +3,10 @@ package org.poolc.api.post;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
 import org.poolc.api.post.dto.PostResponse;
@@ -20,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
 @ActiveProfiles({"boardTest", "postTest", "memberTest"})
+@TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 public class PostAcceptanceTest extends AcceptanceTest {
     private Long noticePostId = 1L;
     private Long freePostId = 2L;
@@ -38,6 +42,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
     private String notExistUrlPath = "notExist";
     private final int pageNum = 1, pageSize = 15;
 
+    @Order(1)
     @Test
     void 로그인xPUBLIC게시물조회() {
         String accessToken = "";
@@ -48,6 +53,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getTitle()).isEqualTo("test1");
     }
 
+    @Order(2)
     @Test
     void 로그인xMEMBER게시물조회() {
         String accessToken = "";
@@ -56,6 +62,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(3)
     @Test
     void 로그인xADMIN게시물조회() {
         String accessToken = "";
@@ -64,6 +71,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(4)
     @Test
     void 멤버PUBLIC게시물조회() {
         String accessToken = 작성자비임원진로그인();
@@ -75,6 +83,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getTitle()).isEqualTo("test1");
     }
 
+    @Order(5)
     @Test
     void 멤버MEMBER게시물조회() {
         String accessToken = 작성자비임원진로그인();
@@ -86,6 +95,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getTitle()).isEqualTo("test2");
     }
 
+    @Order(6)
     @Test
     void 멤버ADMIN게시물조회() {
         String accessToken = 작성자비임원진로그인();
@@ -95,6 +105,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(7)
     @Test
     void 임원PUBLIC게시물조회() {
         String accessToken = 임원진로그인();
@@ -106,6 +117,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getTitle()).isEqualTo("test1");
     }
 
+    @Order(8)
     @Test
     void 임원MEMBER게시물조회() {
         String accessToken = 임원진로그인();
@@ -117,6 +129,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getTitle()).isEqualTo("test2");
     }
 
+    @Order(9)
     @Test
     void 임원ADMIN게시물조회() {
         String accessToken = 임원진로그인();
@@ -128,6 +141,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getTitle()).isEqualTo("test3");
     }
 
+    @Order(10)
     @Test
     void 로그인xPUBLIC게시판게시물전체조회() {
         String accessToken = "", urlPath = noticeUrlPath;
@@ -135,6 +149,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Order(11)
     @Test
     void 로그인xMEMBER게시판게시물전체조회() {
         String accessToken = "", urlPath = freeUrlPath;
@@ -144,6 +159,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     }
 
+    @Order(12)
     @Test
     void 로그인xADMIN게시판게시물전체조회() {
         String accessToken = "", urlPath = adminUrlPath;
@@ -152,6 +168,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(13)
     @Test
     void 멤버PUBLIC게시판게시물전체조회() {
         String accessToken = 작성자비임원진로그인(), urlPath = noticeUrlPath;
@@ -160,6 +177,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Order(14)
     @Test
     void 멤버MEMBER게시판게시물전체조회() {
         String accessToken = 작성자비임원진로그인(), urlPath = freeUrlPath;
@@ -168,6 +186,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Order(15)
     @Test
     void 멤버ADMIN게시판게시물전체조회() {
         String accessToken = 작성자비임원진로그인(), urlPath = adminUrlPath;
@@ -176,6 +195,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(16)
     @Test
     void 임원PUBLIC게시판게시물전체조회() {
         String accessToken = 임원진로그인(), urlPath = freeUrlPath;
@@ -184,6 +204,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Order(17)
     @Test
     void 임원MEMBER게시판게시물전체조회() {
         String accessToken = 임원진로그인(), urlPath = freeUrlPath;
@@ -192,6 +213,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Order(18)
     @Test
     void 임원ADMIN게시판게시물전체조회() {
         String accessToken = 임원진로그인(), urlPath = freeUrlPath;
@@ -200,15 +222,16 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Order(19)
     @Test
     void 없는게시판게시물전체조회() {
         String accessToken = 임원진로그인(), urlPath = notExistUrlPath;
         ExtractableResponse<Response> response = getPostsByUrlPath(accessToken, urlPath, pageNum);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-
+    @Order(20)
     @Test
     void 로그인x게시물생성() {
         String accessToken = "";
@@ -220,6 +243,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(21)
     @Test
     void 멤버MEMBER게시글생성() {
         String accessToken = 작성자비임원진로그인();
@@ -233,6 +257,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
     }
 
+    @Order(22)
     @Test
     void 멤버MEMBER게시글생성중복된파일() {
         String accessToken = 작성자비임원진로그인();
@@ -246,6 +271,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Order(23)
     @Test
     void 멤버ADMIN게시글생성() {
         String accessToken = 작성자비임원진로그인();
@@ -259,6 +285,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(24)
     @Test
     void 임원MEMBER게시글생성() {
         String accessToken = 임원진로그인();
@@ -271,7 +298,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
     }
 
-
+    @Order(25)
     @Test
     void 임원ADMIN게시글생성() {
         String accessToken = 임원진로그인();
@@ -283,6 +310,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
     }
 
+    @Order(26)
     @Test
     void 작성자게시글수정() {
         String accessToken = 작성자비임원진로그인();
@@ -300,6 +328,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getTitle()).isEqualTo("update");
     }
 
+    @Order(27)
     @Test
     void 작성자x게시글수정() {
         String accessToken = 임원진로그인();
@@ -313,6 +342,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(28)
     @Test
     void 작성자게시글삭제() {
         String accessToken = 작성자비임원진로그인();
@@ -322,6 +352,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Order(29)
     @Test
     void 작성자x게시글삭제() {
         String accessToken = 작성자x로그인();
@@ -331,6 +362,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
+    @Order(30)
     @Test
     void 임원게시글삭제() {
         String accessToken = 임원진로그인();
@@ -340,6 +372,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    @Order(31)
     @Test
     void 페이지네이션기능구현() {
         String accessToken = 임원진로그인(), urlPath = "pagination";
@@ -349,6 +382,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getList("data").size()).isEqualTo(pageSize);
     }
 
+    @Order(32)
     @Test
     void 페이지네이션기능구현2() {
         String accessToken = 임원진로그인(), urlPath = "pagination";
@@ -358,6 +392,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getList("data").size()).isEqualTo(pageSize);
     }
 
+    @Order(33)
     @Test
     void 페이지네이션기능구현3() {
         String accessToken = 임원진로그인(), urlPath = "pagination";
@@ -367,6 +402,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().jsonPath().getList("data").size()).isEqualTo(pageSize);
     }
 
+    @Order(34)
     @Test
     void 페이지네이션기능구현4() {
         String accessToken = 임원진로그인(), urlPath = "pagination";

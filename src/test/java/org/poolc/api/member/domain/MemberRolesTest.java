@@ -1,12 +1,12 @@
 package org.poolc.api.member.domain;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 class MemberRolesTest {
     private MemberRoles graduatedRoles;
@@ -26,8 +26,8 @@ class MemberRolesTest {
 
     @Test
     void invalidRolesDoesNotCreate() {
-        assertThatIllegalStateException().isThrownBy(() -> new MemberRoles(Set.of(MemberRole.ADMIN)));
-        assertThatIllegalStateException().isThrownBy(() -> new MemberRoles(Set.of(MemberRole.GRADUATED)));
+        Assertions.assertThatThrownBy(() -> new MemberRoles(Set.of(MemberRole.ADMIN)));
+        Assertions.assertThatThrownBy(() -> new MemberRoles(Set.of(MemberRole.GRADUATED)));
     }
 
     @Test

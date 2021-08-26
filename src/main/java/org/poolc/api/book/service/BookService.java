@@ -7,6 +7,7 @@ import org.poolc.api.book.exception.DuplicateBookException;
 import org.poolc.api.book.repository.BookRepository;
 import org.poolc.api.book.vo.BookCreateValues;
 import org.poolc.api.book.vo.BookUpdateValues;
+import org.poolc.api.common.exception.ConflictException;
 import org.poolc.api.member.domain.Member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,17 +77,17 @@ public class BookService {
 
     private void validateAvailableBook(Book book) {
         if (book.getStatus() != BookStatus.AVAILABLE) {
-            throw new IllegalStateException("대여된 책입니다!");
+            throw new ConflictException("대여된 책입니다!");
         }
     }
 
     private void validateMyBook(Book book, String memberUUID) {
         if (book.getStatus() == BookStatus.AVAILABLE) {
-            throw new IllegalStateException("대여되지 않은 책입니다!");
+            throw new ConflictException("대여되지 않은 책입니다!");
         }
 
         if (!book.getBorrower().getUUID().equals(memberUUID)) {
-            throw new IllegalStateException("본인이 빌린 책이 아닙니다!");
+            throw new ConflictException("본인이 빌린 책이 아닙니다!");
         }
     }
 

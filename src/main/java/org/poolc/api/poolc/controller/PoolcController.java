@@ -26,7 +26,7 @@ public class PoolcController {
 
     @GetMapping
     public ResponseEntity<PoolcResponse> findPoolc() {
-        PoolcResponse response = PoolcResponse.of(poolcService.findPoolc());
+        PoolcResponse response = PoolcResponse.of(poolcService.get());
         return ResponseEntity.ok().body(response);
     }
 

@@ -5,21 +5,19 @@ import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.common.domain.TimestampEntity;
+import org.poolc.api.common.exception.ConflictException;
+import org.poolc.api.interview.domain.InterviewSlot;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Objects;
 
 @Entity(name = "Member")
 @Getter
-@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Member extends TimestampEntity implements UserDetails {
     @Id
@@ -65,9 +63,14 @@ public class Member extends TimestampEntity implements UserDetails {
     @Embedded
     private MemberRoles roles;
 
+    @ManyToOne
+    @JoinColumn(name = "interview_table_id")
+    private InterviewSlot interviewSlot;
+
     protected Member() {
     }
 
+    @Builder
     public Member(String UUID, String loginID, String passwordHash, String email, String phoneNumber, String name, String department, String studentID, String passwordResetToken, LocalDateTime passwordResetTokenValidUntil, String profileImageURL, String introduction, Boolean isExcepted, MemberRoles roles) {
         this.UUID = UUID;
         this.loginID = loginID;
@@ -167,6 +170,24 @@ public class Member extends TimestampEntity implements UserDetails {
         updateIsExceptedTrue();
     }
 
+    public void applyInterviewSlot(InterviewSlot slot) {
+        if (isAcceptedMember())
+            throw new UnauthorizedException("No permission to apply interview slot");
+        if (checkInterviewSlotExist())
+            throw new ConflictException("Already apply");
+        this.interviewSlot = slot;
+        slot.insertMember(this);
+    }
+
+    public InterviewSlot cancelInterviewSlot() {
+        if (interviewSlot == null)
+            throw new ConflictException("No slot in member");
+
+        InterviewSlot slot = interviewSlot.deleteMember(this);
+        this.interviewSlot = null;
+        return slot;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.getAuthorities();
@@ -241,5 +262,11 @@ public class Member extends TimestampEntity implements UserDetails {
 
     private void toggleIsExcepted() {
         isExcepted = !isExcepted;
+    }
+
+    private boolean checkInterviewSlotExist() {
+        if (this.interviewSlot != null)
+            return true;
+        return false;
     }
 }
