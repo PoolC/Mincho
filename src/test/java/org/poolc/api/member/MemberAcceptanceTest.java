@@ -174,15 +174,6 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(responseBody.getIsAdmin()).isEqualTo(false);
     }
 
-    @Order(12)
-    @Test
-    void deleteMemberAsNonAdminIsUnauthorized() {
-        String accessToken = updateMemberLogin();
-
-        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "WILL_DELETE_MEMBER_ID");
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
-    }
 
     @Order(13)
     @Test
@@ -234,23 +225,28 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Order(17)
     @Test
-    public void 임원진_UNACCEPTANCE회원_전체_삭제() {
+    public void 임원진X_UNACCEPTANCE회원_전체_삭제시_에러() {
         //given
+        String accessToken = memberLogin();
 
         //when
+        ExtractableResponse<Response> response = deleteUnacceptedDeleteRequest(accessToken);
 
         //then
-
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Order(18)
     @Test
-    public void 임원진X_UNACCEPTANCE회원_전체_삭제시_에러() {
+    public void 임원진_UNACCEPTANCE회원_전체_삭제() {
         //given
+        String accessToken = adminLogin();
 
         //when
+        ExtractableResponse<Response> response = deleteUnacceptedDeleteRequest(accessToken);
 
         //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
     }
 
@@ -371,6 +367,16 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .auth().oauth2(accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/member/excepted/{loginId}", loginId)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> deleteUnacceptedDeleteRequest(String accessToken) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/member/unaccepted")
                 .then().log().all()
                 .extract();
     }
