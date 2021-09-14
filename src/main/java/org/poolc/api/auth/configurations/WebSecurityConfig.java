@@ -95,8 +95,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/member/reset-password-token").permitAll()
                 .antMatchers(HttpMethod.PUT, "/member/reset-password").permitAll()
                 .antMatchers(HttpMethod.GET, "/member").hasAuthority(MemberRole.MEMBER.name())
-                .antMatchers(HttpMethod.DELETE, "/member/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/member/activate/*").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.DELETE, "/member/unaccepted").hasAnyAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/member/**").hasAuthority(MemberRole.MEMBER.name())
 
                 .antMatchers(HttpMethod.POST, "/poolc").hasAuthority(MemberRole.ADMIN.name())
