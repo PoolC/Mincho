@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -225,5 +226,10 @@ public class MemberService {
         String newPasswordHash = passwordHashProvider.encodePassword(newPassword);
         resetMember.updatePassword(newPasswordHash);
         memberRepository.saveAndFlush(resetMember);
+    }
+
+    public void deleteUnacceptedMembers() {
+        getAllMembers().stream().filter(Predicate.not(Member::isEnabled))
+                .forEach(memberRepository::delete);
     }
 }

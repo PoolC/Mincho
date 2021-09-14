@@ -137,6 +137,12 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping(path = "/unaccepted")
+    public ResponseEntity<Void> deleteUnacceptedMembers() {
+        memberService.deleteUnacceptedMembers();
+        return ResponseEntity.ok().build();
+    }
+
     private void checkIsValidMemberCreateInput(RegisterMemberRequest request) {
         if (!request.getPassword().equals(request.getPasswordCheck())) {
             throw new IllegalArgumentException("passwords should match");
