@@ -33,7 +33,7 @@ public class CommentController {
         CommentCreateValues commentCreateValues = new CommentCreateValues(correspondingPost, user, body);
         CommentResponse response = commentService.createComment(commentCreateValues);
 
-        return ResponseEntity.accepted().body(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping(value = "/{commentId}")

@@ -29,7 +29,7 @@ public class PostController {
     public ResponseEntity<Map<String, Long>> createPost(@AuthenticationPrincipal Member writer,
                                                         @RequestBody RegisterPostRequest request) {
         Long postId = postService.create(writer, request);
-        return ResponseEntity.accepted().body(Collections.singletonMap("postId", postId));
+        return ResponseEntity.ok().body(Collections.singletonMap("postId", postId));
     }
 
 
