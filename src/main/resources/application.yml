@@ -35,6 +35,6 @@ file:
   fetch-url: ${FETCH_URL}
 search:
   post:
-    url: localhost2
+    url: 172.26.14.223
     port: 9200
     scheme: http
