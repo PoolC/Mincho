@@ -25,7 +25,6 @@ spring:
       auth: true
       starttls.enable: true
       ssl.trust: smtp.gmail.com
-
 security:
   jwt:
     token:
@@ -34,3 +33,8 @@ security:
 file:
   file-dir: ${FILE_DIR}
   fetch-url: ${FETCH_URL}
+search:
+  post:
+    url: localhost2
+    port: 9200
+    scheme: http

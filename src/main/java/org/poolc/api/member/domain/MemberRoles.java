@@ -85,11 +85,7 @@ public class MemberRoles {
     }
 
     public boolean checkIsExcepted() {
-        int memberOrdinal = MemberRole.MEMBER.ordinal();
-        if (getHighestRole().ordinal() < memberOrdinal) {
-            return true;
-        }
-        return false;
+        return getHighestRole().ordinal() < MemberRole.MEMBER.ordinal();
     }
 
     private void checkRolesAreCorrect() {

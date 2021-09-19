@@ -13,4 +13,8 @@ public class PostsResponse {
     public PostsResponse(List<PostResponse> data) {
         this.data = data;
     }
+
+    public static PostsResponse of(List<PostResponse> posts) {
+        return new PostsResponse(posts);
+    }
 }
