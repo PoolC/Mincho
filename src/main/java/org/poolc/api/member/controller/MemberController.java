@@ -56,7 +56,7 @@ public class MemberController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping(value = "/{loginID}")
+    @GetMapping(path = "/{loginID}")
     public ResponseEntity<MemberResponse> getMemberWithProjectAndActivity(@PathVariable String loginID) {
         //TODO: project schema 변경한 뒤에 refactoring 진행
         Member findMember = memberService.getMemberByLoginID(loginID);
@@ -83,7 +83,7 @@ public class MemberController {
     public ResponseEntity<Void> createMember(@RequestBody RegisterMemberRequest request) {
         checkIsValidMemberCreateInput(request);
         memberService.create(new MemberCreateValues(request));
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "/me")

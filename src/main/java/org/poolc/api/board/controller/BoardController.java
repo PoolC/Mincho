@@ -38,7 +38,7 @@ public class BoardController {
     public ResponseEntity<Void> createBoard(@RequestBody RegisterBoardRequest registerBoardRequest) {
         boardService.create(new BoardCreateValues(registerBoardRequest));
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
