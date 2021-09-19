@@ -1,4 +1,4 @@
-package org.poolc.api.searcher.exception;
+package org.poolc.api.search.exception;
 
 public class UpdateUnsupportedException extends RuntimeException {
     public UpdateUnsupportedException(String message) {

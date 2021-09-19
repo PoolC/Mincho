@@ -9,6 +9,7 @@ import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.domain.MemberRoles;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity(name = "Board")
 @SequenceGenerator(
@@ -104,9 +105,7 @@ public class Board extends TimestampEntity {
     }
 
     public Boolean checkPageNumberInBound(Long pageNumber) {
-        if (PAGE_SIZE * (pageNumber - 1) > postCount)
-            return false;
-        return true;
+        return PAGE_SIZE * (pageNumber - 1) <= postCount;
     }
 
     private boolean onlyAdminAllowed(MemberRole permission, MemberRoles roles) {
