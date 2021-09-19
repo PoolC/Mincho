@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Collections;
+import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.*;
@@ -176,24 +177,47 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Order(12)
     @Test
-    void deleteMemberAsNonAdminIsUnauthorized() {
-        String accessToken = updateMemberLogin();
+    public void 임원진X_UNACCEPTANCE회원_전체_삭제시_에러() {
+        //given
+        String accessToken = memberLogin();
 
-        ExtractableResponse<Response> response = deleteMemberRequest(accessToken, "WILL_DELETE_MEMBER_ID");
+        //when
+        ExtractableResponse<Response> response = deleteUnacceptedDeleteRequest(accessToken);
 
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Order(13)
+    @Test
+    public void 임원진_UNACCEPTANCE회원_전체_삭제() {
+        //given
+        String accessToken = adminLogin();
+
+        //when
+        ExtractableResponse<Response> response = deleteUnacceptedDeleteRequest(accessToken);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> checkMemberNumber = getMembersRequest(accessToken);
+
+        MemberListResponse allMembers = checkMemberNumber.as(MemberListResponse.class);
+        long unacceptedMembersCount = allMembers.getData().stream().filter(Predicate.not(MemberResponse::getIsActivated)).count();
+        assertThat(unacceptedMembersCount).isEqualTo(0L);
+
+    }
+
+    @Order(14)
     @Test
     void adminUpdatesMemberStatusAsExpelled() {
         String accessToken = adminLogin();
         ExtractableResponse<Response> response = adminUpdateMemberStatusRequest(accessToken, "TO_BE_EXPELLED_ID", "EXPELLED");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
     }
 
-    @Order(14)
+    @Order(15)
     @Test
     void adminUpdatesMemberStatus() {
         String accessToken = adminLogin();
@@ -208,7 +232,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(memberResponse.getRole()).isEqualTo(MemberRole.GRADUATED.name());
     }
 
-    @Order(15)
+    @Order(16)
     @Test
     void selfUpdateStatus() {
         String accessToken = loginRequest("MEMBER_ID3", "MEMBER_PASSWORD3")
@@ -223,35 +247,13 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(memberResponse.getRole()).isEqualTo(MemberRole.COMPLETE.name());
     }
 
-    @Order(16)
+    @Order(17)
     @Test
     void updateIsExcepted() {
         String accessToken = adminLogin();
         ExtractableResponse<Response> response = updateMemberIsExceptedRequest(accessToken, "MEMBER_ID");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    @Order(17)
-    @Test
-    public void 임원진_UNACCEPTANCE회원_전체_삭제() {
-        //given
-
-        //when
-
-        //then
-
-    }
-
-    @Order(18)
-    @Test
-    public void 임원진X_UNACCEPTANCE회원_전체_삭제시_에러() {
-        //given
-
-        //when
-
-        //then
-
     }
 
     public static ExtractableResponse<Response> createMemberRequest(RegisterMemberRequest request) {
@@ -371,6 +373,16 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .auth().oauth2(accessToken)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/member/excepted/{loginId}", loginId)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> deleteUnacceptedDeleteRequest(String accessToken) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/member/unaccepted")
                 .then().log().all()
                 .extract();
     }
