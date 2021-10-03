@@ -15,6 +15,9 @@ import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.domain.MemberRoles;
 import org.poolc.api.member.repository.MemberRepository;
+import org.poolc.api.poolc.dto.CreatePoolcRequest;
+import org.poolc.api.poolc.service.PoolcService;
+import org.poolc.api.poolc.vo.PoolcCreateValues;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -33,6 +36,7 @@ public class ActivityDataLoader implements CommandLineRunner {
     private final ActivityRepository activityRepository;
     private final PasswordHashProvider passwordHashProvider;
     private final ActivityService activityService;
+    private final PoolcService poolcService;
     private final SessionService sessionService;
 
     @Override
@@ -88,6 +92,18 @@ public class ActivityDataLoader implements CommandLineRunner {
         memberRepository.save(member);
         memberRepository.save(member2);
         memberRepository.save(member3);
+
+        poolcService.createPoolc(new PoolcCreateValues(new CreatePoolcRequest(
+                "김성하",
+                "01012341234",
+                "공학관",
+                "",
+                "풀씨",
+                "",
+                false,
+                ""
+        )));
+
         LocalDate date = LocalDate.now();
         LocalDate date2 = LocalDate.of(2020, 9, 11);
 

@@ -163,7 +163,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = openActivityRequest(accessToken, 432l);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 
     }
 
@@ -202,7 +202,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = closeActivityRequest(accessToken, 432l);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 
     }
 
@@ -215,7 +215,6 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = closeActivityRequest(accessToken, 1000l);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     @Test
@@ -226,7 +225,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = getActivityRequest(accessToken, 655l);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 
     }
 
@@ -278,7 +277,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
         tags.add("깨꿀잼");
         tags.add("한시간만 들어도 알고리즘 정복가능");
         ExtractableResponse<Response> response = updateActivityRequest(accessToken, 432l, "김성하의 재미있는 sql세미나", "이거 들으면 취업가능", localDate, true, "3시간", 200l, tags, 200l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
 
@@ -320,7 +319,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = deleteActivityRequest(accessToken, 432l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -370,7 +369,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = createSessionRequest(accessToken, 10l, 1l, "김성하의c++세미나 1회차", LocalDate.now(), 1l, null);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -416,7 +415,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = getSessionRequest(accessToken, 100l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -426,7 +425,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
                 .getAccessToken();
 
         ExtractableResponse<Response> response = getSessionsRequest(accessToken, 1000l);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -460,7 +459,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
 
         ExtractableResponse<Response> response = updateSessionRequest(accessToken, 432l, LocalDate.now(), "dsds", 5L);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 
     }
 
@@ -557,7 +556,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = applyActivityRequest(accessToken, 432l);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     //TODO: sql 문제

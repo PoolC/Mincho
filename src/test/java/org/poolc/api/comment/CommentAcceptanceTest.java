@@ -28,7 +28,7 @@ public class CommentAcceptanceTest extends AcceptanceTest {
         String accessToken = 임원진로그인();
         ExtractableResponse<Response> response = createCommentRequest(accessToken, new RegisterCommentRequest(NOTICE_POST_ID, "test"));
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test

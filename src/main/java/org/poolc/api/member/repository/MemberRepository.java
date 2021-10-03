@@ -10,9 +10,6 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, String> {
 
-    @Query("SELECT m FROM Member m ORDER BY created_at DESC")
-    List<Member> findAllSortByLatestOrder();
-
     Optional<Member> findByUUID(String UUID);
 
     Optional<Member> findByLoginID(String loginID);

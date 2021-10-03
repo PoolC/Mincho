@@ -254,7 +254,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         RegisterPostRequest request = new RegisterPostRequest(freeBoardId, "testtest", "testtest", file_list);
         ExtractableResponse<Response> response = createPostRequest(accessToken, request);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Order(22)
@@ -295,7 +295,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         RegisterPostRequest request = new RegisterPostRequest(freeBoardId, "testtest", "testtest", file_list);
         ExtractableResponse<Response> response = createPostRequest(accessToken, request);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Order(25)
@@ -307,7 +307,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         RegisterPostRequest request = new RegisterPostRequest(adminBoardId, "testtest", "testtest", file_list);
         ExtractableResponse<Response> response = createPostRequest(accessToken, request);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Order(26)

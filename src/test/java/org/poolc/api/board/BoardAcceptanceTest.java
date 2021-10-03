@@ -36,7 +36,7 @@ public class BoardAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = createBoardRequest(accessToken, "board", "board", MemberRole.MEMBER, MemberRole.MEMBER);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Order(2)
