@@ -57,14 +57,14 @@ public class MemberController {
     }
 
     @GetMapping(path = "/{loginID}")
-    public ResponseEntity<MemberResponse> getMemberWithProjectAndActivity(@PathVariable String loginID) {
+    public ResponseEntity<MemberResponse> getMemberWithProjectAndActivity(@AuthenticationPrincipal Member loginMember, @PathVariable String loginID) {
         //TODO: project schema 변경한 뒤에 refactoring 진행
         Member findMember = memberService.getMemberByLoginID(loginID);
         List<ActivityResponse> activityResponses = memberService.getMemberActivityResponses(loginID);
         List<ActivityResponse> hostActivityResponses = memberService.getHostActivityResponses(findMember);
         List<ProjectResponse> projectResponses = projectService.findProjectsByProjectMembers(loginID).stream().map(project -> ProjectResponse.of(project, memberService.findMembers(project.getMemberLoginIDs())))
                 .collect(Collectors.toList());
-        MemberResponse response = MemberResponse.of(findMember, hostActivityResponses, activityResponses, projectResponses);
+        MemberResponse response = MemberResponse.of(findMember, loginMember, hostActivityResponses, activityResponses, projectResponses);
         return ResponseEntity.ok().body(response);
     }
 

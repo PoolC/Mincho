@@ -83,10 +83,14 @@ public class MemberResponse implements Serializable {
         return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), member.getProfileImageURL(), member.getIntroduction(), member.isMember(), member.isAdmin(), null, null, null, member.getRole());
     }
 
-    public static MemberResponse of(Member member,
+    public static MemberResponse of(Member findMember, Member loginMember,
                                     List<ActivityResponse> hostActivities,
                                     List<ActivityResponse> participantActivities,
                                     List<ProjectResponse> projects) {
-        return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), member.getProfileImageURL(), member.getIntroduction(), member.isMember(), member.isAdmin(), hostActivities, participantActivities, projects, member.getRole());
+        if(findMember.equals(loginMember)) {
+            return new MemberResponse(findMember.getLoginID(), findMember.getEmail(), findMember.getPhoneNumber(), findMember.getName(), findMember.getDepartment(), findMember.getStudentID(), findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), hostActivities, participantActivities, projects, findMember.getRole());
+        }else{
+            return new MemberResponse(findMember.getLoginID(), null, null, findMember.getName(), findMember.getDepartment(), null, findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), hostActivities, participantActivities, projects, findMember.getRole());
+        }
     }
 }
