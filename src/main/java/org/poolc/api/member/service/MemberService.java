@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.poolc.api.activity.dto.ActivityResponse;
 import org.poolc.api.activity.service.ActivityService;
+import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.common.domain.YearSemester;
@@ -113,11 +114,16 @@ public class MemberService {
         }
     }
 
+    public void throwIfNotMember(Member member) {
+        if(member == null || !member.isMember()) {
+            throw new UnauthorizedException("회원이 아닙니다");
+        }
+    }
+
     public Member getMemberByLoginID(String loginID) {
         return memberRepository.findByLoginID(loginID)
                 .orElseThrow(() -> new NoSuchElementException("No user found with given loginID"));
     }
-
     public Member getMemberIfRegistered(String loginID, String password) {
         return memberRepository.findByLoginID(loginID)
                 .filter(member -> passwordHashProvider.matches(password, member.getPasswordHash()))
